@@ -3,10 +3,46 @@
   "effect": "appear",
   "slides": [
     {
+      "slide": 5,
+      "steps": [
+        {
+          "label": "计算与坐标",
+          "objects": [
+            "reveal-s5-step1-1",
+            "reveal-s5-step1-2",
+            "reveal-s5-step1-3",
+            "reveal-s5-step1-4"
+          ]
+        },
+        {
+          "label": "描点与连线",
+          "objects": [
+            "reveal-s5-step2-1",
+            "Chart",
+            "reveal-s5-step2-3",
+            "reveal-s5-step2-4"
+          ]
+        },
+        {
+          "label": "截距与变化",
+          "objects": [
+            "reveal-s5-step3-1",
+            "reveal-s5-step3-2"
+          ]
+        },
+        {
+          "label": "变式反馈",
+          "objects": [
+            "reveal-s5-step4-1"
+          ]
+        }
+      ]
+    },
+    {
       "slide": 6,
       "steps": [
         {
-          "label": "第一题：求导与单调性",
+          "label": "切线的完整计算",
           "objects": [
             "reveal-s6-step1-1",
             "reveal-s6-step1-2",
@@ -14,13 +50,16 @@
           ]
         },
         {
-          "label": "第一题：极值",
+          "label": "等价转化与图形",
           "objects": [
-            "reveal-s6-step2-1"
+            "reveal-s6-step2-1",
+            "reveal-s6-step2-2",
+            "reveal-s6-step2-3",
+            "Chart"
           ]
         },
         {
-          "label": "第二题：参数迁移",
+          "label": "求导与最大值",
           "objects": [
             "reveal-s6-step3-1",
             "reveal-s6-step3-2",
@@ -28,9 +67,20 @@
           ]
         },
         {
-          "label": "第二题：极值",
+          "label": "参数边界",
           "objects": [
-            "reveal-s6-step4-1"
+            "reveal-s6-step4-1",
+            "reveal-s6-step4-2",
+            "reveal-s6-step4-3"
+          ]
+        },
+        {
+          "label": "方法归纳",
+          "objects": [
+            "reveal-s6-step5-1",
+            "reveal-s6-step5-2",
+            "reveal-s6-step5-3",
+            "reveal-s6-step5-4"
           ]
         }
       ]
@@ -39,7 +89,7 @@
       "slide": 7,
       "steps": [
         {
-          "label": "切线方程",
+          "label": "开头与主题",
           "objects": [
             "reveal-s7-step1-1",
             "reveal-s7-step1-2",
@@ -47,36 +97,56 @@
           ]
         },
         {
-          "label": "转为函数上界",
+          "label": "主旨证据",
           "objects": [
             "reveal-s7-step2-1",
-            "reveal-s7-step2-2",
-            "reveal-s7-step2-3",
-            "reveal-s7-step2-4",
-            "reveal-s7-step2-5",
-            "reveal-s7-step2-6",
-            "reveal-s7-step2-7",
-            "reveal-s7-step2-8",
-            "Chart"
+            "reveal-s7-step2-2"
           ]
         },
         {
-          "label": "确定最大值",
+          "label": "材料解释",
           "objects": [
-            "reveal-s7-step3-1",
-            "reveal-s7-step3-2",
-            "reveal-s7-step3-3",
-            "reveal-s7-step3-4",
-            "reveal-s7-step3-5",
-            "reveal-s7-step3-6"
+            "reveal-s7-step3-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 8,
+      "steps": [
+        {
+          "label": "受力与合力",
+          "objects": [
+            "reveal-s8-step1-1",
+            "reveal-s8-step1-2",
+            "reveal-s8-step1-3"
           ]
         },
         {
-          "label": "参数范围与边界",
+          "label": "加速度与速度",
           "objects": [
-            "reveal-s7-step4-1",
-            "reveal-s7-step4-2",
-            "reveal-s7-step4-3"
+            "reveal-s8-step2-1",
+            "reveal-s8-step2-2",
+            "reveal-s8-step2-3"
+          ]
+        },
+        {
+          "label": "位移",
+          "objects": [
+            "reveal-s8-step3-1",
+            "reveal-s8-step3-2"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 9,
+      "steps": [
+        {
+          "label": "数据解释与证据边界",
+          "objects": [
+            "reveal-s9-step1-1",
+            "reveal-s9-step1-2"
           ]
         }
       ]
@@ -85,11 +155,31 @@
       "slide": 10,
       "steps": [
         {
-          "label": "定位证据并解释逻辑",
+          "label": "Differentiate and solve",
           "objects": [
             "reveal-s10-step1-1",
-            "reveal-s10-step1-2",
-            "reveal-s10-step1-3"
+            "reveal-s10-step1-2"
+          ]
+        },
+        {
+          "label": "Coordinates",
+          "objects": [
+            "reveal-s10-step2-1",
+            "reveal-s10-step2-2"
+          ]
+        },
+        {
+          "label": "Justify the classification",
+          "objects": [
+            "reveal-s10-step3-1",
+            "reveal-s10-step3-2"
+          ]
+        },
+        {
+          "label": "Sketch",
+          "objects": [
+            "Chart",
+            "reveal-s10-step4-2"
           ]
         }
       ]

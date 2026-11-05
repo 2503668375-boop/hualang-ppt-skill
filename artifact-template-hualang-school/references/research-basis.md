@@ -1,36 +1,23 @@
-# 场景与视觉研究依据
+# 研究依据与设计转化
 
-核查日期：2026-11-05。以下是本技能的设计依据，不是华朗办学实绩，也不构成对学习效果的保证。官方来源的结论与本技能的排版建议分开使用。
+核查日期：2026-11-05。区分来源实际支持的教学原则与本技能自行选择的字号、布局和容量。以下不能用于宣称本校实绩或保证学习效果。
 
-## 可直接支持的原则
-
-| 依据 | 来源实际支持什么 | 在本技能中的用途与边界 |
+| 一手来源 | 可用于本技能的内容 | 设计转化及边界 |
 |---|---|---|
-| [TED：演讲者与节目准备](https://www.ted.com/tedx/organizer-guide/prepare-speakers-and-program) | 舞台页聚焦一个观点；强图像或短句优于拥挤段落；图表清楚，后排可读，需排练检验 | 外部演讲可用大字、大图、单图表作为主力页型；不将 TED 的舞台习惯强加到校务会阅读稿与课堂推理 |
-| [UC San Diego：教学多媒体](https://digitallearning.ucsd.edu/instructors/online-teaching-essentials/multimedia.html) | 分段、信号提示、去掉无关内容、相关图文邻近等多媒体原则 | 教学步骤按理解单元呈现，标注贴近对象，必要线索稳定；不等于每页必须少字或必须配照片 |
-| [EEF：课堂认知科学证据审查](https://educationendowmentfoundation.org.uk/education-evidence/evidence-reviews/cognitive-Science-approaches-in-the-classroom) | 实施效果依赖年龄、先备知识、学科与目标；无关插画可能增加分心 | 教学图解必须帮助理解具体关系；设计原则不能被宣传成所有课堂均有效的固定公式 |
-| [Northwestern：品牌色](https://www.northwestern.edu/brand/visual-identity/color-palettes/) | 主要品牌紫及明暗色阶可兼顾一致性与灵活性；多数版面以白色为主 | 华朗采用自身紫金色值和固定颜色角色，统一正文体系；只借鉴系统方法，不复制他校品牌资产 |
-| [UW：演示模板](https://www.washington.edu/brand/templates/presentations/)与[颜色指南](https://www.washington.edu/brand/brand-elements/colors/) | 同一品牌模板可包含紫、金、白背景；颜色组合须保证对比，部分金白组合不可读 | 深浅底可以按页面功能切换；金色小字不能随意放在浅底；华朗的切换范围由本技能自行规定 |
-| [Northwestern：摄影与图像](https://www.northwestern.edu/brand/visual-identity/photos-imagery/) | 自然、具体的活动和语境能呈现学校共同体；人物、地点、物件各自承担叙事功能 | 用课堂活动、学习作品、校园空间说明具体对象；校园建筑不能替代教学成效证据 |
+| [教育部：义务教育课程方案与标准（2022）](https://hudong.moe.gov.cn/srcsite/A26/s8001/202204/t20220420_619921.html)及[数学课标](https://www.moe.gov.cn/srcsite/A26/s8001/202204/W020220420582346895190.pdf) | 分学科的内容、学业要求、教学提示及教学评价联系 | 初中教案明确目标、活动与评价，按本次年级/教材选任务；真实授课核对适用版本 |
+| [教育部：高中课程方案与标准修订通知（2020）](https://jsj.moe.gov.cn/n2/1/1/1507.shtml) | 高中课程与学科差异、适用文本 | 高中按实际课程模块与材料组织，后续学年更新另核实，不把旧版冻结为常量 |
+| [Cambridge IGCSE Biology Teacher Guide，Planning lessons](https://learning.cambridgeinternational.org/classroom/pluginfile.php/162707/mod_resource/content/1/0610_Teacher_Guide.pdf) | 教案考虑学习目标、前置知识、学习监测、差异支持、语言与时间 | 教案表写出具体活动、预期回应与评价；旧教师指南用于一般设计方法，不作为当前考纲或考试规则 |
+| [Cambridge：Teaching, learning and assessment](https://www.cambridgeinternational.org/support-and-training-for-schools/support-for-teachers/teaching-and-assessment/) | 课程、任务、评价、指令词及考生回应示例的联系 | 国际课程保留作答动作与评价要求；未登录资源不声称已读 |
+| [Cambridge AS & A Level Mathematics 9709，2026—2027](https://www.cambridgeinternational.org/Images/697427-2026-2027-syllabus.pdf) | 科目范围、路线、符号和评估信息 | 示例数学按当前已读取版本核对；真实任务仍对准考试年与路线 |
+| [IB DP Mathematics](https://www.ibo.org/programmes/diploma-programme/curriculum/mathematics/) | AA/AI、SL/HL及不同首次评估年份的课程资料 | 国际教案显式区分科目、层级与届别，不能把最新课程直接套给旧届学生 |
+| [College Board：AP Calculus AB](https://apcentral.collegeboard.org/courses/ap-calculus-ab) | 运算、多重表征、论证与数学表达 | AP数学示例同时保留图/式与解释；具体题型、计算器和评分按适用文件核实 |
+| [Mayer：邻近与提示原则](https://www.cambridge.org/core/books/abs/cambridge-handbook-of-multimedia-learning/principles-for-reducing-extraneous-processing-in-multimedia-learning-coherence-signaling-redundancy-spatial-contiguity-and-temporal-contiguity-principles/CD5B7AE1279A9AB81F8EEBB53DBEC86E) | 相关图文邻近、提示重要关系 | 公式、图像与解释就近对应；不推导“所有课堂必须大字少字” |
+| [Duarte：数据展示](https://www.duarte.com/blog/display-data-in-presentations/) | 阅读与演讲的信息密度不同，层级帮助查读 | 内部报告保留完整证据，对外演讲按讲述节奏组织 |
+| [Microsoft：动画对象](https://support.microsoft.com/en-gb/powerpoint/training/animate-text-or-objects) | 点击、同时或随后播放的对象时序 | 教师控制的逐步揭示，先排完整末态，再检查原生时间线与状态 |
 
-## 真实学校管理材料的结构参照
-
-[Fairfax County Public Schools FY2027 预算演示](https://www.fcps.edu/sites/default/files/media/pdf/FY-2027-Proposed-Budget-Presentation.pdf)于 2026-01-22 用于校董会，共 15 页：第 6 页含预算增减汇总及收支表，第 7 页为薪酬调整，第 8 页为薪酬比较，第 9—11 页继续展开调整与投入明细。
-
-这类材料说明学校资源决策需要可查的分解、比较和解释。借鉴其信息结构，不将整套视觉排版视为审美范本；不把其中的数字用于华朗案例。学校内部材料的实际布局见[内部汇报](internal-report.md)。
-
-## 本技能自行确定的设计建议
-
-[视觉规范](design.md)中的具体色值、字号起点、边距、图片裁切和表格样式，是华朗本项目的制作规则，不是上述研究给出的科学阈值。课堂、家长会与舞台页的布局建议见[场景规范](special-scenes.md)。
-
-- 内容密度由阅读方式和任务决定；不把固定字数、图片占比或页型配额冒充研究结论。
-- 网页对比标准可辅助检查文字与背景，不能代替实际投影、图表和照片的可读性检查。
-- 原生编辑性、逐页渲染和缩略图审查属于交付质量要求；没有溢出不代表已经通过内容与审美审查。
+V6的黑色正文、少量红色强调、深蓝分析，源自本次用户明确要求；紫色同时用于华朗品牌、标题与教学组件，普通正文保持黑色。内部概论、依据、图表与条件管理借鉴已确认的公司汇报方法，但成品保留学校身份与学校业务事实。具体容量与字号只是起排建议，必须看真实页面与实际视距。
 
 
-## V5 针对性补充（2026-11-05）
+## 教案版式与品牌角色补充
 
-- [Duarte：数据展示](https://www.duarte.com/blog/display-data-in-presentations/)强调按现场演讲或留阅选择密度，用层级、留白和邻近解释指引数据阅读。本技能据此把数字、图表和解释组成一个主体，而不把所有页均分成文字栏。
-- [Mayer：多媒体学习的邻近与提示原则](https://www.cambridge.org/core/books/abs/cambridge-handbook-of-multimedia-learning/principles-for-reducing-extraneous-processing-in-multimedia-learning-coherence-signaling-redundancy-spatial-contiguity-and-temporal-contiguity-principles/CD5B7AE1279A9AB81F8EEBB53DBEC86E)支持对应图文邻近、重点提示。具体数学分区是本技能的设计转化，不能宣称特定配色或动画必然提分。
-- [Microsoft：动画对象与触发](https://support.microsoft.com/en-gb/powerpoint/training/animate-text-or-objects)说明点击、与上一动画同时及之后播放。本技能采用教师控制的点击出现，并把可编辑对象与揭示清单对应。
-- [Microsoft Open XML：SetBehavior](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.setbehavior?view=openxml-2.20.0)提供原生可见性时间行为；写入结构后仍需区分文件检查与应用内播放检查。
+[Waterloo教案规划](https://uwaterloo.ca/centre-for-teaching-excellence/catalogs/tip-sheets/planning-lesson)与[Cambridge TKT材料](https://www.cambridgeenglish.org/images/168890-tkt-module-2-identifying-the-different-components-of-a-lesson-plan.pdf)用于核对目标、活动、时间、评价和资源。[Cambridge C1教案](https://www.cambridgeenglish.org/Images/649844-c1-advanced-reading-and-use-of-english-part-2.pdf)已实际查看教师过程与局部支持带的组织。[Northwestern演示模板](https://www.northwestern.edu/brand/applying-the-brand/meetings-presentations/powerpoint-templates/)仅用于借鉴品牌色与白色阅读面的分工。华朗紫色导航、黑色正文和教学功能组件是本次设计转化；并非上述来源规定的统一配色。

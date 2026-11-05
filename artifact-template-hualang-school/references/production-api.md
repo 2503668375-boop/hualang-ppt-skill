@@ -1,118 +1,82 @@
-# 原生 PPT 制作辅助库
+# 原生制作工具 V6
 
-`scripts/hualang-kit.mjs` 固定华朗颜色、字体、页眉和表格样式，调用者决定议题、页序及主体构图。它不附带教学案例，也不替代内容审查。保留的封面来自 `assets/source-original.pptx` 第 1 页，原校园图、校徽、几何轮廓和画布保留，紫金底形统一为当前色值。新增页的原生文字、表格、图表和箭头均可编辑。
+`scripts/hualang-kit.mjs` 使用当前可用的 `@oai/artifact-tool`，封面与封尾均从原始模板保留。调用者决定内容、学科与具体构图，工具提供用途对应的默认值。
 
-## 使用环境
+## 运行环境
 
-在已具备 `@oai/artifact-tool` 的 Node.js 制作目录使用。若技能目录无法解析依赖，可把这个辅助文件复制到本次临时制作目录，让它复用该目录已配置的运行库；不要在技能包中加入依赖文件。`skillDir` 指向完整技能目录，所有输出路径由调用者传入，库内没有机器路径。
-
-**先确认实际可用字体，再创建文件。** 默认中文 PingFang SC、英数 Arial。缺少字体时，把已核实可用的字体名传给 `createDeck` 的 `zhFont` / `latinFont`，无需修改库文件。它们统一作用于本稿封面、标题、页脚、文字、表格和图表；校徽图片保持原样。每个 deck 独立保留自己的选择，并行制作其他稿件不会受影响。换字体后须回看实际页面、换行和图表标签。
+桌面环境读取 `load_workspace_dependencies` 返回的运行库。可将辅助库复制到本次临时制作目录，并让该目录解析已有依赖；不要把依赖目录打入技能包。字体先核实，中文默认PingFang SC，英数Arial，简单分式默认Times New Roman；缺失时用 `zhFont / latinFont / mathFont` 传入实际可用字体。
 
 ```js
-import {createDeck, colors} from './hualang-kit.mjs';
-
-const deck = await createDeck({
-  skillDir, title: '本次实际题名', subtitle: '本次副题', presenter, date,
-  zhFont: availableChineseFont, latinFont: availableLatinFont,
-});
-const page = deck.addPage({title: '本页事项', summary: '有依据的判断或安排', section: '所属章节'});
-deck.text(page, '正文内容', {x: 48, y: 220, w: 720, h: 100, size: 28});
-await deck.writeDraft({candidatePath, renderDir});
+import {createDeck,colors,profiles} from './hualang-kit.mjs';
+const deck=await createDeck({skillDir,title:'本次题名',presenter,date});
+const page=deck.addPage({title:'本页议题',purpose:'report',summary:'有依据的判断或安排。'});
+// 新页自动插在固定封尾之前；不要自拟最后一页替代原模板。
+await deck.writeDraft({candidatePath,renderDir});
 ```
 
-坐标与字号采用 96 dpi 的 CSS 像素，画布为原模板的 1280×720。数字 `fontSize: 24` 相当于 18 pt。标题右侧为校徽保留空间；常规正文区域从 y=210 至 y=660，省略概论时可以向上利用空余版面。调用者可以直接访问 `deck.presentation` 使用更多原生能力，主体不限定为两栏或卡片。
+封面不传subtitle。确有独立范围或用户明确要求时同时传 `subtitlePurpose:'scope'` 或 `'user_request'`；这表示已有语义依据，不要求额外审批。不要把版本、使用介绍或演示标签当成副题。
 
-## 常用接口
+## 用途与默认字号
 
-| 接口 | 关键参数与返回 |
+坐标/字号单位为CSS像素，24px=18pt。画布1280×720。标题区约y=30—73，分隔线y=86，主体可从y=108至650。不要复制V5的第二个大标题或y=210才开始正文的布局。
+
+| purpose | 题名px | 正文px | 概论px | 典型用途 |
+|---|---|---|---|---|
+| report | 28 | 21 | 22 | 正式内部阅读汇报 |
+| lessonPlan | 28 | 20 | 21 | 教师教案/备课 |
+| classroom | 30 | 25 | 25 | 学生课堂 |
+| worksheet | 28 | 24 | 24 | 练习题组 |
+| parent | 34 | 28 | 28 | 家长现场/招生 |
+| stage | 52 | 30 | 30 | 舞台表达 |
+
+`deck.text` 对通过入口创建的页面采用对应正文起点，可按真实材料显式调整。正文默认 `colors.ink`，标题和教学组件用 `colors.purple` / `colors.pale`，重点 `colors.red`，分析图形 `colors.blue`。字号起点不等于配额，见[教学设计](teaching-design.md)及[视觉规范](design.md)。
+
+## 主要入口
+
+| 方法 | 返回与用途 |
 |---|---|
-| `createDeck({skillDir,title,subtitle,presenter,date,zhFont,latinFont})` | 异步。保留原始封面图片与结构，填入本次文字，返回 deck；字体选项可省略 |
-| `addPage({title,summary,section,titleSize})` | 返回常规浅底深紫字页面，固定左题名、右校徽 |
-| `addStage({title,subtitle,section,imagePath,imageAlt,titleSize,subtitleSize,brandBacking})` | 异步。无图时为深紫底主张页；有图时上部 480 px 主图、下部深紫标题区。主图页默认主句 64 px、副句 38 px；深紫页默认主句 78 px、副句 40 px |
-| `text(slide,value,{x,y,w,h,size,color,bold,font,zhFont,latinFont,align,name,lineSpacing})` | 返回可编辑文本形状。默认按中文/英数分配字体；`font` 可显式统一。不会自动缩小字号 |
-| `image(slide,file,{x,y,w,h,alt,fit})` | 异步，PNG/JPEG，默认 `contain` 保留全图；`cover` 等比例裁切。`alt` 必填 |
-| `nativeTable(slide,values,{x,y,w,h,columnWidths,rowHeights,size,numericColumns,focusRow,font,zhFont,latinFont})` | 返回原生表格。首行为深紫白字表头；指定数字列在表身右对齐；`focusRow` 按从 0 起的整表行号 |
-| `chart(slide,type,options,fontOptions)` | 返回原生图表，沿用 Artifact Tool 的数据与坐标参数，并补统一字体及紫色系列。可选第 4 参数支持 `{font,zhFont,latinFont}` |
-| `line(slide,{x,y,w,h,color,width})` | 返回无箭头的分隔线，默认水平；可用于图中必要的参考线 |
-| `arrow(slide,{from,to,fromSide,toSide,kind,color,width})` | 两端依附已创建的文本框或形状，箭头由 from 指向 to，默认右侧接左侧 |
-| `arrow(slide,{x,y,w,h,color,width})` | 创建独立的原生连接箭头；w/h 非负，方向从左上端指向右下端。反向关系请用明确的 from/to 形状 |
-| `writeDraft({candidatePath,renderDir,scale})` | 异步。输出候选 PPTX、每页 PNG 和布局记录，返回路径与页数；默认 1.5 倍渲染 |
+| `addPage({title,purpose,summary,section,titleSize})` | 普通页，单题名；summary为正文层级概论 |
+| `addReportPage({title,summary,section})` | 题名、概论、依据与落实区域，内部完整论证 |
+| `addLessonPlanPage({title,section})` | context、sequence、assessment三个区域；可以按具体学科改变安排 |
+| `addMathPage({title,mode,purpose,section})` | mode为single/pair/proof，分别给完整题干+推导/图形、双题或通栏推导 |
+| `addLessonPage({title,task,section})` | 观察对象与任务页，只适用于相应观察任务 |
+| `addPhotoEssay({title,orientation,section})` | 主次照片区域，left/right按真实素材选择 |
+| `await addEditorial({title,dark,section})` | 开放画布；题名不应再与大口号重复 |
+| `await addStage({title,subtitle,imagePath,imageAlt,section})` | 舞台主句/主图；默认不加小场景标题，舞台字号不传给课堂 |
+| `text / image / nativeTable / chart / line / arrow` | 原生文字、图片、表格、数据图与关系图，具体坐标由内容决定 |
+| `fraction(slide,num,den,{x,y,w,size,color})` | 简单可编辑分式：分子/横线/分母；复杂数学对象按数学专项 |
 
-主图页的 `brandBacking` 默认开启，为右上金色校徽提供深紫小底托，避免浅色或复杂照片削弱对比。若遮住主体，先调整裁切或构图；只有图片本身已提供稳定对比时才设为 `false`。底托仅作用于主图页。主图页的主句和副句各以一行短句为默认，过长时先精简或改页型，也可以按实际长度传入 `titleSize` / `subtitleSize` 后查看渲染。深紫主张页为副句留出两行空间。
+原生表格必须给按内容分配的columnWidths且合计为w，可给rowHeights。表头默认紫底白字，可选headerStyle=tint为浅紫深紫字；表身黑色，数字列右对齐。cellPadding控制内边距，按真实换行确定rowHeights，不能让自动增高压住后续内容。图表数值轴使用min/max；函数采用scatter与xValues。默认蓝/灰系列，重点需要时才显式用红。
 
-直接导入独立 `text` / `nativeTable` / `chart` 函数时，也可传上述字体选项；省略时仍使用默认字体。`deck.text` / `deck.nativeTable` / `deck.chart` 自动继承本稿字体，不必逐次重复。
-
-### 表格
-
-`columnWidths` 必填，总和等于 w。先按实际内容分配列宽：名称与说明列通常更宽，数字列以能容纳最长值和单位为准。每行列数一致；传入 `rowHeights` 时，其数量及总高须与表格一致。示例中的单元格值请换成本次材料，不能依赖自动缩字消除溢出。
+## 点击揭示
 
 ```js
-deck.nativeTable(page, [['项目', '数量 / 项'], ['实际项目名称', '8']], {
-  x: 48, y: 220, w: 700, h: 180, columnWidths: [480, 220],
-  rowHeights: [70, 110], size: 26, numericColumns: [1],
-});
-```
-
-### 图表与箭头
-
-数值轴上下限用 `min` / `max`，`majorUnit` 设置主刻度间隔。库会拒绝容易被忽略的 `minimumScale` / `maximumScale`。横向条形图 `barOptions.direction='bar'` 中，**xAxis 仍表示分类轴，yAxis 表示数值轴**；数值范围应写在 yAxis。默认横向条形图可能从下向上排列类别，若要与旁边的表格同序，应对应重排 categories 和每组 values 后查看渲染。散点图 xAxis、yAxis 都是数值轴，适用于函数关系，不能拿分类折线图代替数值横轴。
-
-```js
-deck.chart(page, 'bar', {
-  position: {left: 48, top: 220, width: 700, height: 350},
-  categories: ['项目甲', '项目乙'], series: [{name: '数量', values: [8, 5]}],
-  barOptions: {direction: 'bar', grouping: 'clustered'},
-  xAxis: {majorGridlines: {fill: 'none'}},
-  yAxis: {min: 0, max: 10, majorUnit: 2},
-});
-const a = deck.text(page, '动作甲', {x: 800, y: 260, w: 170, h: 60});
-const b = deck.text(page, '动作乙', {x: 1040, y: 260, w: 170, h: 60});
-deck.arrow(page, {from: a, to: b});
-```
-
-连接箭头采用 `geometry:'connector'` 或 `shapes.connect`，目标端用 `tail`。不要给普通 `geometry:'line'` 传箭头参数，该运行库可能忽略它。关系的顺序与方向由资料决定。
-
-## 输出后的检查
-
-`writeDraft` 只负责导出和实际渲染，不宣称文件、教学内容或视觉已通过验收。查看每一页 PNG，检查文字、图片裁切、数轴、表格和可见箭头；再按成品流程核对可编辑对象与最终保存文件。舞台大图页须检查校徽对比和底托是否遮挡主体，必要时调整图片裁切或改用常规页。真实资料、示意、计划及实绩保持明确。
-
-## 固定字段与场景入口（4.1）
-
-`presenter`和`date`为必填，函数自动加“汇报人：”“汇报时间：”，坐标来自assets/style-contract.json。普通页自动题名用短语；函数拒绝口播问句和过长自动题名。用户给定正式题名可用userSuppliedTitle:true保留，需对照原要求。
-
-新增入口均返回`{slide, areas}`，调用者在areas中放真实内容，不能只画空框：
-
-- `addReportPage({title, summary, section})`：常规题名、概论、通栏evidence与note。
-- `addLessonPage({title, task, section})`：主任务及宽对象visual区、prompts区；task必填。
-- `addParentPage({title, headline, section})`：宽幅visual区、图下主句及support区；headline必填。
-- `addStage({... , heading})`：heading为可选短场景题名，title为大字主句，支持主图和深紫主张页。
-
-每种结构的实际位置、用途与边界见references/scene-layouts.md。普通`addPage`仍用于一般说明和自定义页面，不应承担全部教育场景。
-
-## V5 学科与照片编排
-
-```js
-const {slide,areas}=deck.addMathPage({title:'导数综合',mode:'single',section:'原创例题'});
-// areas.stem: 完整题干；areas.work: 推导；areas.diagram: 固定图形
-const first=deck.text(slide,'具体第一步', {x:48,y:320,w:650,h:70,size:32});
-const formulaParts=deck.fraction(slide,'1','x',{x:190,y:400,size:30});
-deck.registerReveal(slide,[first,...formulaParts],{label:'求导'});
+const {slide}=deck.addMathPage({title:'导数应用',mode:'single'});
+const step=deck.text(slide,'完整的关键推理',{x:48,y:240,w:720,h:70});
+deck.registerReveal(slide,[step],{label:'关键转化'});
 await deck.writeRevealManifest(manifestPath);
-// 先导出无动画PPTX，再运行下述脚本；不要重新导入导出动画稿而丢失时间线。
 ```
+
+先确定页序并排出完整末态，再登记对象。后续重排页序需重新登记/导出清单。对象可为原生shape；图表/图片可传已核实且唯一的导出对象名，例如单图表页面的 `Chart`。
 
 ```text
 python3 scripts/apply_reveals.py base.pptx reveals.json animated.pptx
-python3 scripts/apply_reveals.py base.pptx reveals.json initial.pptx --state 0
-python3 scripts/apply_reveals.py base.pptx reveals.json step1.pptx --state 1
+python3 scripts/apply_reveals.py base.pptx reveals.json state0.pptx --state 0
 ```
 
-同一步可登记多个原生文字/线条/图形，作为一次点击同时出现。原生文字/形状、图片和图表可整对象出现。图表/图片可传已核实的导出对象名，例如单图表页面的 `Chart`；同名不唯一时脚本拒绝，须先修正命名。已有动画、缺失对象、重复对象和覆盖输出均报错。
+基础稿先完成图表数据、文件和视觉检查，再写入原生时间线。写入后不要用会丢失动画的工具重存。已有动画、缺失或重复对象、覆盖输出会报错。状态图只能证明各步内容与位置，不能代替PowerPoint应用内放映。
 
-`addMathPage` 的 `pair` 模式返回 `left/right` 两个完整题域；`proof` 返回通栏推导。区域是排版起点，内容长时拆页。
+图表再导出须核对嵌入数据文件。运行库丢失已有工作簿时回到保留的源稿恢复，不凭缓存伪造来源；新制图表可从完整字面量数据创建快照并保留明确精度。
 
-`addPhotoEssay({title,orientation:'left'})` 返回 `hero/detailTop/detailBottom/caption`，方向也可为 `right`。真实图像的主体位置决定选择，不强制所有招生页都使用此结构。
 
-`await addEditorial({title,dark:false})` 返回更开放的演讲/数字画布，保留品牌和页脚。`fraction` 只适合简单可编辑分式，复杂公式按数学专项处理。
+## 功能组件
 
-图表导入后再次导出时需确认嵌入数据文件仍在。若运行库丢失已有工作簿，回到保留的源稿恢复；不能凭缓存杜撰来源。新制图表可从完整字面量数据创建快照，非整数量保留明确精度。
+- `lessonBand(slide,label,body,{x,y,w,h,size,labelWidth})`：统一任务带，紫色短标签与浅紫完整题干区域，返回原生对象组。
+- `methodStrip(slide,label,body,{x,y,w,h,size})`：方法、关键条件或支持提示，浅紫底/紫色边界、黑色正文。
+- `stepMarker(slide,label,{x,y,w,size})`：稳定的紫色步骤编号，与实际推理同时出现。
+
+任务/步骤/方法是内容组织，不能代替完整题目、论证或活动。组件只在对应信息存在时使用。可将返回对象登记为同一揭示步骤。场景选择决定组合，不强制全稿套一套条带。
+
+演讲图文默认stageLayout=split、imageFit=contain，优先完整保留人物与动作。只有适合宽幅裁切的素材才用banner/cover，必须实看人脸、手部和证据未被裁掉。
+
+`createDeck`用于完整稿。单页或局部任务可从品牌正文页起稿并按用户指定页数导出，保留正文品牌；不强加完整稿的封面封尾。

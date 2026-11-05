@@ -1,44 +1,75 @@
 #!/usr/bin/env python3
-"""Read fixed cover fields and generated topic headings from an actual PPTX."""
-import argparse,json,re,sys,zipfile
+"""Check fixed cover, single page headings and original closing in a saved deck."""
+import argparse,hashlib,json,posixpath,re,sys,zipfile
 from pathlib import Path
 import xml.etree.ElementTree as E
-NS={'p':'http://schemas.openxmlformats.org/presentationml/2006/main','a':'http://schemas.openxmlformats.org/drawingml/2006/main'}
+NS={'p':'http://schemas.openxmlformats.org/presentationml/2006/main','a':'http://schemas.openxmlformats.org/drawingml/2006/main','r':'http://schemas.openxmlformats.org/officeDocument/2006/relationships'}
 EMU=9525
 
 def shapes(raw):
  root=E.fromstring(raw);out=[]
  for sp in root.findall('.//p:sp',NS):
-  nv=sp.find('p:nvSpPr/p:cNvPr',NS);tr=sp.find('p:spPr/a:xfrm',NS)
-  pos=None
+  nv=sp.find('p:nvSpPr/p:cNvPr',NS);tr=sp.find('p:spPr/a:xfrm',NS);pos=None
   if tr is not None:
    o=tr.find('a:off',NS);e=tr.find('a:ext',NS)
    if o is not None and e is not None:pos=[int(o.get('x'))/EMU,int(o.get('y'))/EMU,int(e.get('cx'))/EMU,int(e.get('cy'))/EMU]
   out.append({'name':nv.get('name','') if nv is not None else '', 'text':''.join(t.text or '' for t in sp.findall('.//a:t',NS)), 'position':pos})
  return out
 
-def main():
- ap=argparse.ArgumentParser();ap.add_argument('pptx',type=Path);ap.add_argument('--title',required=True);ap.add_argument('--presenter',required=True);ap.add_argument('--date',required=True);ap.add_argument('--contract',type=Path,default=Path(__file__).resolve().parents[1]/'assets/style-contract.json');ap.add_argument('--template',action='store_true');ap.add_argument('--allow-title',action='append',default=[]);a=ap.parse_args()
- c=json.loads(a.contract.read_text());errors=[];headers=[]
- with zipfile.ZipFile(a.pptx) as z:
-  cover=shapes(z.read('ppt/slides/slide1.xml'))
-  expected={'title':a.title,'presenter':'汇报人：'+re.sub(r'^汇报人[：:]\s*','',a.presenter),'date':'汇报时间：'+re.sub(r'^汇报时间[：:]\s*','',a.date)}
-  for key in expected:
-   rule=c['cover'][key];match=[x for x in cover if x['name']==rule['name']]
+def relationships(z,part):
+ name=posixpath.join(posixpath.dirname(part),'_rels',posixpath.basename(part)+'.rels')
+ if name not in z.namelist():return []
+ out=[]
+ for rel in E.fromstring(z.read(name)):
+  if rel.get('TargetMode')=='External':continue
+  target=rel.get('Target');dest=target.lstrip('/') if target.startswith('/') else posixpath.normpath(posixpath.join(posixpath.dirname(part),target))
+  out.append((rel.get('Id'),rel.get('Type').rsplit('/',1)[-1],dest))
+ return out
+
+def slide_parts(z):
+ rel={rid:dest for rid,typ,dest in relationships(z,'ppt/presentation.xml') if typ=='slide'}
+ return [rel[s.get('{'+NS['r']+'}id')] for s in E.fromstring(z.read('ppt/presentation.xml')).find('p:sldIdLst',NS)]
+
+def closing_check(z,part,expected_sha):
+ root=E.fromstring(z.read(part));tree=root.find('p:cSld/p:spTree',NS)
+ added=[n.tag.rsplit('}',1)[-1] for n in tree if n.tag.rsplit('}',1)[-1] not in ['nvGrpSpPr','grpSpPr']]
+ seen=set();hashes=[]
+ def walk(p):
+  if p in seen:return
+  seen.add(p)
+  for rid,typ,dest in relationships(z,p):
+   if typ=='image':hashes.append(hashlib.sha256(z.read(dest)).hexdigest())
+   elif typ in ['slideLayout','slideMaster']:walk(dest)
+ walk(part)
+ return {'original_asset_present':expected_sha in hashes,'added_objects':added,'passed':expected_sha in hashes and not added}
+
+def check(pptx,c,title,presenter,date,template=False,allow_titles=(),allow_subtitle=False):
+ errors=[];headers=[]
+ expected={'title':title,'presenter':'汇报人：'+re.sub(r'^汇报人[：:]\s*','',presenter),'date':'汇报时间：'+re.sub(r'^汇报时间[：:]\s*','',date)}
+ with zipfile.ZipFile(pptx) as z:
+  parts=slide_parts(z);cover=shapes(z.read(parts[0]))
+  for key,want_text in expected.items():
+   rule=c['cover'][key];match=[o for o in cover if o['name']==rule['name']]
    if len(match)!=1:errors.append('封面固定字段缺失或重复：'+key);continue
    ob=match[0]
-   if ob['text']!=expected[key]:errors.append('封面字段与本次要求不一致：'+key)
-   want=[rule[k] for k in ['x','y','w','h']]
-   if ob['position'] is None or any(abs(x-y)>1 for x,y in zip(ob['position'],want)):errors.append('封面字段偏离固定区域：'+key)
-   if not a.template and re.search(r'待补|待填|姓名或团队|按需填写|\[.+\]|［.+］',ob['text']):errors.append('正式封面仍含待补字段：'+key)
-  slide_names=sorted((n for n in z.namelist() if re.fullmatch(r'ppt/slides/slide\d+\.xml',n)),key=lambda x:int(re.search(r'slide(\d+)',x).group(1)))
-  for number,n in enumerate(slide_names[1:],2):
-   for ob in shapes(z.read(n)):
-    if ob['name'] not in ['title','scene-title']:continue
+   if ob['text']!=want_text:errors.append('封面字段与要求不一致：'+key)
+   if ob['position'] is None or any(abs(x-y)>1 for x,y in zip(ob['position'],[rule[k] for k in ['x','y','w','h']])):errors.append('封面字段位置错误：'+key)
+   if not template and re.search(r'待补|待填|姓名或团队|按需填写|\[.+\]|［.+］',ob['text']):errors.append('正式封面仍有待补字段：'+key)
+  if not allow_subtitle and any(o['name']=='cover-subtitle' and o['text'].strip() for o in cover):errors.append('封面存在未声明必要性的副题')
+  for number,part in enumerate(parts[1:-1],2):
+   titles=[o for o in shapes(z.read(part)) if o['name'] in ['title','scene-title']]
+   if len(titles)>1:errors.append(f'第{number}页存在多个页标题')
+   for ob in titles:
     t=ob['text'];headers.append({'slide':number,'title':t})
-    if t in a.allow_title:continue
+    if t in allow_titles:continue
     units=len(re.findall(r'[\u3400-\u9fff]|[A-Za-z0-9]+',t))
-    if units>c['heading']['maxUnits'] or re.search(r'[：:？?，,；;]',t) or any(re.search(p,t) for p in c['heading']['forbiddenPatterns']):errors.append(f'第{number}页题名不符合短题名规范：{t}')
- result={'ok':not errors,'cover_expected':expected,'headings':headers,'errors':errors,'scope':'字段、位置及题名检查；不替代事实、排版与视觉审查'}
- print(json.dumps(result,ensure_ascii=False,indent=2));return 1 if errors else 0
+    if units>c['heading']['maxUnits'] or re.search(r'[：:？?，,；;]',t) or any(re.search(p,t) for p in c['heading']['forbiddenPatterns']):errors.append(f'第{number}页题名不符合规范：{t}')
+  closing=closing_check(z,parts[-1],c['closing']['assetSha256'])
+  if not closing['passed']:errors.append('最后一页未完整保留原模板封尾，或添加了自拟内容')
+ return {'ok':not errors,'cover_expected':expected,'headings':headers,'closing':closing,'errors':errors,'scope':'首尾、字段、位置及已命名标题；仍需人工检查内容、重复语义、密度和视觉'}
+
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('pptx',type=Path);ap.add_argument('--title',required=True);ap.add_argument('--presenter',required=True);ap.add_argument('--date',required=True);ap.add_argument('--contract',type=Path,default=Path(__file__).resolve().parents[1]/'assets/style-contract.json');ap.add_argument('--template',action='store_true');ap.add_argument('--allow-title',action='append',default=[]);ap.add_argument('--allow-subtitle',action='store_true');a=ap.parse_args()
+ result=check(a.pptx,json.loads(a.contract.read_text()),a.title,a.presenter,a.date,a.template,a.allow_title,a.allow_subtitle)
+ print(json.dumps(result,ensure_ascii=False,indent=2));return int(not result['ok'])
 if __name__=='__main__':sys.exit(main())

@@ -1,4 +1,4 @@
-> V5专项入口：[中学数学与题库](math-teaching.md)、[学科对象](subject-layouts.md)、[家长与招生](parent-admissions.md)。以下保留通用原则；观察照片页只适用于观察任务。
+> V6专项入口：[教案与课件](teaching-design.md)、[初中](junior-subjects.md)、[高中](senior-subjects.md)、[国际课程](international-subjects.md)、[中学数学与题库](math-teaching.md)、[学科对象](subject-layouts.md)、[家长与招生](parent-admissions.md)。以下保留通用原则；观察照片页只适用于观察任务。
 
 # 课堂、家长沟通与外部演讲
 

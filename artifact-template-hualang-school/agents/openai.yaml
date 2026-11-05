@@ -1,6 +1,6 @@
 interface:
   display_name: "华朗学校 Hualang School"
-  short_description: "华朗汇报、学科课件与题库排版，支持答案点击揭示和家长招生图文"
+  short_description: "华朗内部汇报与初中、高中、国际高中分学科教案课件，按用途排版"
   icon_large: "./assets/preview.png"
   default_prompt: "使用 $artifact-template-hualang-school，根据本次内容、材料与要求完成可直接应用的华朗汇报PPT。"
 policy:

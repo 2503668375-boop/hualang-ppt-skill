@@ -3,11 +3,20 @@ import path from 'node:path';
 import {FileBlob, PresentationFile} from '@oai/artifact-tool';
 
 export const colors = Object.freeze({
-  purple: '#403653', secondary: '#70677F', gold: '#BCA36D',
-  paper: '#FDFDFE', pale: '#F1EEF5', line: '#DAD4E2', white: '#FFFFFF',
+  purple: '#403653', ink: '#222222', secondary: '#666666', gold: '#BCA36D',
+  red: '#B4232C', blue: '#1B385B', paper: '#FDFDFE', pale: '#F0ECF5',
+  line: '#D8D8D8', white: '#FFFFFF',
 });
 export const fonts = Object.freeze({zh: 'PingFang SC', latin: 'Arial'});
 export const canvas = Object.freeze({width: 1280, height: 720});
+export const profiles = Object.freeze({
+  report:{title:28,body:21,summary:22,table:19},
+  lessonPlan:{title:28,body:20,summary:21,table:19},
+  classroom:{title:30,body:25,summary:25,table:23},
+  worksheet:{title:28,body:24,summary:24,table:22},
+  parent:{title:34,body:28,summary:28,table:24},
+  stage:{title:52,body:30,summary:30,table:26},
+});
 const noLine = {fill: 'none', width: 0};
 
 export function assertTopicTitle(value, {userSupplied = false} = {}) {
@@ -24,7 +33,7 @@ export function assertTopicTitle(value, {userSupplied = false} = {}) {
 
 
 // CSS pixels at 96 dpi. Keep the content geometry under the caller's control.
-export function text(owner, value, {x, y, w, h, size = 26, color = colors.purple,
+export function text(owner, value, {x, y, w, h, size = 22, color = colors.ink,
   bold = false, font, zhFont = fonts.zh, latinFont = fonts.latin,
   align = 'left', name = 'content', lineSpacing = 1.2} = {}) {
   const shape = owner.shapes.add({geometry: 'textbox', name,
@@ -60,7 +69,8 @@ export async function image(owner, file, {x, y, w, h, alt, fit = 'contain'}) {
 }
 
 export function nativeTable(slide, values, {x, y, w, h, columnWidths,
-  rowHeights, size = 23, numericColumns = [], focusRow = -1,
+  rowHeights, size = 20, numericColumns = [], focusRow = -1,
+  headerStyle = 'purple', labelColumns = [], cellPadding = {left:12,right:12,top:6,bottom:6},
   font, zhFont = fonts.zh, latinFont = fonts.latin} = {}) {
   if (!values.length || !values[0].length || values.some(row => row.length !== values[0].length)) {
     throw new Error('nativeTable requires a nonempty rectangular values array.');
@@ -80,10 +90,11 @@ export function nativeTable(slide, values, {x, y, w, h, columnWidths,
     table.rows[r].height = rowHeights?.[r] ?? h / values.length;
     for (let c = 0; c < values[0].length; c++) {
       const cell = table.getCell(r, c);
-      cell.fill = r === 0 ? colors.purple : r === focusRow ? colors.pale : colors.paper;
-      styleText(cell, values[r][c], {size, font, zhFont, latinFont, color: r === 0 ? colors.white : colors.purple,
-        bold: r === 0 || r === focusRow, align: r > 0 && numericColumns.includes(c) ? 'right' : 'left'});
-      cell.text.style = {verticalAlignment: 'middle', insets: {left: 16, right: 16, top: 12, bottom: 12}};
+      cell.fill = r === 0 ? (headerStyle === 'purple' ? colors.purple : colors.pale) : r === focusRow ? colors.pale : colors.paper;
+      styleText(cell, values[r][c], {size, font, zhFont, latinFont, lineSpacing:1.12,
+        color:r === 0 ? (headerStyle === 'purple' ? colors.white : colors.purple) : labelColumns.includes(c) ? colors.purple : colors.ink,
+        bold: r === 0 || r === focusRow || labelColumns.includes(c), align: r > 0 && numericColumns.includes(c) ? 'right' : 'left'});
+      cell.text.style = {verticalAlignment: 'middle', insets:cellPadding};
     }
   }
   return table;
@@ -95,12 +106,12 @@ export function chart(slide, type, options, {font, zhFont = fonts.zh, latinFont 
       throw new Error('Chart numeric bounds use min and max, not minimumScale/maximumScale.');
     }
   }
-  const axis = config => ({textStyle: {fontSize: 21, fill: colors.purple},
+  const axis = config => ({textStyle: {fontSize: 19, fill: colors.ink},
     majorGridlines: {fill: colors.line, width: 0.6}, ...config});
   const c = slide.charts.add(type, {chartFill: 'none', chartLine: noLine,
     plotAreaFill: 'none', plotAreaLine: noLine, hasLegend: false,
     titlePlacement: options.title ? 'aboveChart' : 'none', ...options,
-    series: options.series?.map((s, i) => ({fill: [colors.purple, colors.secondary, colors.gold][i % 3], ...s})),
+    series: options.series?.map((s, i) => ({fill: [colors.blue, colors.secondary, colors.red][i % 3], ...s})),
     xAxis: axis(options.xAxis), yAxis: axis(options.yAxis)});
   const styles = [c.legend?.textStyle, c.dataLabels?.textStyle, c.xAxis?.textStyle,
     c.yAxis?.textStyle];
@@ -132,8 +143,8 @@ export function arrow(slide, {from, to, fromSide = 'right', toSide = 'left',
     position: {left: x, top: y, width: w, height: h}, ...options});
 }
 
-export async function createDeck({skillDir, title, subtitle = '', presenter, date,
-  zhFont = fonts.zh, latinFont = fonts.latin}) {
+export async function createDeck({skillDir, title, subtitle = '', subtitlePurpose = '', presenter, date,
+  zhFont = fonts.zh, latinFont = fonts.latin, mathFont = 'Times New Roman'}) {
   if (!skillDir || !title) throw new Error('createDeck requires skillDir and the actual title.');
   if (!String(presenter ?? '').trim() || !String(date ?? '').trim()) {
     throw new Error('封面必须提供汇报人和汇报时间；缺项应明确核实，不能静默留空。');
@@ -143,19 +154,34 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
   if (![zhFont, latinFont].every(f => typeof f === 'string' && f.trim())) {
     throw new Error('zhFont and latinFont must be nonempty installed font family names.');
   }
+  if (subtitle && !['scope','user_request'].includes(subtitlePurpose)) {
+    throw new Error('封面默认一个主标题；副题需填写独立范围或用户明确要求的 subtitlePurpose。');
+  }
   const fontOptions = {zhFont, latinFont};
-  const deckText = (owner, value, options) => text(owner, value, {...fontOptions, ...options});
+  const pageProfiles = new Map();
+  const deckText = (owner,value,options={}) => text(owner,value,
+    {size:profiles[pageProfiles.get(owner.id) ?? 'report'].body,color:colors.ink,...fontOptions,...options});
   const deckTable = (slide, values, options) => nativeTable(slide, values, {...fontOptions, ...options});
   const deckChart = (slide, type, options, overrides = {}) => chart(slide, type, options, {...fontOptions, ...overrides});
   const assets = path.join(skillDir, 'assets');
   const presentation = await PresentationFile.importPptx(await FileBlob.load(path.join(assets, 'source-original.pptx')));
-  presentation.slides.keep([0]);
+  const closingIndex = contract.closing.sourceSlide-1;
+  if (!presentation.slides.items[closingIndex]) throw new Error('原模板封尾缺失。');
+  presentation.slides.keep([0,closingIndex]);
+  const closing = presentation.slides.items[1];
+  const ensureClosing = () => {
+    if (!presentation.slides.items.includes(closing)) throw new Error('固定封尾被移除，请恢复原模板封尾。');
+    presentation.slides.reorder([...presentation.slides.items.filter(s=>s!==closing).map(s=>s.id),closing.id]);
+  };
+  const addContentSlide = (options={}) => {
+    const slide=presentation.slides.add(options);ensureClosing();return slide;
+  };
   presentation.theme.defaultFont = zhFont;
   presentation.theme.colorScheme = {name: 'Hualang Purple Gold', themeColors: {
-    accent1: colors.purple, accent2: colors.gold, accent3: colors.secondary,
+    accent1: colors.blue, accent2: colors.red, accent3: colors.secondary,
     accent4: colors.line, accent5: colors.pale, accent6: colors.paper,
-    bg1: colors.paper, bg2: colors.purple, tx1: colors.purple, tx2: colors.secondary,
-    dk1: colors.purple, dk2: colors.secondary, lt1: colors.white, lt2: colors.pale,
+    bg1: colors.paper, bg2: colors.purple, tx1: colors.ink, tx2: colors.secondary,
+    dk1: colors.ink, dk2: colors.secondary, lt1: colors.white, lt2: colors.pale,
     hlink: colors.purple, folHlink: colors.secondary,
   }};
   // This preserved source has a single title shape on slide 0; pictures, the
@@ -179,7 +205,7 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
   };
   if (subtitle) field('subtitle', subtitle);
   field('presenter', '汇报人：' + String(presenter).replace(/^汇报人[：:]\s*/, ''));
-  field('date', '汇报时间：' + String(date).replace(/^汇报时间[：:]\s*/, ''), {align:'right'});
+  field('date', '汇报时间：' + String(date).replace(/^汇报时间[：:]\s*/, ''), {align:'left'});
 
 
   const brand = async (owner, dark = false) => image(owner,
@@ -188,57 +214,81 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
   const layout = presentation.layouts.add('华朗统一紫金正文');
   layout.background.fill = colors.paper;
   await brand(layout);
-  line(layout, {x: 48, y: 99, w: 1184, color: colors.gold, width: 1.4});
+  line(layout, {x: 48, y: 86, w: 1184, color: colors.gold, width: 1.4});
 
   const footer = (slide, section, dark = false) => {
     const color = dark ? colors.line : colors.secondary;
     if (section) deckText(slide, section, {x: 48, y: 679, w: 1090, h: 21, size: 14, color});
-    deckText(slide, String(presentation.slides.items.length).padStart(2, '0'),
+    deckText(slide, String(presentation.slides.items.indexOf(slide)+1).padStart(2, '0'),
       {x: 1190, y: 677, w: 42, h: 24, size: 15, color, align: 'right'});
   };
-  function addPage({title: pageTitle, summary = '', section = '', titleSize = 36, userSuppliedTitle = false}) {
+  function addPage({title: pageTitle, summary = '', section = '', titleSize, purpose = 'report', userSuppliedTitle = false}) {
     assertTopicTitle(pageTitle, {userSupplied:userSuppliedTitle});
-    const slide = presentation.slides.add({layoutId: layout.id});
-    deckText(slide, pageTitle, {x: 48, y: 32, w: 1010, h: 57, size: titleSize, bold: true, name: 'title'});
-    if (summary) deckText(slide, summary, {x: 48, y: 120, w: 1184, h: 68, size: 25, name: 'summary'});
+    if (!profiles[purpose]) throw new Error('Unknown page purpose: '+purpose);
+    const slide=addContentSlide({layoutId:layout.id});pageProfiles.set(slide.id,purpose);
+    deckText(slide,pageTitle,{x:48,y:30,w:1010,h:43,size:titleSize ?? profiles[purpose].title,bold:true,color:colors.purple,name:'title'});
+    if(summary) deckText(slide,summary,{x:48,y:108,w:1184,h:70,size:profiles[purpose].summary,name:'summary'});
     footer(slide, section);
     return slide;
   }
 
   function addReportPage({title, summary, section = ''}) {
-    const slide = addPage({title, summary, section});
-    return {slide, areas:{evidence:{x:48,y:215,w:1184,h:335}, note:{x:48,y:578,w:1184,h:72}}};
+    const slide=addPage({title,summary,section,purpose:'report'});
+    return {slide,areas:{evidence:{x:48,y:196,w:1184,h:356},note:{x:48,y:572,w:1184,h:80}}};
   }
   // Observation is one lesson pattern. Mathematics and text analysis have
   // separate geometry below; callers must choose from their actual material.
   function addLessonPage({title, task, section = ''}) {
     if (!String(task ?? '').trim()) throw new Error('课堂观察页必须有完整学习任务。');
-    const slide = addPage({title, section});
-    deckText(slide, task, {x:48,y:126,w:1184,h:80,size:36,bold:true,name:'learning-task'});
+    const slide = addPage({title,section,purpose:'classroom'});
+    deckText(slide, task, {x:48,y:112,w:1184,h:75,size:26,bold:true,name:'learning-task'});
     return {slide, areas:{visual:{x:48,y:228,w:740,h:405}, prompts:{x:838,y:228,w:394,h:405}}};
   }
   function addParentPage({title, headline, section = ''}) {
     if (!String(headline ?? '').trim()) throw new Error('家长图文页需要具体沟通主题。');
-    const slide = addPage({title, section});
+    const slide = addPage({title,section,purpose:'parent'});
     deckText(slide, headline, {x:48,y:464,w:1184,h:54,size:34,bold:true,name:'parent-headline'});
     return {slide, areas:{visual:{x:48,y:130,w:1184,h:305}, support:{x:48,y:545,w:1184,h:100}}};
   }
 
-  function addMathPage({title, mode = 'single', section = ''}) {
+  function addMathPage({title, mode = 'single', section = '', purpose = 'classroom'}) {
     if (!['single','pair','proof'].includes(mode)) throw new Error('Math mode: single, pair or proof.');
-    const slide = addPage({title, section});
+    const slide = addPage({title, section,purpose});
     if (mode === 'pair') {
-      line(slide,{x:640,y:144,w:0,h:488,color:colors.line});
-      return {slide, areas:{left:{x:48,y:140,w:552,h:500},right:{x:680,y:140,w:552,h:500}}};
+      line(slide,{x:640,y:112,w:0,h:532,color:colors.line});
+      return {slide, areas:{left:{x:48,y:112,w:568,h:532},right:{x:664,y:112,w:568,h:532}}};
     }
-    return {slide, areas:{stem:{x:48,y:132,w:1184,h:146},
-      work:{x:48,y:304,w:mode === 'proof' ? 1184 : 674,h:344},
-      diagram:mode === 'proof' ? null : {x:770,y:304,w:462,h:344}}};
+    return {slide, areas:{stem:{x:48,y:112,w:1184,h:104},
+      work:{x:48,y:236,w:mode === 'proof' ? 1184 : 744,h:416},
+      diagram:mode === 'proof' ? null : {x:824,y:236,w:408,h:416}}};
+  }
+
+  function lessonBand(slide,label,body,{x=48,y=108,w=1184,h=100,size=24,labelWidth=78}={}) {
+    const bg=slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:w,height:h},fill:colors.pale,line:noLine});
+    const tab=slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:labelWidth,height:h},fill:colors.purple,line:noLine});
+    const tag=deckText(slide,label,{x:x+12,y:y+(h-31)/2,w:labelWidth-24,h:31,size:20,bold:true,color:colors.white,align:'center'});
+    const content=deckText(slide,body,{x:x+labelWidth+20,y:y+14,w:w-labelWidth-38,h:h-24,size,color:colors.ink});
+    return [bg,tab,tag,content];
+  }
+  function methodStrip(slide,label,body,{x=48,y=602,w=1184,h=50,size=21}={}) {
+    const bg=slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:w,height:h},fill:colors.pale,line:noLine});
+    const rule=line(slide,{x,y,w:0,h,color:colors.purple,width:3});
+    const tag=deckText(slide,label,{x:x+14,y:y+10,w:76,h:h-14,size,bold:true,color:colors.purple});
+    const content=deckText(slide,body,{x:x+102,y:y+10,w:w-118,h:h-14,size,color:colors.ink});
+    return [bg,rule,tag,content];
+  }
+  function stepMarker(slide,label,{x=48,y,w=38,size=22}={}) {
+    return deckText(slide,label,{x,y,w,h:35,size,bold:true,color:colors.purple});
+  }
+
+  function addLessonPlanPage({title,section=''}) {
+    const slide=addPage({title,section,purpose:'lessonPlan'});
+    return {slide,areas:{context:{x:48,y:108,w:1184,h:124},sequence:{x:48,y:254,w:1184,h:326},assessment:{x:48,y:602,w:1184,h:50}}};
   }
 
   function addPhotoEssay({title, section = '', orientation = 'left'}) {
     if (!['left','right'].includes(orientation)) throw new Error('Photo essay orientation: left or right.');
-    const slide = addPage({title,section});
+    const slide = addPage({title,section,purpose:'parent'});
     const flip = r => orientation === 'left' ? r : {...r,x:1280-r.x-r.w};
     return {slide,areas:{hero:flip({x:48,y:140,w:754,h:450}),
       detailTop:flip({x:826,y:140,w:406,h:210}),detailBottom:flip({x:826,y:376,w:406,h:214}),
@@ -247,11 +297,11 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
 
   async function addEditorial({title, section = '', dark = false}) {
     assertTopicTitle(title);
-    const slide = presentation.slides.add();
+    const slide = addContentSlide();
     slide.background.fill = dark ? colors.purple : colors.paper;
     await brand(slide,dark);
     deckText(slide,title,{x:48,y:30,w:920,h:46,size:29,bold:true,
-      color:dark?colors.white:colors.purple,name:'scene-title'});
+      color:dark?colors.white:colors.ink,name:'scene-title'});
     footer(slide,section,dark);
     return slide;
   }
@@ -259,6 +309,7 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
   const revealSlides = new Map();
   function registerReveal(slide, objects, {label = ''} = {}) {
     if (!objects?.length || objects.some(o => typeof o !== 'string' && (!o || !o.id))) throw new Error('A reveal step requires actual native objects or verified exported object names.');
+    ensureClosing();
     const index = presentation.slides.items.indexOf(slide)+1;
     if (!index) throw new Error('Reveal slide is not in this deck.');
     const steps = revealSlides.get(index) ?? [];
@@ -280,24 +331,31 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
     await fs.writeFile(file,JSON.stringify(manifest,null,2));return manifest;
   }
 
-  function fraction(slide,numerator,denominator,{x,y,w=92,size=32,name='fraction',color=colors.purple}={}) {
+  function fraction(slide,numerator,denominator,{x,y,w=92,size=32,name='fraction',color=colors.ink}={}) {
     // Native text and rule stay editable. Suitable for a simple fraction only.
-    const top=deckText(slide,numerator,{x,y,w,h:size*1.3,size,align:'center',font:'Times New Roman',name:name+'-num',color});
+    const top=deckText(slide,numerator,{x,y,w,h:size*1.3,size,align:'center',font:mathFont,name:name+'-num',color});
     const rule=line(slide,{x,y:y+size*1.33,w,color,width:1.5});
-    const bottom=deckText(slide,denominator,{x,y:y+size*1.46,w,h:size*1.3,size,align:'center',font:'Times New Roman',name:name+'-den',color});
+    const bottom=deckText(slide,denominator,{x,y:y+size*1.46,w,h:size*1.3,size,align:'center',font:mathFont,name:name+'-den',color});
     return [top,rule,bottom];
   }
 
   async function addStage({title: pageTitle, subtitle: sub = '', section = '',
-    imagePath, imageAlt, heading = '', titleSize = imagePath ? 64 : 78,
-    subtitleSize = imagePath ? 38 : 40, brandBacking = true}) {
+    imagePath, imageAlt, heading = '', titleSize = imagePath ? 52 : 60,
+    subtitleSize = imagePath ? 28 : 30, brandBacking = true,
+    stageLayout = 'split', imageFit = 'contain'}) {
     if (!pageTitle) throw new Error('addStage requires the actual page title.');
     if (heading) assertTopicTitle(heading);
     if (/(^先|先.+再|然后|接着)/.test(pageTitle)) throw new Error('演讲主句不采用流程口播句式。');
-    const slide = presentation.slides.add();
+    const slide = addContentSlide();
     slide.background.fill = colors.purple;
-    if (imagePath) {
-      await image(slide, imagePath, {x: 0, y: 0, w: 1280, h: 480, alt: imageAlt, fit: 'cover'});
+    if (imagePath && stageLayout === 'split') {
+      await image(slide,imagePath,{x:538,y:142,w:694,h:472,alt:imageAlt,fit:imageFit});
+      deckText(slide,pageTitle,{x:48,y:240,w:448,h:182,size:titleSize,color:colors.white,bold:true});
+      line(slide,{x:48,y:453,w:140,color:colors.gold,width:2});
+      if(sub) deckText(slide,sub,{x:48,y:496,w:448,h:140,size:subtitleSize,color:colors.white});
+    } else if (imagePath) {
+      if(stageLayout !== 'banner') throw new Error('stageLayout must be split or banner.');
+      await image(slide, imagePath, {x: 0, y: 0, w: 1280, h: 480, alt: imageAlt, fit:imageFit});
       deckText(slide, pageTitle, {x: 55, y: 510, w: 1170, h: 92, size: titleSize, color: colors.white, bold: true});
       if (sub) deckText(slide, sub, {x: 59, y: 615, w: 1100, h: 56, size: subtitleSize, color: colors.white});
       if (brandBacking) slide.shapes.add({geometry: 'rect', name: 'brand-backing',
@@ -314,6 +372,7 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
   }
   async function writeDraft({candidatePath, renderDir, scale = 1.5}) {
     if (!candidatePath || !renderDir) throw new Error('writeDraft requires candidatePath and renderDir.');
+    ensureClosing();
     await fs.mkdir(path.dirname(candidatePath), {recursive: true});
     await fs.mkdir(renderDir, {recursive: true});
     await (await PresentationFile.exportPptx(presentation)).save(candidatePath);
@@ -328,7 +387,7 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
     }
     return {candidatePath, renderPaths, slideCount: presentation.slides.items.length};
   }
-  return {presentation, cover, addPage, addReportPage, addLessonPage, addParentPage, addStage, addMathPage,
+  return {presentation, cover, closing, lessonBand, methodStrip, stepMarker, addLessonPlanPage, addPage, addReportPage, addLessonPage, addParentPage, addStage, addMathPage,
     addPhotoEssay,addEditorial,registerReveal,writeRevealManifest,fraction,text: deckText,image,
     nativeTable: deckTable, chart: deckChart, line, arrow, writeDraft};
 }
