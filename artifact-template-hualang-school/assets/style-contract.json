@@ -1,0 +1,66 @@
+{
+  "canvas": {
+    "width": 1280,
+    "height": 720
+  },
+  "cover": {
+    "title": {
+      "name": "cover-title",
+      "x": 64,
+      "y": 488,
+      "w": 1050,
+      "h": 74.4,
+      "size": 45
+    },
+    "subtitle": {
+      "name": "cover-subtitle",
+      "x": 64,
+      "y": 568,
+      "w": 1100,
+      "h": 50,
+      "size": 31
+    },
+    "presenter": {
+      "name": "cover-presenter",
+      "x": 64,
+      "y": 638,
+      "w": 820,
+      "h": 36,
+      "size": 21,
+      "prefix": "汇报人："
+    },
+    "date": {
+      "name": "cover-date",
+      "x": 940,
+      "y": 638,
+      "w": 292,
+      "h": 36,
+      "size": 20,
+      "prefix": "汇报时间："
+    }
+  },
+  "heading": {
+    "preferredLengths": [
+      4,
+      6,
+      8
+    ],
+    "maxUnits": 12,
+    "forbiddenPatterns": [
+      "^先",
+      "先.+再",
+      "然后",
+      "接着",
+      "怎样",
+      "怎么",
+      "如何",
+      "本页",
+      "我们",
+      "你",
+      "从.+开始",
+      "哪些",
+      "什么",
+      "^它"
+    ]
+  }
+}

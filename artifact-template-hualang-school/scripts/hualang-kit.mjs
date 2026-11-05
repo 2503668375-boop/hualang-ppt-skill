@@ -10,6 +10,19 @@ export const fonts = Object.freeze({zh: 'PingFang SC', latin: 'Arial'});
 export const canvas = Object.freeze({width: 1280, height: 720});
 const noLine = {fill: 'none', width: 0};
 
+export function assertTopicTitle(value, {userSupplied = false} = {}) {
+  const title = String(value ?? '').trim();
+  if (!title) throw new Error('页面题名不能为空。');
+  if (userSupplied) return title;
+  const prohibited = /(^先|先.+再|然后|接着|怎样|怎么|如何|本页|我们|你|哪些|什么|^它|从.+开始)/;
+  const units = (title.match(/[\u3400-\u9fff]|[A-Za-z0-9]+/g) ?? []).length;
+  if (prohibited.test(title) || /[：:？?，,；;]/.test(title) || units > 12) {
+    throw new Error('自动题名须为具体短语，通常4、6或8字；不用口播、问句或长结论：' + title);
+  }
+  return title;
+}
+
+
 // CSS pixels at 96 dpi. Keep the content geometry under the caller's control.
 export function text(owner, value, {x, y, w, h, size = 26, color = colors.purple,
   bold = false, font, zhFont = fonts.zh, latinFont = fonts.latin,
@@ -115,9 +128,14 @@ export function arrow(slide, {from, to, fromSide = 'right', toSide = 'left',
     position: {left: x, top: y, width: w, height: h}, ...options});
 }
 
-export async function createDeck({skillDir, title, subtitle = '', presenter = '', date = '',
+export async function createDeck({skillDir, title, subtitle = '', presenter, date,
   zhFont = fonts.zh, latinFont = fonts.latin}) {
   if (!skillDir || !title) throw new Error('createDeck requires skillDir and the actual title.');
+  if (!String(presenter ?? '').trim() || !String(date ?? '').trim()) {
+    throw new Error('封面必须提供汇报人和汇报时间；缺项应明确核实，不能静默留空。');
+  }
+  const contract = JSON.parse(await fs.readFile(path.join(skillDir, 'assets/style-contract.json'), 'utf8'));
+  const cv = contract.cover;
   if (![zhFont, latinFont].every(f => typeof f === 'string' && f.trim())) {
     throw new Error('zhFont and latinFont must be nonempty installed font family names.');
   }
@@ -148,11 +166,17 @@ export async function createDeck({skillDir, title, subtitle = '', presenter = ''
   coverLayout.shapes.items[1].fill = colors.purple;
   const coverTitle = cover.shapes.items[0];
   if (!coverTitle) throw new Error('The source cover title is missing; inspect the template before proceeding.');
-  coverTitle.position = {left: 60, top: 488, width: 1120, height: 70};
-  styleText(coverTitle, title, {...fontOptions, size: 45, color: colors.white, bold: true});
-  if (subtitle) deckText(cover, subtitle, {x: 64, y: 568, w: 1100, h: 50, size: 31, color: colors.white});
-  if (presenter) deckText(cover, presenter, {x: 65, y: 638, w: 880, h: 36, size: 21, color: colors.white});
-  if (date) deckText(cover, date, {x: 1000, y: 640, w: 230, h: 30, size: 20, color: colors.white, align: 'right'});
+  coverTitle.name = cv.title.name;
+  coverTitle.position = {left: cv.title.x, top: cv.title.y, width: cv.title.w, height: cv.title.h};
+  styleText(coverTitle, title, {...fontOptions, size: cv.title.size, color: colors.white, bold: true});
+  const field = (key, value, extra = {}) => {
+    const f = cv[key];
+    return deckText(cover, value, {x:f.x,y:f.y,w:f.w,h:f.h,size:f.size,color:colors.white,name:f.name,...extra});
+  };
+  if (subtitle) field('subtitle', subtitle);
+  field('presenter', '汇报人：' + String(presenter).replace(/^汇报人[：:]\s*/, ''));
+  field('date', '汇报时间：' + String(date).replace(/^汇报时间[：:]\s*/, ''), {align:'right'});
+
 
   const brand = async (owner, dark = false) => image(owner,
     path.join(assets, dark ? 'logo-gold.png' : 'logo-horizontal.png'),
@@ -168,18 +192,38 @@ export async function createDeck({skillDir, title, subtitle = '', presenter = ''
     deckText(slide, String(presentation.slides.items.length).padStart(2, '0'),
       {x: 1190, y: 677, w: 42, h: 24, size: 15, color, align: 'right'});
   };
-  function addPage({title: pageTitle, summary = '', section = '', titleSize = 36}) {
-    if (!pageTitle) throw new Error('addPage requires the actual page title.');
+  function addPage({title: pageTitle, summary = '', section = '', titleSize = 36, userSuppliedTitle = false}) {
+    assertTopicTitle(pageTitle, {userSupplied:userSuppliedTitle});
     const slide = presentation.slides.add({layoutId: layout.id});
     deckText(slide, pageTitle, {x: 48, y: 32, w: 1010, h: 57, size: titleSize, bold: true, name: 'title'});
     if (summary) deckText(slide, summary, {x: 48, y: 120, w: 1184, h: 68, size: 25, name: 'summary'});
     footer(slide, section);
     return slide;
   }
+
+  function addReportPage({title, summary, section = ''}) {
+    const slide = addPage({title, summary, section});
+    return {slide, areas:{evidence:{x:48,y:215,w:1184,h:335}, note:{x:48,y:578,w:1184,h:72}}};
+  }
+  function addLessonPage({title, task, section = ''}) {
+    if (!String(task ?? '').trim()) throw new Error('课堂观察页必须有完整学习任务。');
+    const slide = addPage({title, section});
+    deckText(slide, task, {x:48,y:126,w:1184,h:80,size:36,bold:true,name:'learning-task'});
+    return {slide, areas:{visual:{x:48,y:228,w:740,h:405}, prompts:{x:838,y:228,w:394,h:405}}};
+  }
+  function addParentPage({title, headline, section = ''}) {
+    if (!String(headline ?? '').trim()) throw new Error('家长图文页需要具体沟通主题。');
+    const slide = addPage({title, section});
+    deckText(slide, headline, {x:48,y:464,w:1184,h:54,size:34,bold:true,name:'parent-headline'});
+    return {slide, areas:{visual:{x:48,y:130,w:1184,h:305}, support:{x:48,y:545,w:1184,h:100}}};
+  }
+
   async function addStage({title: pageTitle, subtitle: sub = '', section = '',
-    imagePath, imageAlt, titleSize = imagePath ? 64 : 78,
+    imagePath, imageAlt, heading = '', titleSize = imagePath ? 64 : 78,
     subtitleSize = imagePath ? 38 : 40, brandBacking = true}) {
     if (!pageTitle) throw new Error('addStage requires the actual page title.');
+    if (heading) assertTopicTitle(heading);
+    if (/(^先|先.+再|然后|接着)/.test(pageTitle)) throw new Error('演讲主句不采用流程口播句式。');
     const slide = presentation.slides.add();
     slide.background.fill = colors.purple;
     if (imagePath) {
@@ -194,6 +238,7 @@ export async function createDeck({skillDir, title, subtitle = '', presenter = ''
       if (sub) deckText(slide, sub, {x: 64, y: 555, w: 1110, h: 104, size: subtitleSize, color: colors.gold});
     }
     await brand(slide, true);
+    if (heading) deckText(slide, heading, {x:48,y:32,w:900,h:50,size:32,color:colors.white,bold:true,name:'scene-title'});
     footer(slide, section, true);
     return slide;
   }
@@ -213,6 +258,6 @@ export async function createDeck({skillDir, title, subtitle = '', presenter = ''
     }
     return {candidatePath, renderPaths, slideCount: presentation.slides.items.length};
   }
-  return {presentation, cover, addPage, addStage, text: deckText, image,
+  return {presentation, cover, addPage, addReportPage, addLessonPage, addParentPage, addStage, text: deckText, image,
     nativeTable: deckTable, chart: deckChart, line, arrow, writeDraft};
 }

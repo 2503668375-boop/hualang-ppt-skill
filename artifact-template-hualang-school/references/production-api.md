@@ -75,3 +75,16 @@ deck.arrow(page, {from: a, to: b});
 ## 输出后的检查
 
 `writeDraft` 只负责导出和实际渲染，不宣称文件、教学内容或视觉已通过验收。查看每一页 PNG，检查文字、图片裁切、数轴、表格和可见箭头；再按成品流程核对可编辑对象与最终保存文件。舞台大图页须检查校徽对比和底托是否遮挡主体，必要时调整图片裁切或改用常规页。真实资料、示意、计划及实绩保持明确。
+
+## 固定字段与场景入口（4.1）
+
+`presenter`和`date`为必填，函数自动加“汇报人：”“汇报时间：”，坐标来自assets/style-contract.json。普通页自动题名用短语；函数拒绝口播问句和过长自动题名。用户给定正式题名可用userSuppliedTitle:true保留，需对照原要求。
+
+新增入口均返回`{slide, areas}`，调用者在areas中放真实内容，不能只画空框：
+
+- `addReportPage({title, summary, section})`：常规题名、概论、通栏evidence与note。
+- `addLessonPage({title, task, section})`：主任务及宽对象visual区、prompts区；task必填。
+- `addParentPage({title, headline, section})`：宽幅visual区、图下主句及support区；headline必填。
+- `addStage({... , heading})`：heading为可选短场景题名，title为大字主句，支持主图和深紫主张页。
+
+每种结构的实际位置、用途与边界见references/scene-layouts.md。普通`addPage`仍用于一般说明和自定义页面，不应承担全部教育场景。

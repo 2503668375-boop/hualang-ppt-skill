@@ -1,6 +1,6 @@
 # 华朗学校汇报 Skill
 
-当前版本 **v4.0**。输入内容、材料和使用要求，由助手组织主题、判断依据与页序，再按华朗品牌制作可编辑PPT。
+当前版本 **v4.1**。输入内容、材料和使用要求，由助手组织主题、判断依据与页序，再按华朗品牌制作可编辑PPT。
 
 ## 开始使用
 
@@ -16,7 +16,16 @@
 
 技能子目录是 `artifact-template-hualang-school`，需要完整目录。助手根据当前环境选择实际个人技能目录。首次安装方法依据[官方技能说明](https://learn.chatgpt.com/docs/build-skills)；本仓库未宣称上架插件商店。
 
-## 制作时怎样工作
+## 固定规范
+
+- [封面字段与位置](artifact-template-hualang-school/references/cover-layout.md)：主题、汇报人和汇报时间分别固定，署名与时间必填。
+- [页面文案](artifact-template-hualang-school/references/writing.md)：普通页使用具体短题名，课堂提问与演讲主句另按用途处理。
+- [场景版式](artifact-template-hualang-school/references/scene-layouts.md)：内部审议、课堂观察、家长图文和对外演讲拥有实际构图与调用入口。
+- [封面与题名检查](artifact-template-hualang-school/scripts/check_style_contract.py)：读取保存文件核对字段、位置与题名，不替代人工内容和视觉检查。
+
+![四类场景实页](demo/scene-comparison.png)
+
+## 制作方法
 
 1. 从本次要求确定读者、用途、必答事项与必须保留的事实。
 2. 先形成核心回答，将依据、比较、条件和动作分到各页。
@@ -34,7 +43,7 @@
 
 介绍围绕用法、具体痛点、思考结构、场景、排版及下载启动展开。具体实例只解释技能如何处理资料。
 
-另外用独立虚构材料制作了[5页内部费用汇报](demo/internal-report.pptx?raw=true)和[4页对外演讲](demo/external-speech.pptx?raw=true)。三份输入与核验摘要见[实际制作检验](tests/README.md)。这些检验覆盖所列任务，未做Microsoft PowerPoint应用内放映或新设备安装测试。
+V4历史上用独立虚构材料制作了[5页内部费用汇报](demo/internal-report.pptx?raw=true)和[4页对外演讲](demo/external-speech.pptx?raw=true)。三份输入与核验摘要见[实际制作检验](tests/README.md)。旧测试稿保留为历史记录；现行封面、题名和场景规范以v4.1为准。本轮未做Microsoft PowerPoint应用内放映或新设备安装测试。
 
 <a href="demo/internal.png"><img src="demo/internal.png" width="49%" alt="内部费用比较"></a> <a href="demo/speech.png"><img src="demo/speech.png" width="49%" alt="对外演讲主图"></a>
 
