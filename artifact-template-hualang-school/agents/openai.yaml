@@ -1,7 +1,7 @@
 interface:
   display_name: "华朗学校 Hualang School"
-  short_description: "统一紫金品牌，按内部审议、教学、家长沟通与演讲制作有实质内容的可编辑 PPT"
+  short_description: "输入内容、材料与要求，制作主题准确、适合使用现场的华朗可编辑PPT"
   icon_large: "./assets/preview.png"
-  default_prompt: "使用 $artifact-template-hualang-school，先判断本次现场与读者任务，再按华朗统一紫金规范制作材料。"
+  default_prompt: "使用 $artifact-template-hualang-school，根据本次内容、材料与要求完成可直接应用的华朗汇报PPT。"
 policy:
   allow_implicit_invocation: true

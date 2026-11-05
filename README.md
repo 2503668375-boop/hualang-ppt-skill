@@ -1,51 +1,51 @@
-# 华朗学校汇报与教学演示
+# 华朗学校汇报 Skill
 
-当前版本 **v3.0**。以统一的深紫、香槟金与近白品牌系统，制作内部审议、课堂教学、家长沟通和对外演讲的可编辑 PPT。
+当前版本 **v4.0**。输入内容、材料和使用要求，由助手组织主题、判断依据与页序，再按华朗品牌制作可编辑PPT。
 
-## 先看实际页面
+## 开始使用
 
-[![17页场景示范总览](demo/overview.jpg)](demo/hualang-skill-introduction.pptx?raw=true)
+在具备本地技能与PPT制作能力的 Codex 桌面环境中，首次发送：
 
-[下载17页可编辑案例](demo/hualang-skill-introduction.pptx?raw=true)
+> 使用 skill-installer，从 https://github.com/2503668375-boop/hualang-ppt-skill 安装其中的 artifact-template-hualang-school 技能，保留完整模板和素材。
 
-围绕“用证据说明理由”，案例展示学情诊断、方案取舍、实施排程、阅读任务、科学观察、数学图解、家长对话和舞台演讲。最后用实样说明图片和表格规则，并提供可直接使用的请求。
+已安装时要求更新并保留旧版。下一轮附上材料，例如：
 
-<a href="demo/internal.png"><img src="demo/internal.png" width="49%" alt="内部审议：学情数据与作答问题"></a> <a href="demo/education.png"><img src="demo/education.png" width="49%" alt="课堂：图片观察与证据问题"></a>
+> 用华朗学校汇报技能，把附件方案和报价做成给校务会的费用汇报。保留两场已定安排，讲清理由、内容、费用和责任节点。只交可编辑PPT，署名与日期按附件。
 
-<a href="demo/speech.png"><img src="demo/speech.png" width="99%" alt="对外演讲：单一主图与一句追问"></a>
+[下载完整仓库 ZIP](https://github.com/2503668375-boop/hualang-ppt-skill/archive/refs/heads/main.zip) · [详细下载与启用说明](artifact-template-hualang-school/references/getting-started.md)
 
-演示数据、作答、题例及安排均为虚构或拟议。两张生成情境图有明确标识，不代表华朗真实课堂或实验结果。
+技能子目录是 `artifact-template-hualang-school`，需要完整目录。助手根据当前环境选择实际个人技能目录。首次安装方法依据[官方技能说明](https://learn.chatgpt.com/docs/build-skills)；本仓库未宣称上架插件商店。
 
-## 不同现场怎样改变页面
+## 制作时怎样工作
 
-| 使用方式 | 内容重点 | 页面组织 |
-|---|---|---|
-| 校务会、经营与专项审议 | 问题、事实、比较、投入、责任与节点 | 完整数据图、方案矩阵、必要证据和排程 |
-| 课堂教学 | 观察、推理、练习与反馈 | 主图或完整题干、就近批注、分步示范、独立练习 |
-| 家长现场及留阅 | 看懂学习方式，知道如何支持和办理 | 作品、对话、支持路径；留阅保留必要条件 |
-| 对外演讲 | 跟随讲述，记住具体主张 | 大字页、单图页、作品对照、单个数据关系 |
+1. 从本次要求确定读者、用途、必答事项与必须保留的事实。
+2. 先形成核心回答，将依据、比较、条件和动作分到各页。
+3. 按内部汇报、课堂、家长沟通、演讲或培训用途选择版式。
+4. 复用品牌和原生制作工具，完成文字、表格、图表与图像。
+5. 先核对主题和要求，再审文案、实际排版与全稿视觉，修复后交付。
 
-颜色角色全稿一致：深紫正文，紫灰辅助，近白背景，少量金色；紫底白字用于封面与演讲重点。照片保留真实颜色。不会按场景切换成黑红、蓝白、紫金多套正文。
+普通内容统一深紫文字、近白底及少量香槟金。内部保留比较与实施依据；课堂按学习任务组织；舞台演讲可用大字和主图。默认品牌底稿不含课程或业务案例，避免旧主题混进新材料。
 
-## 使用
+## 使用介绍与实际制作检验
 
-将 `artifact-template-hualang-school` 文件夹完整安装到所用助手的个人 skills 目录，或让支持技能安装的助手从本仓库安装该文件夹。入口为 [SKILL.md](artifact-template-hualang-school/SKILL.md)。
+[![使用介绍预览](demo/overview.jpg)](demo/hualang-skill-introduction.pptx?raw=true)
 
-例如：
+[13页使用介绍PPT](demo/hualang-skill-introduction.pptx?raw=true)
 
-> 用华朗技能，把这份学情材料整理给校务会，说明主要问题、方案取舍、需要的课时和责任。
+介绍围绕用法、具体痛点、思考结构、场景、排版及下载启动展开。具体实例只解释技能如何处理资料。
 
-> 用华朗技能，做8分钟家长分享，讲清孩子怎样学会说明理由，以大图、作品和短句展开。
+另外用独立虚构材料制作了[5页内部费用汇报](demo/internal-report.pptx?raw=true)和[4页对外演讲](demo/external-speech.pptx?raw=true)。三份输入与核验摘要见[实际制作检验](tests/README.md)。这些检验覆盖所列任务，未做Microsoft PowerPoint应用内放映或新设备安装测试。
 
-提供实际资料、听众与使用场合即可；影响结论的缺项再补充。文字、表格、数据图和关系节点保持可编辑。
+<a href="demo/internal.png"><img src="demo/internal.png" width="49%" alt="内部费用比较"></a> <a href="demo/speech.png"><img src="demo/speech.png" width="49%" alt="对外演讲主图"></a>
 
-## 规范与依据
+## 规则与工具
 
-- [视觉、图片与表格规范](artifact-template-hualang-school/references/design.md)
-- [课堂、家长与演讲规范](artifact-template-hualang-school/references/special-scenes.md)
-- [官方研究与真实演示依据](artifact-template-hualang-school/references/research-basis.md)
-- [实际页面验收](artifact-template-hualang-school/references/review.md)
-- [模板组件索引](artifact-template-hualang-school/references/component-index.md)
-- [版本记录](CHANGELOG.md)
+- [技能入口](artifact-template-hualang-school/SKILL.md)
+- [从任务到页面](artifact-template-hualang-school/references/workflow.md)
+- [视觉、图片与表格](artifact-template-hualang-school/references/design.md)
+- [课堂、家长与演讲](artifact-template-hualang-school/references/special-scenes.md)
+- [原生制作工具](artifact-template-hualang-school/references/production-api.md)
+- [任务与页面验收](artifact-template-hualang-school/references/review.md)
+- [研究依据](artifact-template-hualang-school/references/research-basis.md)
 
-模板保留原有华朗品牌资产。研究原则、华朗排版建议与学校实际数据分别处理，不宣称模板已经过学校正式VI审批或教学效果实验。
+所有公开测试数值、作答和安排均为虚构；生成图片清楚标示情境属性，不代表学校实绩。原始品牌模板保留。
