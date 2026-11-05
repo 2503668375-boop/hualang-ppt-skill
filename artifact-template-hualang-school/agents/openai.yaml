@@ -1,6 +1,6 @@
 interface:
   display_name: "华朗学校 Hualang School"
-  short_description: "继承佳兆业内部汇报规范，结合华朗教学、家长及对外展示的图表与组件，支持中英文"
+  short_description: "制作华朗独立品牌的完整内部汇报与教学、家长、对外展示材料，支持中英文与图表组件"
   icon_large: "./assets/preview.png"
   default_prompt: "使用 $artifact-template-hualang-school，按内部汇报或教育展示的要求制作华朗材料。"
 policy:
