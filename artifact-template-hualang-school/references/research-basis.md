@@ -26,3 +26,11 @@
 - 内容密度由阅读方式和任务决定；不把固定字数、图片占比或页型配额冒充研究结论。
 - 网页对比标准可辅助检查文字与背景，不能代替实际投影、图表和照片的可读性检查。
 - 原生编辑性、逐页渲染和缩略图审查属于交付质量要求；没有溢出不代表已经通过内容与审美审查。
+
+
+## V5 针对性补充（2026-11-05）
+
+- [Duarte：数据展示](https://www.duarte.com/blog/display-data-in-presentations/)强调按现场演讲或留阅选择密度，用层级、留白和邻近解释指引数据阅读。本技能据此把数字、图表和解释组成一个主体，而不把所有页均分成文字栏。
+- [Mayer：多媒体学习的邻近与提示原则](https://www.cambridge.org/core/books/abs/cambridge-handbook-of-multimedia-learning/principles-for-reducing-extraneous-processing-in-multimedia-learning-coherence-signaling-redundancy-spatial-contiguity-and-temporal-contiguity-principles/CD5B7AE1279A9AB81F8EEBB53DBEC86E)支持对应图文邻近、重点提示。具体数学分区是本技能的设计转化，不能宣称特定配色或动画必然提分。
+- [Microsoft：动画对象与触发](https://support.microsoft.com/en-gb/powerpoint/training/animate-text-or-objects)说明点击、与上一动画同时及之后播放。本技能采用教师控制的点击出现，并把可编辑对象与揭示清单对应。
+- [Microsoft Open XML：SetBehavior](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.setbehavior?view=openxml-2.20.0)提供原生可见性时间行为；写入结构后仍需区分文件检查与应用内播放检查。

@@ -1,60 +1,53 @@
 # 华朗学校汇报 Skill
 
-当前版本 **v4.1**。输入内容、材料和使用要求，由助手组织主题、判断依据与页序，再按华朗品牌制作可编辑PPT。
+当前版本 **v5.0**。根据材料与使用现场制作可编辑PPT，覆盖学校内部汇报、中学学科教学、家长招生和对外演讲。保留原始校徽、固定封面与紫金配色。
+
+## 本次更新
+
+- **题目决定分区**：支持两道短题同屏、综合题的题干/推导/函数图分区，长题按设问续页。
+- **答案点击揭示**：提供PowerPoint原生出现动画工具，题干先显示，推导与答案按步骤出现；函数图可以随等价转化揭示。
+- **章节与题库**：给章节时按学段拟题并校核，给题库时保留题号与条件，组织诊断、例题、变式与检测。原创题明确标注。
+- **学科表达**：数学用公式与数值坐标，英语与语文用文本证据和批注，理科按装置、变量、方程与现象安排。
+- **家长招生**：照片采用主次关系，数字带单位与口径，演讲、活动说明和留阅材料分别编排。
+- **五个尺度**：同时检查整稿、整页、分区、组件和字与细节，实际看动画初始态、中间态及末态。
+
+[完整复盘与改进对应](docs/v5-review.md) · [构图方法](artifact-template-hualang-school/references/composition.md) · [数学与题库](artifact-template-hualang-school/references/math-teaching.md)
+
+## 使用介绍
+
+[![18页介绍预览](demo/overview.jpg)](demo/hualang-skill-introduction.pptx?raw=true)
+
+[下载18页介绍PPT](demo/hualang-skill-introduction.pptx?raw=true) · [下载教学点击预览HTML](demo/teaching-preview.html?raw=true)
+
+PPT第6、7页为数学点击揭示，第10页为英语证据句揭示。HTML下载到本地后用浏览器打开，可查看同一页面的逐步状态；它用于展示揭示节奏，不等于PowerPoint兼容性测试。
+
+![教学、图文与演讲实页](demo/scene-comparison.png)
 
 ## 开始使用
 
-在具备本地技能与PPT制作能力的 Codex 桌面环境中，首次发送：
+首次可在支持本地技能的 Codex 环境发送：
 
-> 使用 skill-installer，从 https://github.com/2503668375-boop/hualang-ppt-skill 安装其中的 artifact-template-hualang-school 技能，保留完整模板和素材。
+> 从 https://github.com/2503668375-boop/hualang-ppt-skill 安装 artifact-template-hualang-school，保留完整模板和素材。
 
-已安装时要求更新并保留旧版。下一轮附上材料，例如：
+已安装时要求更新并保留旧版。之后附上材料并点名调用，例如：
 
-> 用华朗学校汇报技能，把附件方案和报价做成给校务会的费用汇报。保留两场已定安排，讲清理由、内容、费用和责任节点。只交可编辑PPT，署名与日期按附件。
+> 用华朗学校汇报技能，把附件两道导数题做成高三复习课件。保留完整题干，按题目划分页面。答案按关键推理逐次点击出现，函数图与公式对应。署名和日期按附件。
 
-[下载完整仓库 ZIP](https://github.com/2503668375-boop/hualang-ppt-skill/archive/refs/heads/main.zip) · [详细下载与启用说明](artifact-template-hualang-school/references/getting-started.md)
+> 用华朗学校汇报技能，把这些校园照片与课程材料做成家长开放日介绍。面向首次到访的家庭，用图片和关键数字讲清学习体验与课程选择，保留全部适用条件。
 
-技能子目录是 `artifact-template-hualang-school`，需要完整目录。助手根据当前环境选择实际个人技能目录。首次安装方法依据[官方技能说明](https://learn.chatgpt.com/docs/build-skills)；本仓库未宣称上架插件商店。
+> 用华朗学校汇报技能，把方案与报价做成校务会费用审议稿，保留已定安排、费用明细、比较依据与责任节点。
 
-## 固定规范
-
-- [封面字段与位置](artifact-template-hualang-school/references/cover-layout.md)：主题、汇报人和汇报时间分别固定，署名与时间必填。
-- [页面文案](artifact-template-hualang-school/references/writing.md)：普通页使用具体短题名，课堂提问与演讲主句另按用途处理。
-- [场景版式](artifact-template-hualang-school/references/scene-layouts.md)：内部审议、课堂观察、家长图文和对外演讲拥有实际构图与调用入口。
-- [封面与题名检查](artifact-template-hualang-school/scripts/check_style_contract.py)：读取保存文件核对字段、位置与题名，不替代人工内容和视觉检查。
-
-![四类场景实页](demo/scene-comparison.png)
-
-## 制作方法
-
-1. 从本次要求确定读者、用途、必答事项与必须保留的事实。
-2. 先形成核心回答，将依据、比较、条件和动作分到各页。
-3. 按内部汇报、课堂、家长沟通、演讲或培训用途选择版式。
-4. 复用品牌和原生制作工具，完成文字、表格、图表与图像。
-5. 先核对主题和要求，再审文案、实际排版与全稿视觉，修复后交付。
-
-普通内容统一深紫文字、近白底及少量香槟金。内部保留比较与实施依据；课堂按学习任务组织；舞台演讲可用大字和主图。默认品牌底稿不含课程或业务案例，避免旧主题混进新材料。
-
-## 使用介绍与实际制作检验
-
-[![使用介绍预览](demo/overview.jpg)](demo/hualang-skill-introduction.pptx?raw=true)
-
-[13页使用介绍PPT](demo/hualang-skill-introduction.pptx?raw=true)
-
-介绍围绕用法、具体痛点、思考结构、场景、排版及下载启动展开。具体实例只解释技能如何处理资料。
-
-V4历史上用独立虚构材料制作了[5页内部费用汇报](demo/internal-report.pptx?raw=true)和[4页对外演讲](demo/external-speech.pptx?raw=true)。三份输入与核验摘要见[实际制作检验](tests/README.md)。旧测试稿保留为历史记录；现行封面、题名和场景规范以v4.1为准。本轮未做Microsoft PowerPoint应用内放映或新设备安装测试。
-
-<a href="demo/internal.png"><img src="demo/internal.png" width="49%" alt="内部费用比较"></a> <a href="demo/speech.png"><img src="demo/speech.png" width="49%" alt="对外演讲主图"></a>
+[下载完整仓库ZIP](https://github.com/2503668375-boop/hualang-ppt-skill/archive/refs/heads/main.zip) · [安装说明](artifact-template-hualang-school/references/getting-started.md)
 
 ## 规则与工具
 
 - [技能入口](artifact-template-hualang-school/SKILL.md)
-- [从任务到页面](artifact-template-hualang-school/references/workflow.md)
-- [视觉、图片与表格](artifact-template-hualang-school/references/design.md)
-- [课堂、家长与演讲](artifact-template-hualang-school/references/special-scenes.md)
-- [原生制作工具](artifact-template-hualang-school/references/production-api.md)
-- [任务与页面验收](artifact-template-hualang-school/references/review.md)
-- [研究依据](artifact-template-hualang-school/references/research-basis.md)
+- [固定封面](artifact-template-hualang-school/references/cover-layout.md)与[文案](artifact-template-hualang-school/references/writing.md)
+- [组件索引](artifact-template-hualang-school/references/component-index.md)与[场景版式](artifact-template-hualang-school/references/scene-layouts.md)
+- [学科对象](artifact-template-hualang-school/references/subject-layouts.md)与[家长招生](artifact-template-hualang-school/references/parent-admissions.md)
+- [制作API](artifact-template-hualang-school/references/production-api.md)与[出现动画工具](artifact-template-hualang-school/scripts/apply_reveals.py)
+- [实际检查范围](tests/v5-validation.md)与[研究依据](artifact-template-hualang-school/references/research-basis.md)
 
-所有公开测试数值、作答和安排均为虚构；生成图片清楚标示情境属性，不代表学校实绩。原始品牌模板保留。
+需要现有PPT制作运行库。教学文字、简单公式、原生图表与关系图保持可编辑；复杂公式在不同环境中的实现与编辑限制须按实际工具说明。本版未完成Microsoft PowerPoint应用内放映；原生时间线与逐步状态已检查。示例题、虚构预算与活动安排均有标识，生成情境图不代表学校真实活动或办学成果。
+
+V4历史测试保留在[历史记录](tests/README.md)，不作为V5现行版式。原始品牌资产保留，不扩大其授权使用范围。

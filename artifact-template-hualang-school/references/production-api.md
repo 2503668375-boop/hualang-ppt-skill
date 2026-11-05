@@ -88,3 +88,31 @@ deck.arrow(page, {from: a, to: b});
 - `addStage({... , heading})`：heading为可选短场景题名，title为大字主句，支持主图和深紫主张页。
 
 每种结构的实际位置、用途与边界见references/scene-layouts.md。普通`addPage`仍用于一般说明和自定义页面，不应承担全部教育场景。
+
+## V5 学科与照片编排
+
+```js
+const {slide,areas}=deck.addMathPage({title:'导数综合',mode:'single',section:'原创例题'});
+// areas.stem: 完整题干；areas.work: 推导；areas.diagram: 固定图形
+const first=deck.text(slide,'具体第一步', {x:48,y:320,w:650,h:70,size:32});
+const formulaParts=deck.fraction(slide,'1','x',{x:190,y:400,size:30});
+deck.registerReveal(slide,[first,...formulaParts],{label:'求导'});
+await deck.writeRevealManifest(manifestPath);
+// 先导出无动画PPTX，再运行下述脚本；不要重新导入导出动画稿而丢失时间线。
+```
+
+```text
+python3 scripts/apply_reveals.py base.pptx reveals.json animated.pptx
+python3 scripts/apply_reveals.py base.pptx reveals.json initial.pptx --state 0
+python3 scripts/apply_reveals.py base.pptx reveals.json step1.pptx --state 1
+```
+
+同一步可登记多个原生文字/线条/图形，作为一次点击同时出现。原生文字/形状、图片和图表可整对象出现。图表/图片可传已核实的导出对象名，例如单图表页面的 `Chart`；同名不唯一时脚本拒绝，须先修正命名。已有动画、缺失对象、重复对象和覆盖输出均报错。
+
+`addMathPage` 的 `pair` 模式返回 `left/right` 两个完整题域；`proof` 返回通栏推导。区域是排版起点，内容长时拆页。
+
+`addPhotoEssay({title,orientation:'left'})` 返回 `hero/detailTop/detailBottom/caption`，方向也可为 `right`。真实图像的主体位置决定选择，不强制所有招生页都使用此结构。
+
+`await addEditorial({title,dark:false})` 返回更开放的演讲/数字画布，保留品牌和页脚。`fraction` 只适合简单可编辑分式，复杂公式按数学专项处理。
+
+图表导入后再次导出时需确认嵌入数据文件仍在。若运行库丢失已有工作簿，回到保留的源稿恢复；不能凭缓存杜撰来源。新制图表可从完整字面量数据创建快照，非整数量保留明确精度。

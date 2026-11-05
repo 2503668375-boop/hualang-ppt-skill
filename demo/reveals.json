@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "effect": "appear",
+  "slides": [
+    {
+      "slide": 6,
+      "steps": [
+        {
+          "label": "第一题：求导与单调性",
+          "objects": [
+            "reveal-s6-step1-1",
+            "reveal-s6-step1-2",
+            "reveal-s6-step1-3"
+          ]
+        },
+        {
+          "label": "第一题：极值",
+          "objects": [
+            "reveal-s6-step2-1"
+          ]
+        },
+        {
+          "label": "第二题：参数迁移",
+          "objects": [
+            "reveal-s6-step3-1",
+            "reveal-s6-step3-2",
+            "reveal-s6-step3-3"
+          ]
+        },
+        {
+          "label": "第二题：极值",
+          "objects": [
+            "reveal-s6-step4-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 7,
+      "steps": [
+        {
+          "label": "切线方程",
+          "objects": [
+            "reveal-s7-step1-1",
+            "reveal-s7-step1-2",
+            "reveal-s7-step1-3"
+          ]
+        },
+        {
+          "label": "转为函数上界",
+          "objects": [
+            "reveal-s7-step2-1",
+            "reveal-s7-step2-2",
+            "reveal-s7-step2-3",
+            "reveal-s7-step2-4",
+            "reveal-s7-step2-5",
+            "reveal-s7-step2-6",
+            "reveal-s7-step2-7",
+            "reveal-s7-step2-8",
+            "Chart"
+          ]
+        },
+        {
+          "label": "确定最大值",
+          "objects": [
+            "reveal-s7-step3-1",
+            "reveal-s7-step3-2",
+            "reveal-s7-step3-3",
+            "reveal-s7-step3-4",
+            "reveal-s7-step3-5",
+            "reveal-s7-step3-6"
+          ]
+        },
+        {
+          "label": "参数范围与边界",
+          "objects": [
+            "reveal-s7-step4-1",
+            "reveal-s7-step4-2",
+            "reveal-s7-step4-3"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 10,
+      "steps": [
+        {
+          "label": "定位证据并解释逻辑",
+          "objects": [
+            "reveal-s10-step1-1",
+            "reveal-s10-step1-2",
+            "reveal-s10-step1-3"
+          ]
+        }
+      ]
+    }
+  ]
+}

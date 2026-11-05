@@ -98,11 +98,15 @@ export function chart(slide, type, options, {font, zhFont = fonts.zh, latinFont 
   const axis = config => ({textStyle: {fontSize: 21, fill: colors.purple},
     majorGridlines: {fill: colors.line, width: 0.6}, ...config});
   const c = slide.charts.add(type, {chartFill: 'none', chartLine: noLine,
-    plotAreaFill: 'none', plotAreaLine: noLine, hasLegend: false, ...options,
+    plotAreaFill: 'none', plotAreaLine: noLine, hasLegend: false,
+    titlePlacement: options.title ? 'aboveChart' : 'none', ...options,
     series: options.series?.map((s, i) => ({fill: [colors.purple, colors.secondary, colors.gold][i % 3], ...s})),
     xAxis: axis(options.xAxis), yAxis: axis(options.yAxis)});
   const styles = [c.legend?.textStyle, c.dataLabels?.textStyle, c.xAxis?.textStyle,
-    c.yAxis?.textStyle, c.titleTextStyle];
+    c.yAxis?.textStyle];
+  // Accessing titleTextStyle materializes an empty native chart title. Only set
+  // its font when a real title was requested; a nearby slide heading may suffice.
+  if (options.title) styles.push(c.titleTextStyle);
   for (const a of [c.xAxis, c.yAxis]) if (a?.title?.text) styles.push(a.title.textStyle);
   for (const style of styles) if (style) style.typeface = font ?? zhFont;
   // Axis identifiers describe OOXML categories/values; a horizontal bar still uses
@@ -205,6 +209,8 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
     const slide = addPage({title, summary, section});
     return {slide, areas:{evidence:{x:48,y:215,w:1184,h:335}, note:{x:48,y:578,w:1184,h:72}}};
   }
+  // Observation is one lesson pattern. Mathematics and text analysis have
+  // separate geometry below; callers must choose from their actual material.
   function addLessonPage({title, task, section = ''}) {
     if (!String(task ?? '').trim()) throw new Error('课堂观察页必须有完整学习任务。');
     const slide = addPage({title, section});
@@ -216,6 +222,70 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
     const slide = addPage({title, section});
     deckText(slide, headline, {x:48,y:464,w:1184,h:54,size:34,bold:true,name:'parent-headline'});
     return {slide, areas:{visual:{x:48,y:130,w:1184,h:305}, support:{x:48,y:545,w:1184,h:100}}};
+  }
+
+  function addMathPage({title, mode = 'single', section = ''}) {
+    if (!['single','pair','proof'].includes(mode)) throw new Error('Math mode: single, pair or proof.');
+    const slide = addPage({title, section});
+    if (mode === 'pair') {
+      line(slide,{x:640,y:144,w:0,h:488,color:colors.line});
+      return {slide, areas:{left:{x:48,y:140,w:552,h:500},right:{x:680,y:140,w:552,h:500}}};
+    }
+    return {slide, areas:{stem:{x:48,y:132,w:1184,h:146},
+      work:{x:48,y:304,w:mode === 'proof' ? 1184 : 674,h:344},
+      diagram:mode === 'proof' ? null : {x:770,y:304,w:462,h:344}}};
+  }
+
+  function addPhotoEssay({title, section = '', orientation = 'left'}) {
+    if (!['left','right'].includes(orientation)) throw new Error('Photo essay orientation: left or right.');
+    const slide = addPage({title,section});
+    const flip = r => orientation === 'left' ? r : {...r,x:1280-r.x-r.w};
+    return {slide,areas:{hero:flip({x:48,y:140,w:754,h:450}),
+      detailTop:flip({x:826,y:140,w:406,h:210}),detailBottom:flip({x:826,y:376,w:406,h:214}),
+      caption:{x:48,y:612,w:1184,h:42}}};
+  }
+
+  async function addEditorial({title, section = '', dark = false}) {
+    assertTopicTitle(title);
+    const slide = presentation.slides.add();
+    slide.background.fill = dark ? colors.purple : colors.paper;
+    await brand(slide,dark);
+    deckText(slide,title,{x:48,y:30,w:920,h:46,size:29,bold:true,
+      color:dark?colors.white:colors.purple,name:'scene-title'});
+    footer(slide,section,dark);
+    return slide;
+  }
+
+  const revealSlides = new Map();
+  function registerReveal(slide, objects, {label = ''} = {}) {
+    if (!objects?.length || objects.some(o => typeof o !== 'string' && (!o || !o.id))) throw new Error('A reveal step requires actual native objects or verified exported object names.');
+    const index = presentation.slides.items.indexOf(slide)+1;
+    if (!index) throw new Error('Reveal slide is not in this deck.');
+    const steps = revealSlides.get(index) ?? [];
+    const used = new Set(steps.flatMap(s=>s.objectIds));
+    const ids=objects.map(o=>typeof o==='string'?'name:'+o:o.id);
+    if (ids.some(id=>used.has(id)) || new Set(ids).size!==objects.length) throw new Error('An object can enter only once.');
+    const names = objects.map((o,i)=>{
+      if(typeof o==='string') return o;
+      const name=`reveal-s${index}-step${steps.length+1}-${i+1}`;
+      o.name=name; return name;
+    });
+    steps.push({label,objects:names,objectIds:ids});
+    revealSlides.set(index,steps);
+    return names;
+  }
+  async function writeRevealManifest(file) {
+    const manifest={schemaVersion:1,effect:'appear',slides:[...revealSlides].map(([slide,steps])=>({slide,
+      steps:steps.map(({label,objects})=>({label,objects}))}))};
+    await fs.writeFile(file,JSON.stringify(manifest,null,2));return manifest;
+  }
+
+  function fraction(slide,numerator,denominator,{x,y,w=92,size=32,name='fraction',color=colors.purple}={}) {
+    // Native text and rule stay editable. Suitable for a simple fraction only.
+    const top=deckText(slide,numerator,{x,y,w,h:size*1.3,size,align:'center',font:'Times New Roman',name:name+'-num',color});
+    const rule=line(slide,{x,y:y+size*1.33,w,color,width:1.5});
+    const bottom=deckText(slide,denominator,{x,y:y+size*1.46,w,h:size*1.3,size,align:'center',font:'Times New Roman',name:name+'-den',color});
+    return [top,rule,bottom];
   }
 
   async function addStage({title: pageTitle, subtitle: sub = '', section = '',
@@ -258,6 +328,7 @@ export async function createDeck({skillDir, title, subtitle = '', presenter, dat
     }
     return {candidatePath, renderPaths, slideCount: presentation.slides.items.length};
   }
-  return {presentation, cover, addPage, addReportPage, addLessonPage, addParentPage, addStage, text: deckText, image,
+  return {presentation, cover, addPage, addReportPage, addLessonPage, addParentPage, addStage, addMathPage,
+    addPhotoEssay,addEditorial,registerReveal,writeRevealManifest,fraction,text: deckText,image,
     nativeTable: deckTable, chart: deckChart, line, arrow, writeDraft};
 }
