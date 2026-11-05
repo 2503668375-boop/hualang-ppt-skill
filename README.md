@@ -1,72 +1,51 @@
-# 华朗学校通用汇报
+# 华朗学校汇报与教学演示
 
-面向华朗学校的内部管理、课堂教学、家长沟通与对外展示，制作可编辑 PPT，并按需要提供配套一页纸。当前版本 **v2.1**。
+当前版本 **v3.0**。以统一的深紫、香槟金与近白品牌系统，制作内部审议、课堂教学、家长沟通和对外演讲的可编辑 PPT。
 
-先确定读者、任务和内容，再决定每页怎么写、怎么排。内部汇报保留完整论证、信息密度和审查要求；教育场景通过图表、图解、流程、路径和任务组件帮助理解。英文与双语版本分别组织语言和版面。
+## 先看实际页面
 
-## 看一次实际应用介绍
+[![17页场景示范总览](demo/overview.jpg)](demo/hualang-skill-introduction.pptx?raw=true)
 
-[![华朗通用汇报 Skill 使用方法与场景应用](demo/overview.jpg)](demo/hualang-skill-introduction.pptx?raw=true)
+[下载17页可编辑案例](demo/hualang-skill-introduction.pptx?raw=true)
 
-[下载管理层介绍 PPT](demo/hualang-skill-introduction.pptx?raw=true)
+围绕“用证据说明理由”，案例展示学情诊断、方案取舍、实施排程、阅读任务、科学观察、数学图解、家长对话和舞台演讲。最后用实样说明图片和表格规则，并提供可直接使用的请求。
 
-这份 18 页案例模拟华朗管理层介绍本技能，说明怎么使用、解决哪些常见问题、不同场景如何改变排版，并以实际页面展示图表的作用和检查方法。它是一份完整介绍，不是组件目录。教学题例、经营数据和安排中的模拟内容会明确标示，不代表学校实绩或已批准计划。
+<a href="demo/internal.png"><img src="demo/internal.png" width="49%" alt="内部审议：学情数据与作答问题"></a> <a href="demo/education.png"><img src="demo/education.png" width="49%" alt="课堂：图片观察与证据问题"></a>
 
-<a href="demo/internal.png"><img src="demo/internal.png" width="49%" alt="内部汇报案例：判断、比较、依据与行动形成完整阅读内容"></a> <a href="demo/education.png"><img src="demo/education.png" width="49%" alt="教育场景案例：图表和路径组件帮助理解，同时保留必要条件"></a>
+<a href="demo/speech.png"><img src="demo/speech.png" width="99%" alt="对外演讲：单一主图与一句追问"></a>
 
-## 按用途选择写法
+演示数据、作答、题例及安排均为虚构或拟议。两张生成情境图有明确标识，不代表华朗真实课堂或实验结果。
 
-| 用途 | 内容与排版重点 |
-| --- | --- |
-| 学校管理层、校务会、经营及专项汇报 | 短业务题名、正式概论、充分依据；同页核对目标、实际、差额、原因和行动，保留费用、条件、责任和时点。 |
-| 学生课堂、复习和复读备考 | 概念图解、例题批注、错因对照、变式练习与评价；保留题干、单位、条件和推理。 |
-| 家长沟通、招生说明 | 平行课程路径、同维度比较、学习反馈与家校行动；把适用条件和家庭需要配合的事项讲清楚。 |
-| 对外演讲、教学交流 | 清楚主线、案例、图文证据与数据可视化；图表支持主张，说明适用范围。 |
-| 英文及双语 | 核对术语和事实，重新断行排版；提供必要的术语、图解和句式支架。 |
+## 不同现场怎样改变页面
 
-普通内容底色接近白色（`#FDFDFE`），辅助分区用中性浅灰。保留华朗校徽及紫金识别，默认左侧题名、右侧校徽；主体构图按内容变化。内部正文黑字、重点红色，教育展示按任务使用紫色强调。
+| 使用方式 | 内容重点 | 页面组织 |
+|---|---|---|
+| 校务会、经营与专项审议 | 问题、事实、比较、投入、责任与节点 | 完整数据图、方案矩阵、必要证据和排程 |
+| 课堂教学 | 观察、推理、练习与反馈 | 主图或完整题干、就近批注、分步示范、独立练习 |
+| 家长现场及留阅 | 看懂学习方式，知道如何支持和办理 | 作品、对话、支持路径；留阅保留必要条件 |
+| 对外演讲 | 跟随讲述，记住具体主张 | 大字页、单图页、作品对照、单个数据关系 |
 
-图表减少的是重复散文，不能删掉事实和推理。数值图检查变量、坐标和单位；流程与路径检查真实关系；家长材料保留条件；中英文版本保持数据和结论一致。无实际测量时，不宣称固定的效率提升或学习效果。
+颜色角色全稿一致：深紫正文，紫灰辅助，近白背景，少量金色；紫底白字用于封面与演讲重点。照片保留真实颜色。不会按场景切换成黑红、蓝白、紫金多套正文。
 
-## 下载与安装
+## 使用
 
-复制这句话，发给 **Codex 或 WorkBuddy**：
+将 `artifact-template-hualang-school` 文件夹完整安装到所用助手的个人 skills 目录，或让支持技能安装的助手从本仓库安装该文件夹。入口为 [SKILL.md](artifact-template-hualang-school/SKILL.md)。
 
-```text
-请从 https://github.com/2503668375-boop/hualang-ppt-skill/tree/main/artifact-template-hualang-school 下载完整的「华朗学校通用汇报」技能，安装到当前工具的个人技能目录，并核对模板与参考文件完整。
-```
+例如：
 
-也可[下载整个仓库 ZIP](https://github.com/2503668375-boop/hualang-ppt-skill/archive/refs/heads/main.zip)，按所用工具的安装方式，安装其中的 `artifact-template-hualang-school` 文件夹。
+> 用华朗技能，把这份学情材料整理给校务会，说明主要问题、方案取舍、需要的课时和责任。
 
-附上本次材料，说明受众和用途即可，例如：
+> 用华朗技能，做8分钟家长分享，讲清孩子怎样学会说明理由，以大图、作品和短句展开。
 
-> 用华朗模板，把附件做成校务会月度经营汇报，展开招生差额、预算与实际、原因和责任节点。
+提供实际资料、听众与使用场合即可；影响结论的缺项再补充。文字、表格、数据图和关系节点保持可编辑。
 
-> 用华朗模板，做一套高一数学复习课件，保留例题推导，增加错因对照与变式练习。
+## 规范与依据
 
-> 用华朗模板，做一份家长课程说明，把选择路径、适用条件和家校配合可视化。
+- [视觉、图片与表格规范](artifact-template-hualang-school/references/design.md)
+- [课堂、家长与演讲规范](artifact-template-hualang-school/references/special-scenes.md)
+- [官方研究与真实演示依据](artifact-template-hualang-school/references/research-basis.md)
+- [实际页面验收](artifact-template-hualang-school/references/review.md)
+- [模板组件索引](artifact-template-hualang-school/references/component-index.md)
+- [版本记录](CHANGELOG.md)
 
-也可以调用 `$artifact-template-hualang-school`。已有要求和资料直接沿用，只补问影响结果的缺项。
-
-## 技能资源
-
-- [技能入口](artifact-template-hualang-school/SKILL.md)：按内部汇报与教育场景选择流程。
-- [华朗汇报方法](artifact-template-hualang-school/references/reporting-method.md)：起稿、论证、排版与三遍审查的方法。
-- [视觉与组件规范](artifact-template-hualang-school/references/design.md)：近白背景、华朗品牌、字体和内容构图。
-- [特殊图表验收](artifact-template-hualang-school/references/review.md#特殊场景图表是否达到要求)：按图表作用检查是否帮助理解，是否存在误导。
-- [后台制作参考](artifact-template-hualang-school/assets/reference.pptx?raw=true)与[原始品牌模板](artifact-template-hualang-school/assets/source-original.pptx?raw=true)：用于制作时取用，不代替本次应用介绍。
-- [Word 一页纸母版](artifact-template-hualang-school/assets/one-page-report.docx?raw=true)：仅在需要独立简报或配套一页纸时使用。
-
-PPT 使用 PingFang SC 与 Arial。更换电脑或字体后需复查换行、图表和表格。只有实际在 PowerPoint 中打开并查看后，才可声称完成该软件验证。
-
-## 持续维护
-
-优化在本仓库持续更新，记录在 [CHANGELOG](CHANGELOG.md)。修改同时核对规范、模板、案例和个人安装版；规则与实际页面应一致，文案、信息密度、图表含义和版面均需检查。
-
-```bash
-python3 scripts/validate_package.py --expected-slides 15
-```
-
-该命令检查后台参考资产的文件、相对引用和原生对象结构。它不能代替对介绍案例、特殊图表及实际阅读效果的审查。
-
-校徽、校名及校园素材不因本仓库公开而授予商标或其他使用权；本仓库不代表学校的正式对外发布。
+模板保留原有华朗品牌资产。研究原则、华朗排版建议与学校实际数据分别处理，不宣称模板已经过学校正式VI审批或教学效果实验。
