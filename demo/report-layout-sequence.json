@@ -1,0 +1,85 @@
+{
+  "simulated": true,
+  "slides": [
+    {
+      "slide": 2,
+      "title": "年度概览",
+      "family": "open-results-hierarchy",
+      "readerAction": "判断全年结果与计划边界",
+      "primaryEvidence": "招生主结果与财务、教学层级说明",
+      "conditions": "全部为虚构演示；实绩/目标/拟议与归因边界分清"
+    },
+    {
+      "slide": 3,
+      "title": "招生差距",
+      "family": "shared-axis-dot-comparison",
+      "readerAction": "比较同单位目标与实际，定位缺口",
+      "primaryEvidence": "三个学段共用人数轴，端点与差额直接标注",
+      "conditions": "同期新增人数；缺口不等于离校人数；未提供原因资料"
+    },
+    {
+      "slide": 4,
+      "title": "季度走势",
+      "family": "native-quarterly-trend",
+      "readerAction": "追踪年度过程并对照目标",
+      "primaryEvidence": "通栏原生折线图与逐季差额",
+      "conditions": "季度实际合计500、目标550；趋势不能直接说明原因"
+    },
+    {
+      "slide": 5,
+      "title": "在籍勾稽",
+      "family": "enrollment-contribution-bridge",
+      "readerAction": "核对规模增减与统计边界",
+      "primaryEvidence": "可加总贡献桥与完整算式",
+      "conditions": "新增/转入与毕业/退学分列；招生目标差额不能混入"
+    },
+    {
+      "slide": 6,
+      "title": "收支偏差",
+      "family": "finance-table-and-composition",
+      "readerAction": "查预算偏差与支出构成",
+      "primaryEvidence": "原生预算/实际表及共用比例的科目条形",
+      "conditions": "单位万元；实际/预算同口径；收入不等同到账"
+    },
+    {
+      "slide": 7,
+      "title": "教学证据",
+      "family": "response-evidence-annotation",
+      "readerAction": "观察具体错误，区分表现变化与归因",
+      "primaryEvidence": "匿名作答原文、修订及同标测评比例",
+      "conditions": "同一批200人/同一能力框架；不能证明措施因果；作答为虚构"
+    },
+    {
+      "slide": 8,
+      "title": "支持协作",
+      "family": "labeled-support-network",
+      "readerAction": "追踪主体之间的交付接口",
+      "primaryEvidence": "有名称与交付内容的协作网络",
+      "conditions": "全部拟议；教师培训只有参与记录，不能认定效果"
+    },
+    {
+      "slide": 9,
+      "title": "资源取舍",
+      "family": "resource-options-with-tradeoff",
+      "readerAction": "同字段比较投入、对象与实施条件",
+      "primaryEvidence": "A/B原生比较表与优先次序说明",
+      "conditions": "两方案均为模拟选项；没有虚构审批结果"
+    },
+    {
+      "slide": 10,
+      "title": "推进节点",
+      "family": "date-proportional-milestones",
+      "readerAction": "按真实时间间距追踪计划",
+      "primaryEvidence": "日期轴与近邻责任/交付说明",
+      "conditions": "全部拟议，非学校已定承诺；原始精确日期保留"
+    },
+    {
+      "slide": 11,
+      "title": "责任查阅",
+      "family": "complete-responsibility-register",
+      "readerAction": "查阅责任、日期和完成物",
+      "primaryEvidence": "四项原生责任台账与前文结论承接",
+      "conditions": "拟议责任与时间，不代表已实施；结论不超出模拟材料"
+    }
+  ]
+}

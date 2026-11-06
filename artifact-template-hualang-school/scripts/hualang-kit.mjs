@@ -251,7 +251,9 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
   }
   function addReportPage({title, summary, section = ''}) {
     const slide=addPage({title,summary,section,purpose:'report'});
-    return {slide,areas:{evidence:{x:48,y:196,w:1184,h:356},note:{x:48,y:572,w:1184,h:80}}};
+    // content is the open working area; evidence/note remain for older callers.
+    return {slide,areas:{content:{x:48,y:summary?196:108,w:1184,h:summary?456:544},
+      evidence:{x:48,y:196,w:1184,h:356},note:{x:48,y:572,w:1184,h:80}}};
   }
   // Observation is one lesson pattern. Mathematics and text analysis have
   // separate geometry below; callers must choose from their actual material.
@@ -444,6 +446,84 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     return slide.shapes.add({geometry:'parallelogram',position:{left:x,top:y,width:w,height:h},fill:color,line:noLine});
   }
 
+  // Open components: no enclosing panels or page-level grid is added.
+  function metricInline(slide,value,label,{x,y,w=310,unit='',context='',size=64}={}) {
+    if(value == null || !String(value).trim() || !String(label??'').trim()) throw new Error('metricInline requires value and meaning.');
+    return [deckText(slide,String(value)+(unit?' '+unit:''),{x,y,w,h:size*1.35,size,bold:true,color:colors.purple,name:'metric-value'}),
+      deckText(slide,label,{x,y:y+size*1.4,w,h:32,size:22,bold:true,name:'metric-label'}),
+      ...(context?[deckText(slide,context,{x,y:y+size*1.4+40,w,h:58,size:18,color:colors.secondary,name:'metric-context'})]:[])];
+  }
+  function segment(slide,x1,y1,x2,y2,{color=colors.line,width=1.5}={}) {
+    const left=Math.min(x1,x2),top=Math.min(y1,y2),w=Math.max(Math.abs(x2-x1),1),h=Math.max(Math.abs(y2-y1),1);
+    return slide.shapes.add({geometry:'custom',position:{left,top,width:w,height:h},fill:'none',line:{fill:color,width},
+      customPaths:[{width:w,height:h,commands:[{moveTo:{x:x1-left,y:y1-top}},{lineTo:{x:x2-left,y:y2-top}}]}]});
+  }
+  function evidenceNote(slide,body,{x,y,w=280,h=96,anchor,title='',size=21}={}) {
+    if(!String(body??'').trim()) throw new Error('evidenceNote requires an explanation.');
+    const out=[];
+    if(anchor){
+      if(!Number.isFinite(anchor.x)||!Number.isFinite(anchor.y)) throw new Error('evidenceNote anchor must be finite.');
+      if(anchor.x>=x && anchor.x<=x+w && anchor.y>=y && anchor.y<=y+h) throw new Error('evidenceNote anchor must point outside its text area.');
+      const endX=Math.max(x-10,Math.min(x+w+10,anchor.x)),endY=Math.max(y-8,Math.min(y+h+8,anchor.y));
+      out.push(segment(slide,anchor.x,anchor.y,endX,endY,{color:colors.purple}),
+        slide.shapes.add({geometry:'ellipse',position:{left:anchor.x-3,top:anchor.y-3,width:6,height:6},fill:colors.purple,line:noLine}));
+    }
+    if(title)out.push(deckText(slide,title,{x,y,w,h:30,size:22,bold:true,color:colors.purple,name:'evidence-note-title'}));
+    out.push(deckText(slide,body,{x,y:y+(title?36:0),w,h:h-(title?36:0),size,name:'evidence-note-body'}));
+    return out;
+  }
+  function dotComparison(slide,rows,{x=48,y=196,w=1184,h=360,min=0,max,unit='',
+    beforeLabel='目标',afterLabel='实际',labelWidth=170,size=21}={}) {
+    if(!rows?.length || !Number.isFinite(min) || !Number.isFinite(max) || max<=min) throw new Error('dotComparison requires rows and a finite increasing domain.');
+    for(const r of rows)if(!r.label || ![r.before,r.after].every(v=>Number.isFinite(v)&&v>=min&&v<=max)) throw new Error('dotComparison values must lie in the shared domain.');
+    const out=[],plotX=x+labelWidth,plotW=w-labelWidth-100,rowH=(h-75)/rows.length;
+    if(plotW<=0 || rowH<44)throw new Error('dotComparison needs enough space for labels and rows.');
+    const px=v=>plotX+(v-min)/(max-min)*plotW;
+    out.push(deckText(slide,`${beforeLabel} ○　${afterLabel} ●${unit?'　单位：'+unit:''}`,{x:plotX,y,w:plotW,h:30,size:18,color:colors.secondary}),
+      deckText(slide,'差额',{x:plotX+plotW+20,y,w:80,h:30,size:18,color:colors.secondary}));
+    for(let i=0;i<=4;i++){
+      const value=min+(max-min)*i/4,sx=px(value);
+      out.push(line(slide,{x:sx,y:y+38,w:0,h:h-67,color:colors.line,width:0.7}),
+        deckText(slide,String(Number(value.toFixed(2))),{x:sx-38,y:y+h-25,w:76,h:24,size:16,align:'center',color:colors.secondary}));
+    }
+    rows.forEach((r,i)=>{
+      const sy=y+46+rowH*(i+.5),bx=px(r.before),ax=px(r.after);
+      out.push(deckText(slide,r.label,{x,y:sy-14,w:labelWidth-20,h:34,size,bold:true}),
+        segment(slide,bx,sy,ax,sy,{color:colors.gold,width:4}),
+        slide.shapes.add({geometry:'ellipse',position:{left:bx-6,top:sy-6,width:12,height:12},fill:colors.paper,line:{fill:colors.secondary,width:2}}),
+        slide.shapes.add({geometry:'ellipse',position:{left:ax-6,top:sy-6,width:12,height:12},fill:colors.purple,line:noLine}),
+        deckText(slide,String(r.before),{x:bx-40,y:sy-31,w:80,h:23,size:17,align:'center',color:colors.secondary}),
+        deckText(slide,String(r.after),{x:ax-40,y:sy+9,w:80,h:23,size:17,align:'center',color:colors.purple}),
+        deckText(slide,`${r.after-r.before>0?'+':''}${Number((r.after-r.before).toFixed(2))}`,{x:plotX+plotW+20,y:sy-13,w:80,h:30,size:20,bold:true,color:colors.ink}));
+    });
+    return out;
+  }
+  function milestoneTimeline(slide,events,{x=48,y=210,w=1184,h=330,start,end,size=21}={}) {
+    const iso=v=>{
+      if(typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(v))throw new Error('Timeline dates require YYYY-MM-DD.');
+      const t=Date.parse(v+'T00:00:00Z');
+      if(!Number.isFinite(t)||new Date(t).toISOString().slice(0,10)!==v)throw new Error('Invalid timeline date.');
+      return t;
+    };
+    const lo=iso(start),hi=iso(end);
+    if(hi<=lo||!events?.length)throw new Error('Timeline requires events and an increasing date range.');
+    const located=events.map(e=>({...e,t:iso(e.date)}));
+    if(located.some(e=>e.t<lo||e.t>hi||!e.label))throw new Error('Timeline events need labels and dates within range.');
+    const axisY=y+h*.47,left=x+30,right=x+w-30,out=[line(slide,{x:left,y:axisY,w:right-left,color:colors.gold,width:2})];
+    located.forEach((e,i)=>{
+      const cx=left+(e.t-lo)/(hi-lo)*(right-left),tw=e.width??220;
+      const tx=e.labelX??Math.max(x,Math.min(x+w-tw,cx-tw/2)),ty=e.labelY??(i%2?axisY+65:y);
+      const textH=e.detail?105:34,below=ty>=axisY;
+      const endpointY=below?ty-8:ty+textH+8;
+      out.push(slide.shapes.add({geometry:'ellipse',position:{left:cx-6,top:axisY-6,width:12,height:12},fill:colors.purple,line:noLine}),
+        segment(slide,cx,below?axisY+43:axisY-8,Math.max(tx,Math.min(tx+tw,cx)),endpointY,{color:colors.purple,width:1}),
+        deckText(slide,e.date,{x:cx-65,y:axisY+14,w:130,h:25,size:17,align:'center',color:colors.secondary}),
+        deckText(slide,e.label,{x:tx,y:ty,w:tw,h:34,size,bold:true,color:colors.purple}),
+        ...(e.detail?[deckText(slide,e.detail,{x:tx,y:ty+39,w:tw,h:66,size:size-2})]:[]));
+    });
+    return out;
+  }
+
   async function addCanvas({purpose='stage',section=''}={}) {
     const slide=addContentSlide();pageProfiles.set(slide.id,purpose);
     slide.background.fill=colors.paper;
@@ -483,6 +563,6 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     return {candidatePath, renderPaths, slideCount: presentation.slides.items.length};
   }
   return {presentation, cover, closing, lessonBand, methodStrip, stepMarker, addLessonPlanPage, addPage, addReportPage, addLessonPage, addParentPage, addStage, addMathPage,
-    addPhotoEssay,addEditorial,addCanvas,addSchoolScene,schoolIcon,numberBadge,iconLabel,sectionRule,photoLabel,pointBand,purpleRibbon,lightFrame,focusPanel,numberFlag,starOrbit,stepBands,evidenceStrip,facetCorner,registerReveal,writeRevealManifest,fraction,text: deckText,image,
+    addPhotoEssay,addEditorial,addCanvas,addSchoolScene,schoolIcon,numberBadge,iconLabel,sectionRule,photoLabel,pointBand,purpleRibbon,lightFrame,focusPanel,numberFlag,starOrbit,stepBands,evidenceStrip,facetCorner,metricInline,evidenceNote,dotComparison,milestoneTimeline,registerReveal,writeRevealManifest,fraction,text: deckText,image,
     nativeTable: deckTable, chart: deckChart, line, arrow, writeDraft};
 }

@@ -1,10 +1,12 @@
-# 原生制作工具 V8
+# 原生制作工具 V8.1
 
 常规华朗内容页先使用 `addPage`；家长、招生与对外材料也可使用 `addSchoolScene({title,summary,section,purpose})`，它保留同一页眉、校徽、分隔线与正文底。默认purpose为report供留阅；现场家长说明显式用parent、舞台用stage，课堂用classroom。固定页眉保持不变，正文和表格随用途使用相应起点。组件在正文内组合，标题/说明/材料尽量同屏，不自动切换另一套整页模板。
 
 `scripts/hualang-kit.mjs` 使用当前可用的 `@oai/artifact-tool`，封面与封尾均从原始模板保留。调用者决定内容、学科与具体构图，工具提供用途对应的默认值。
 
 ## 运行环境
+
+`addPage`只提供品牌框架，没有默认卡片网格。`addReportPage(...).areas.content`给出完整正文区；历史`evidence/note`保留兼容，调用者无需将一页切成证据块和底备注块。内容选择见[内容与版式](report-layouts.md)。
 
 桌面环境读取 `load_workspace_dependencies` 返回的运行库。可将辅助库复制到本次临时制作目录，并让该目录解析已有依赖；不要把依赖目录打入技能包。字体先核实，中文默认PingFang SC，英数Arial，简单分式默认Times New Roman；缺失时用 `zhFont / latinFont / mathFont` 传入实际可用字体。
 
@@ -34,6 +36,37 @@ await deck.writeDraft({candidatePath,renderDir});
 `deck.text` 对通过入口创建的页面采用对应正文起点，可按真实材料显式调整。正文默认 `colors.ink`，标题和教学组件用 `colors.purple` / `colors.pale`，重点 `colors.red`，分析图形 `colors.blue`。字号起点不等于配额，见[教学设计](teaching-design.md)及[视觉规范](design.md)。
 
 ## 主要入口
+
+### 开放式组件
+
+下列方法返回可编辑原生对象数组，可以登记揭示；它们不创建背景面板，也不决定整页布局。
+
+```js
+deck.metricInline(slide,'500','年度新增学生',{
+  x:48,y:200,w:350,unit:'人',context:'模拟数据；同一招生年度',size:64
+});
+deck.dotComparison(slide,[
+  {label:'初中',before:180,after:165},
+  {label:'高中',before:240,after:225},
+  {label:'国际高中',before:130,after:110}
+],{x:48,y:210,w:1184,h:340,min:0,max:260,unit:'人',beforeLabel:'目标',afterLabel:'实际'});
+deck.milestoneTimeline(slide,[
+  {date:'2027-01-15',label:'复核需求',detail:'模拟安排'},
+  {date:'2027-04-20',label:'阶段复测',detail:'同标准检验'}
+],{x:48,y:220,w:1184,h:330,start:'2027-01-01',end:'2027-06-30'});
+deck.evidenceNote(slide,'解释这个具体转折及其条件。',{
+  x:900,y:260,w:300,h:150,anchor:{x:850,y:360},title:'变化依据'
+});
+```
+
+- `metricInline`：开放数字、含义与口径，`unit/context`可省略；检查长值与单位是否适配宽度。不同群体与期间分开标明，不暗示可加总。
+- `dotComparison`：相同指标、单位和口径的成对值，共用`min/max`数轴；端点、数值和差额直接标注。`labelWidth/size`可调，留出必要行高。它是按数值定位的可编辑图形，不是含数据工作簿的原生chart；多系列图表可用`deck.chart`。
+- `milestoneTimeline`：`start/end`和每项`date`为有效ISO日期，节点依真实间距定位。事件可带`width/labelX/labelY`调整文字，近邻日期须实看避免重叠。若日期未定或只有季度，不虚构具体日期；改用阶段文字或责任关系。
+- `evidenceNote`：正文可加`title`和指向证据的`anchor`，无需底框；锚点须在注释文字区外。检查引线端点与对象对应；不能让引线穿过重要文字。
+
+数据图导出后另查图表部件与数值是否保留，以及是否包含嵌入工作簿。含原生chart和数值字面量不自动证明PowerPoint的“编辑数据”已可用；需要该功能时按实际工具补工作簿并验证，交付不声称未做的应用编辑测试。
+
+色块接口如`focusPanel/numberFlag/stepBands`仍可使用，但只在内容关系适合时调用。不要循环同款组件填满整稿；组件名称不同也可能产生相同的等分面板。
 
 先按实际对象组合小组件。表格接口只在真实行列查阅需要时使用；教案、推理、方法、反馈和文本并不因接口方便而默认套表。内容完整与密度由关系、条件及完整解释保证，不能靠删网格、缩字或等宽卡片替代组织。
 

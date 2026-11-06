@@ -1,5 +1,9 @@
 # 验证入口与历史记录
 
+当前版式验证见[V8.1](v8.1-validation.md)。`test_sequence_audit.py`使用纯OOXML行为夹具检验几何、镜像、组合变换、画布、面板与保留理由；[模拟年度材料](fixtures/年度管理模拟材料.txt)用于独立生成连续报告。文件检查与实页联排分别记录，不把机器通过当作视觉完成。
+
+`test_open_components.py`与`open-components-fixture.mjs`从真实导出文件核对点比较、时间轴、引注、数字及新旧区域接口；与既有原生工具测试一样，通过`HUALANG_NODE/HUALANG_NODE_MODULES`传入发现的运行库，缺失时明确跳过。纯几何、首尾和动画测试仅需Python标准库。
+
 本轮完整性审查及验证范围见[V8审查](../docs/v8-completeness-review.md)。本轮新增[原生工具行为测试](test_tool_behavior.py)及[制作夹具](tool-behavior-fixture.mjs)，实际导出后核对题名、场景默认字号、显式覆盖和序列检查的成功/失败行为。按当前环境发现的路径传入 `HUALANG_NODE` 和 `HUALANG_NODE_MODULES` 后运行；未提供原生运行库时该组测试会明确跳过。
 
 历史检查分别见[V7](v7-validation.md)、[V6](v6-validation.md)和[V5](v5-validation.md)。以下保留V4/V4.1记录，原来记录的版本、页数与验证范围仅指当轮产物，不代表现行示例。
