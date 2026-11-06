@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import {FileBlob, PresentationFile} from '@oai/artifact-tool';
 
 export const colors = Object.freeze({
@@ -18,6 +19,40 @@ export const profiles = Object.freeze({
   stage:{title:28,body:30,summary:30,table:26},
 });
 const noLine = {fill: 'none', width: 0};
+
+// Preview evidence only. A rendered candidate still needs content and visual review.
+export async function renderSavedDeck({candidatePath, renderDir, scale = 1.5, slides, pageContexts = []}) {
+  if (!candidatePath || !renderDir) throw new Error('renderSavedDeck requires candidatePath and renderDir.');
+  if (!Number.isFinite(scale) || scale <= 0) throw new Error('Render scale must be positive.');
+  const sha = data => createHash('sha256').update(data).digest('hex');
+  const source = path.resolve(candidatePath), sourceHash = sha(await fs.readFile(source));
+  const saved = await PresentationFile.importPptx(await FileBlob.load(source));
+  const selected = slides ?? saved.slides.items.map((_,i)=>i+1);
+  if (!Array.isArray(selected) || !selected.length || new Set(selected).size !== selected.length ||
+      selected.some(n=>!Number.isInteger(n) || n<1 || n>saved.slides.items.length)) {
+    throw new Error('Render slides must be unique existing one-based page numbers.');
+  }
+  const runDir = path.join(path.resolve(renderDir), `run-${sourceHash.slice(0,12)}-${Date.now()}`);
+  await fs.mkdir(runDir, {recursive:true});
+  const pages = [], contexts = new Map(pageContexts.map(p=>[p.slide,p]));
+  for (const number of selected) {
+    const slide = saved.slides.items[number-1], stem = `slide-${String(number).padStart(2,'0')}`;
+    const render = path.join(runDir,stem+'.png'), layout = path.join(runDir,stem+'.layout.json');
+    const png = new Uint8Array(await (await saved.export({slide,format:'png',scale})).arrayBuffer());
+    await fs.writeFile(render,png);
+    await fs.writeFile(layout,await (await slide.export({format:'layout'})).text());
+    pages.push({slide:number,render,renderSha256:sha(png),layout,
+      scene:contexts.get(number)?.scene ?? '',subject:'',verdict:'unverified'});
+  }
+  if (sha(await fs.readFile(source)) !== sourceHash) throw new Error('PPTX changed during preview export; render the saved version again.');
+  const manifest = {schemaVersion:1,status:'unreviewed',artifact:{path:source,sha256:sourceHash},
+    renderSourceSha256:sourceHash,slideCount:saved.slides.items.length,scope:selected,pages,
+    notice:'预览由保存文件重导入，仅记录文件证据；内容、场景和视觉尚未审查。'};
+  const renderManifestPath = path.join(runDir,'render-manifest.json');
+  await fs.writeFile(renderManifestPath,JSON.stringify(manifest,null,2)+'\n');
+  return {candidatePath:source,renderDir:runDir,renderPaths:pages.map(p=>p.render),
+    slideCount:saved.slides.items.length,renderManifestPath,reviewStatus:'unreviewed'};
+}
 
 export function assertTopicTitle(value, {userSupplied = false} = {}) {
   const title = String(value ?? '').trim();
@@ -147,11 +182,14 @@ export function arrow(slide, {from, to, fromSide = 'right', toSide = 'left',
 
 export async function createDeck({skillDir, title, subtitle = '', subtitlePurpose = '', presenter, date,
   zhFont = fonts.zh, latinFont = fonts.latin, mathFont = 'Times New Roman',
+  sceneMode = 'single', defaultPurpose = 'report',
   closingText = '汇报完毕，敬请指导', closingMotto = '华夏俊采，朗若星辰'}) {
   if (!skillDir || !title) throw new Error('createDeck requires skillDir and the actual title.');
   if (!String(presenter ?? '').trim() || !String(date ?? '').trim()) {
     throw new Error('封面必须提供汇报人和汇报时间；缺项应明确核实，不能静默留空。');
   }
+  if (!['single','mixed'].includes(sceneMode)) throw new Error('sceneMode must be single or mixed.');
+  if (!profiles[defaultPurpose]) throw new Error('Unknown defaultPurpose: '+defaultPurpose);
   const contract = JSON.parse(await fs.readFile(path.join(skillDir, 'assets/style-contract.json'), 'utf8'));
   const cv = contract.cover;
   if (![zhFont, latinFont].every(f => typeof f === 'string' && f.trim())) {
@@ -235,8 +273,10 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     deckText(slide, String(presentation.slides.items.indexOf(slide)+1).padStart(2, '0'),
       {x: 1190, y: 677, w: 42, h: 24, size: 15, color, align: 'right'});
   };
-  function addPage({title: pageTitle, summary = '', section = '', titleSize, purpose = 'report', userSuppliedTitle = false}) {
+  function addPage({title: pageTitle, summary = '', section = '', titleSize, purpose, userSuppliedTitle = false}) {
     assertTopicTitle(pageTitle, {userSupplied:userSuppliedTitle});
+    if (purpose == null && sceneMode === 'mixed') throw new Error('混合场景须逐页显式选择purpose；该参数仍不能代替主体构图。');
+    purpose ??= defaultPurpose;
     if (!profiles[purpose]) throw new Error('Unknown page purpose: '+purpose);
     const slide=addContentSlide({layoutId:layout.id});pageProfiles.set(slide.id,purpose);
     pageBrand(slide);
@@ -246,7 +286,7 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     return slide;
   }
 
-  function addSchoolScene({title,summary='',section='',purpose='report',userSuppliedTitle=false}) {
+  function addSchoolScene({title,summary='',section='',purpose,userSuppliedTitle=false}) {
     return addPage({title,summary,section,purpose,userSuppliedTitle});
   }
   function addReportPage({title, summary, section = ''}) {
@@ -549,18 +589,9 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     if (!candidatePath || !renderDir) throw new Error('writeDraft requires candidatePath and renderDir.');
     ensureClosing();
     await fs.mkdir(path.dirname(candidatePath), {recursive: true});
-    await fs.mkdir(renderDir, {recursive: true});
     await (await PresentationFile.exportPptx(presentation)).save(candidatePath);
-    const renderPaths = [];
-    for (let i = 0; i < presentation.slides.items.length; i++) {
-      const slide = presentation.slides.items[i], stem = `slide-${String(i + 1).padStart(2, '0')}`;
-      const pngPath = path.join(renderDir, `${stem}.png`);
-      const png = await presentation.export({slide, format: 'png', scale});
-      await fs.writeFile(pngPath, new Uint8Array(await png.arrayBuffer()));
-      await fs.writeFile(path.join(renderDir, `${stem}.layout.json`), await (await slide.export({format: 'layout'})).text());
-      renderPaths.push(pngPath);
-    }
-    return {candidatePath, renderPaths, slideCount: presentation.slides.items.length};
+    return renderSavedDeck({candidatePath,renderDir,scale,pageContexts:presentation.slides.items.map((s,i)=>({
+      slide:i+1,scene:s===cover?'cover':s===closing?'closing':pageProfiles.get(s.id) ?? ''}))});
   }
   return {presentation, cover, closing, lessonBand, methodStrip, stepMarker, addLessonPlanPage, addPage, addReportPage, addLessonPage, addParentPage, addStage, addMathPage,
     addPhotoEssay,addEditorial,addCanvas,addSchoolScene,schoolIcon,numberBadge,iconLabel,sectionRule,photoLabel,pointBand,purpleRibbon,lightFrame,focusPanel,numberFlag,starOrbit,stepBands,evidenceStrip,facetCorner,metricInline,evidenceNote,dotComparison,milestoneTimeline,registerReveal,writeRevealManifest,fraction,text: deckText,image,

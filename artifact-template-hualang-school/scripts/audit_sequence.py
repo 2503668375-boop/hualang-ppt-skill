@@ -296,7 +296,10 @@ def audit(pptx, manifest=None):
     for entry in entries:
         if entry.get('lesson'):
             times[entry['lesson']] = times.get(entry['lesson'], 0)+entry.get('minutes', 0)
-    return {'ok': not errors, 'slide_count': len(rows), 'content_pages': len(ordered),
+    return {'ok': not errors, 'structure_valid': not errors,
+            'quality_verdict': 'not_assessed', 'human_visual_review_required': True,
+            'findings_to_review': len(findings),
+            'slide_count': len(rows), 'content_pages': len(ordered),
             'layout_families': len({f for f in families if f}),
             'planned_minutes_by_lesson': times, 'errors': errors, 'warnings': warnings,
             'findings': findings, 'similar_pairs': similar_pairs, 'panel_grid_pages': panel_pages,

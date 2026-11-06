@@ -1,6 +1,6 @@
-# 原生制作工具 V8.1
+# 原生制作工具 V8.3
 
-常规华朗内容页先使用 `addPage`；家长、招生与对外材料也可使用 `addSchoolScene({title,summary,section,purpose})`，它保留同一页眉、校徽、分隔线与正文底。默认purpose为report供留阅；现场家长说明显式用parent、舞台用stage，课堂用classroom。固定页眉保持不变，正文和表格随用途使用相应起点。组件在正文内组合，标题/说明/材料尽量同屏，不自动切换另一套整页模板。
+常规华朗内容页使用`addPage`；`addSchoolScene`同样只保留页眉、校徽、分隔线与正文底。混合场景创建时指定`sceneMode:'mixed'`，通用入口漏传`purpose`会报错；单一场景可用`defaultPurpose`整稿指定。为兼容旧稿，未传这些参数仍保留report默认。用途参数只设置字号起点，不决定主体和构图，也不证明场景设计已经完成。
 
 `scripts/hualang-kit.mjs` 使用当前可用的 `@oai/artifact-tool`，封面与封尾均从原始模板保留。调用者决定内容、学科与具体构图，工具提供用途对应的默认值。
 
@@ -11,12 +11,18 @@
 桌面环境读取 `load_workspace_dependencies` 返回的运行库。可将辅助库复制到本次临时制作目录，并让该目录解析已有依赖；不要把依赖目录打入技能包。字体先核实，中文默认PingFang SC，英数Arial，简单分式默认Times New Roman；缺失时用 `zhFont / latinFont / mathFont` 传入实际可用字体。
 
 ```js
-import {createDeck,colors,profiles} from './hualang-kit.mjs';
-const deck=await createDeck({skillDir,title:'本次题名',presenter,date});
-const page=deck.addPage({title:'本页议题',purpose:'report',summary:'有依据的判断或安排。'});
+import {createDeck,renderSavedDeck,colors,profiles} from './hualang-kit.mjs';
+const deck=await createDeck({skillDir,title:'本次题名',presenter,date,sceneMode:'mixed'});
+const report=deck.addPage({title:'招生差额',purpose:'report'});
+// 在主比较旁安排结论与条件，不先加同款分栏。
+const lesson=deck.addPage({title:'区间最值',purpose:'classroom'});
+// 完整题干、图形与关键推理；教师教案另用lessonPlan。
 // 新页自动插在固定封尾之前；不要自拟最后一页替代原模板。
-await deck.writeDraft({candidatePath,renderDir});
+const preview=await deck.writeDraft({candidatePath,renderDir});
+// preview.reviewStatus始终为unreviewed；按实际预览继续审查。
 ```
+
+概论可省略。`summary`的固定文本区及旧`evidence/note`区域仅为兼容便捷入口，不把所有页都推成“题名＋长概论＋分栏”。内容需要概论时确定真实行数和位置，短概论不预留无用高度；也可在完整正文区用`deck.text`自行安排。文字高度不等于实际字形边界，需检查最终换行和末行。
 
 封面不传subtitle。确有独立范围或用户明确要求时同时传 `subtitlePurpose:'scope'` 或 `'user_request'`；这表示已有语义依据，不要求额外审批。不要把版本、使用介绍或演示标签当成副题。
 
@@ -75,12 +81,12 @@ deck.evidenceNote(slide,'解释这个具体转折及其条件。',{
 | `addPage({title,purpose,summary,section,titleSize})` | 普通页，单题名；summary为正文层级概论 |
 | `addSchoolScene({title,summary,section,purpose})` | 保留固定正文框架，用于家长、招生与对外交流 |
 | `addReportPage({title,summary,section})` | 题名、概论、依据与落实区域，内部完整论证 |
-| `addLessonPlanPage({title,section})` | context、sequence、assessment三个区域；可以按具体学科改变安排 |
+| `addLessonPlanPage({title,section})` | 历史分区便捷入口，不代表所有教案固定三块；按实际活动与反馈重组 |
 | `addMathPage({title,mode,purpose,section})` | mode为single/pair/proof，分别给完整题干+推导/图形、双题或通栏推导 |
 | `addLessonPage({title,task,section})` | 观察对象与任务页，只适用于相应观察任务 |
 | `addPhotoEssay({title,orientation,section})` | 主次照片区域，left/right按真实素材选择 |
 | `await addEditorial({title,dark,section})` | 开放画布；题名不应再与大口号重复 |
-| `await addStage({title,subtitle,imagePath,imageAlt,section})` | 舞台主句/主图；默认不加小场景标题，舞台字号不传给课堂 |
+| `await addStage({title,subtitle,imagePath,imageAlt,section})` | 旧的局部特殊画布；常规演讲用addPage保留既定品牌框架，再组合主句与主图 |
 | `text / image / nativeTable / chart / line / arrow` | 原生文字、图片、表格、数据图与关系图，具体坐标由内容决定 |
 | `fraction(slide,num,den,{x,y,w,size,color})` | 简单可编辑分式：分子/横线/分母；复杂数学对象按数学专项 |
 
@@ -155,6 +161,17 @@ deck.facetCorner(slide,{x:48,y:540,w:220,h:100});
 复杂关系可用原生customPaths、连接线、表图及上述组件组合。文字、图形和线条保持可编辑，不能以组件数量代替信息完整和实际页面检查。
 
 ## 题名与草稿
+
+`writeDraft`保存候选PPTX后，调用`renderSavedDeck`从保存文件重新导入。每次使用新的run目录，返回PNG、实际layout及`render-manifest.json`，记录源文件和各页图片SHA-256，状态始终为`unreviewed`。不再渲染保存前的内存对象充当最终证据。
+
+对已有或随后补附件/动画的最终文件，只读重渲染，不重新导出PPT：
+
+```js
+const preview=await renderSavedDeck({candidatePath:finalPptx,renderDir,scale:1.5});
+// 局部修复可传slides:[受影响页码]；只声明该范围复查。
+```
+
+预览成功后按[四项验收](review.md)看实际页面，并按[记录格式](review-record.md)补真实观察。混合场景若全部页使用同一用途，应复核选择是否合理；即使不同用途参数齐全，主体仍同构也需修改。`addParentPage`等历史便捷布局只适合其特定照片材料，不替代家长作品反馈的构图选择。
 
 自动中文题名用具体议题短语，课堂问句放任务区；四、六、八字是编辑偏好。正常英文与学科专名不按12字位硬截，长中文由保存后检查提示实看实际换行。用户给定正式题名可用userSuppliedTitle保留，并在验收时对应原要求。
 
