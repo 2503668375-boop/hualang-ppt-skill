@@ -1,0 +1,214 @@
+{
+  "slides": [
+    {
+      "slide": 2,
+      "title": "函数知识联系",
+      "family": "relationship-map",
+      "lesson": 1,
+      "minutes": 4
+    },
+    {
+      "slide": 3,
+      "title": "基础诊断",
+      "family": "four-problems",
+      "lesson": 1,
+      "minutes": 4
+    },
+    {
+      "slide": 4,
+      "title": "概念辨析",
+      "family": "wide-table",
+      "lesson": 1,
+      "minutes": 5
+    },
+    {
+      "slide": 5,
+      "title": "表图互译",
+      "family": "table-plot-evidence",
+      "lesson": 1,
+      "minutes": 5
+    },
+    {
+      "slide": 6,
+      "title": "系数与图像",
+      "family": "three-graphs",
+      "lesson": 1,
+      "minutes": 4
+    },
+    {
+      "slide": 7,
+      "title": "截距与象限",
+      "family": "plot-left-solution-right",
+      "lesson": 1,
+      "minutes": 5
+    },
+    {
+      "slide": 8,
+      "title": "两点确定解析式",
+      "family": "full-derivation",
+      "lesson": 1,
+      "minutes": 5
+    },
+    {
+      "slide": 9,
+      "title": "错解订正",
+      "family": "error-correction",
+      "lesson": 1,
+      "minutes": 4
+    },
+    {
+      "slide": 10,
+      "title": "条件与参数",
+      "family": "conditions-rows",
+      "lesson": 1,
+      "minutes": 5
+    },
+    {
+      "slide": 11,
+      "title": "第一课反馈",
+      "family": "vertical-problem-set",
+      "lesson": 1,
+      "minutes": 4
+    },
+    {
+      "slide": 12,
+      "title": "交点坐标",
+      "family": "central-graph",
+      "lesson": 2,
+      "minutes": 4
+    },
+    {
+      "slide": 13,
+      "title": "方程的图像解释",
+      "family": "wide-table",
+      "lesson": 2,
+      "minutes": 4
+    },
+    {
+      "slide": 14,
+      "title": "不等式与图像",
+      "family": "wide-plot-bottom-pair",
+      "lesson": 2,
+      "minutes": 5
+    },
+    {
+      "slide": 15,
+      "title": "双线数量比较",
+      "family": "plot-left-solution-right",
+      "lesson": 2,
+      "minutes": 5
+    },
+    {
+      "slide": 16,
+      "title": "系数条件归纳",
+      "family": "wide-table",
+      "lesson": 2,
+      "minutes": 4
+    },
+    {
+      "slide": 17,
+      "title": "平移规律",
+      "family": "paired-graphs",
+      "lesson": 2,
+      "minutes": 5
+    },
+    {
+      "slide": 18,
+      "title": "坐标与面积",
+      "family": "plot-right-solution-left",
+      "lesson": 2,
+      "minutes": 5
+    },
+    {
+      "slide": 19,
+      "title": "面积问题变式",
+      "family": "two-worked-problems",
+      "lesson": 2,
+      "minutes": 4
+    },
+    {
+      "slide": 20,
+      "title": "图像综合练习",
+      "family": "vertical-problem-set",
+      "lesson": 2,
+      "minutes": 5
+    },
+    {
+      "slide": 21,
+      "title": "第二课反馈",
+      "family": "diagnosis-and-transfer",
+      "lesson": 2,
+      "minutes": 4
+    },
+    {
+      "slide": 22,
+      "title": "计费模型",
+      "family": "formula-above-table",
+      "lesson": 3,
+      "minutes": 4
+    },
+    {
+      "slide": 23,
+      "title": "方案选择",
+      "family": "plot-right-solution-left",
+      "lesson": 3,
+      "minutes": 4
+    },
+    {
+      "slide": 24,
+      "title": "分段计费",
+      "family": "wide-graph-bottom-triple",
+      "lesson": 3,
+      "minutes": 5
+    },
+    {
+      "slide": 25,
+      "title": "相向行程",
+      "family": "timeline-equations",
+      "lesson": 3,
+      "minutes": 5
+    },
+    {
+      "slide": 26,
+      "title": "数据与解析式",
+      "family": "data-derivation",
+      "lesson": 3,
+      "minutes": 4
+    },
+    {
+      "slide": 27,
+      "title": "模型的适用范围",
+      "family": "table-left-evidence-right",
+      "lesson": 3,
+      "minutes": 5
+    },
+    {
+      "slide": 28,
+      "title": "开放建模",
+      "family": "branching-method",
+      "lesson": 3,
+      "minutes": 5
+    },
+    {
+      "slide": 29,
+      "title": "综合应用",
+      "family": "integrated-material",
+      "lesson": 3,
+      "minutes": 4
+    },
+    {
+      "slide": 30,
+      "title": "单元自测",
+      "family": "six-question-grid",
+      "lesson": 3,
+      "minutes": 6
+    },
+    {
+      "slide": 31,
+      "title": "自测讲评",
+      "family": "wide-table",
+      "lesson": 3,
+      "minutes": 3
+    }
+  ]
+}

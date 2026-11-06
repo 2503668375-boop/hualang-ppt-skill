@@ -3,110 +3,12 @@
   "effect": "appear",
   "slides": [
     {
-      "slide": 5,
-      "steps": [
-        {
-          "label": "计算与坐标",
-          "objects": [
-            "reveal-s5-step1-1",
-            "reveal-s5-step1-2",
-            "reveal-s5-step1-3",
-            "reveal-s5-step1-4"
-          ]
-        },
-        {
-          "label": "描点与连线",
-          "objects": [
-            "reveal-s5-step2-1",
-            "Chart",
-            "reveal-s5-step2-3",
-            "reveal-s5-step2-4"
-          ]
-        },
-        {
-          "label": "截距与变化",
-          "objects": [
-            "reveal-s5-step3-1",
-            "reveal-s5-step3-2"
-          ]
-        },
-        {
-          "label": "变式反馈",
-          "objects": [
-            "reveal-s5-step4-1"
-          ]
-        }
-      ]
-    },
-    {
-      "slide": 6,
-      "steps": [
-        {
-          "label": "切线的完整计算",
-          "objects": [
-            "reveal-s6-step1-1",
-            "reveal-s6-step1-2",
-            "reveal-s6-step1-3"
-          ]
-        },
-        {
-          "label": "等价转化与图形",
-          "objects": [
-            "reveal-s6-step2-1",
-            "reveal-s6-step2-2",
-            "reveal-s6-step2-3",
-            "Chart"
-          ]
-        },
-        {
-          "label": "求导与最大值",
-          "objects": [
-            "reveal-s6-step3-1",
-            "reveal-s6-step3-2",
-            "reveal-s6-step3-3"
-          ]
-        },
-        {
-          "label": "参数边界",
-          "objects": [
-            "reveal-s6-step4-1",
-            "reveal-s6-step4-2",
-            "reveal-s6-step4-3"
-          ]
-        },
-        {
-          "label": "方法归纳",
-          "objects": [
-            "reveal-s6-step5-1",
-            "reveal-s6-step5-2",
-            "reveal-s6-step5-3",
-            "reveal-s6-step5-4"
-          ]
-        }
-      ]
-    },
-    {
       "slide": 7,
       "steps": [
         {
-          "label": "开头与主题",
+          "label": "解答与反馈",
           "objects": [
-            "reveal-s7-step1-1",
-            "reveal-s7-step1-2",
-            "reveal-s7-step1-3"
-          ]
-        },
-        {
-          "label": "主旨证据",
-          "objects": [
-            "reveal-s7-step2-1",
-            "reveal-s7-step2-2"
-          ]
-        },
-        {
-          "label": "材料解释",
-          "objects": [
-            "reveal-s7-step3-1"
+            "reveal-s7-step1-1"
           ]
         }
       ]
@@ -115,26 +17,31 @@
       "slide": 8,
       "steps": [
         {
-          "label": "受力与合力",
+          "label": "设式",
           "objects": [
             "reveal-s8-step1-1",
-            "reveal-s8-step1-2",
-            "reveal-s8-step1-3"
+            "reveal-s8-step1-2"
           ]
         },
         {
-          "label": "加速度与速度",
+          "label": "代入",
           "objects": [
             "reveal-s8-step2-1",
-            "reveal-s8-step2-2",
-            "reveal-s8-step2-3"
+            "reveal-s8-step2-2"
           ]
         },
         {
-          "label": "位移",
+          "label": "求解",
           "objects": [
             "reveal-s8-step3-1",
             "reveal-s8-step3-2"
+          ]
+        },
+        {
+          "label": "检验",
+          "objects": [
+            "reveal-s8-step4-1",
+            "reveal-s8-step4-2"
           ]
         }
       ]
@@ -143,10 +50,24 @@
       "slide": 9,
       "steps": [
         {
-          "label": "数据解释与证据边界",
+          "label": "开头与主题",
           "objects": [
             "reveal-s9-step1-1",
-            "reveal-s9-step1-2"
+            "reveal-s9-step1-2",
+            "reveal-s9-step1-3"
+          ]
+        },
+        {
+          "label": "主旨证据",
+          "objects": [
+            "reveal-s9-step2-1",
+            "reveal-s9-step2-2"
+          ]
+        },
+        {
+          "label": "材料解释",
+          "objects": [
+            "reveal-s9-step3-1"
           ]
         }
       ]
@@ -155,31 +76,26 @@
       "slide": 10,
       "steps": [
         {
-          "label": "Differentiate and solve",
+          "label": "受力与合力",
           "objects": [
             "reveal-s10-step1-1",
-            "reveal-s10-step1-2"
+            "reveal-s10-step1-2",
+            "reveal-s10-step1-3"
           ]
         },
         {
-          "label": "Coordinates",
+          "label": "加速度与速度",
           "objects": [
             "reveal-s10-step2-1",
-            "reveal-s10-step2-2"
+            "reveal-s10-step2-2",
+            "reveal-s10-step2-3"
           ]
         },
         {
-          "label": "Justify the classification",
+          "label": "位移",
           "objects": [
             "reveal-s10-step3-1",
             "reveal-s10-step3-2"
-          ]
-        },
-        {
-          "label": "Sketch",
-          "objects": [
-            "Chart",
-            "reveal-s10-step4-2"
           ]
         }
       ]

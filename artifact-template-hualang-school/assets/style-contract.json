@@ -68,7 +68,18 @@
     "source": "assets/source-original.pptx",
     "sourceSlide": 5,
     "assetSha256": "c6b11153809bdb1518cbb132dd2e638734d9d41309d4feccc304a6cdf89b2dd3",
-    "allowAddedContent": false
+    "allowAddedContent": true,
+    "motto": "华夏俊采，朗若星辰",
+    "allowedObjectNames": [
+      "closing-motto",
+      "closing-message"
+    ],
+    "safeArea": [
+      80,
+      170,
+      1120,
+      280
+    ]
   },
   "body": {
     "defaultColor": "222222",

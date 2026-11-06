@@ -1,0 +1,517 @@
+{
+  "schemaVersion": 1,
+  "effect": "appear",
+  "slides": [
+    {
+      "slide": 2,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s2-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s2-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 3,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s3-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s3-step2-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s3-step3-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s3-step4-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 5,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s5-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s5-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 6,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s6-step1-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 7,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s7-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s7-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 8,
+      "steps": [
+        {
+          "label": "设式",
+          "objects": [
+            "reveal-s8-step1-1",
+            "reveal-s8-step1-2"
+          ]
+        },
+        {
+          "label": "代入",
+          "objects": [
+            "reveal-s8-step2-1",
+            "reveal-s8-step2-2"
+          ]
+        },
+        {
+          "label": "求解",
+          "objects": [
+            "reveal-s8-step3-1",
+            "reveal-s8-step3-2"
+          ]
+        },
+        {
+          "label": "检验",
+          "objects": [
+            "reveal-s8-step4-1",
+            "reveal-s8-step4-2"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 9,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s9-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s9-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 10,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s10-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s10-step2-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s10-step3-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s10-step4-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s10-step5-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s10-step6-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 11,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s11-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s11-step2-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s11-step3-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 12,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s12-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s12-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 13,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s13-step1-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 14,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s14-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s14-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 15,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s15-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s15-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 16,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s16-step1-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 17,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s17-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s17-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 18,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s18-step1-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 19,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s19-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s19-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 20,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s20-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s20-step2-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s20-step3-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 21,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s21-step1-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 22,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s22-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s22-step2-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s22-step3-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 23,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s23-step1-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 24,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s24-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s24-step2-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s24-step3-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 25,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s25-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s25-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 26,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s26-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s26-step2-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s26-step3-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 27,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s27-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s27-step2-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 28,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s28-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s28-step2-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s28-step3-1"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 29,
+      "steps": [
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s29-step1-1"
+          ]
+        },
+        {
+          "label": "解答与反馈",
+          "objects": [
+            "reveal-s29-step2-1"
+          ]
+        }
+      ]
+    }
+  ]
+}

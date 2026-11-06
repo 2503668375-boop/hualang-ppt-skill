@@ -14,8 +14,8 @@ export const profiles = Object.freeze({
   lessonPlan:{title:28,body:20,summary:21,table:19},
   classroom:{title:30,body:25,summary:25,table:23},
   worksheet:{title:28,body:24,summary:24,table:22},
-  parent:{title:34,body:28,summary:28,table:24},
-  stage:{title:52,body:30,summary:30,table:26},
+  parent:{title:28,body:28,summary:28,table:24},
+  stage:{title:28,body:30,summary:30,table:26},
 });
 const noLine = {fill: 'none', width: 0};
 
@@ -124,6 +124,7 @@ export function chart(slide, type, options, {font, zhFont = fonts.zh, latinFont 
   // xAxis for categories and yAxis for values. Scatter uses two numeric axes.
   if (type === 'scatter' || type === 'bubble') c.xAxis.textStyle.typeface = font ?? latinFont;
   if (c.yAxis?.textStyle) c.yAxis.textStyle.typeface = font ?? latinFont;
+  options.series?.forEach((s,i)=>{if(s.dataLabels)c.series.getItemAt(i).dataLabels.textStyle.typeface=font ?? latinFont;});
   if (c.dataLabels?.textStyle && !options.dataLabels?.showCategoryName && !options.dataLabels?.showSeriesName) {
     c.dataLabels.textStyle.typeface = font ?? latinFont;
   }
@@ -144,7 +145,8 @@ export function arrow(slide, {from, to, fromSide = 'right', toSide = 'left',
 }
 
 export async function createDeck({skillDir, title, subtitle = '', subtitlePurpose = '', presenter, date,
-  zhFont = fonts.zh, latinFont = fonts.latin, mathFont = 'Times New Roman'}) {
+  zhFont = fonts.zh, latinFont = fonts.latin, mathFont = 'Times New Roman',
+  closingText = '汇报完毕，敬请指导', closingMotto = '华夏俊采，朗若星辰'}) {
   if (!skillDir || !title) throw new Error('createDeck requires skillDir and the actual title.');
   if (!String(presenter ?? '').trim() || !String(date ?? '').trim()) {
     throw new Error('封面必须提供汇报人和汇报时间；缺项应明确核实，不能静默留空。');
@@ -169,6 +171,8 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
   if (!presentation.slides.items[closingIndex]) throw new Error('原模板封尾缺失。');
   presentation.slides.keep([0,closingIndex]);
   const closing = presentation.slides.items[1];
+  deckText(closing,closingMotto,{x:100,y:220,w:1080,h:74,size:48,bold:true,color:colors.white,align:'center',name:'closing-motto'});
+  deckText(closing,closingText,{x:100,y:340,w:1080,h:52,size:28,color:colors.white,align:'center',name:'closing-message'});
   const ensureClosing = () => {
     if (!presentation.slides.items.includes(closing)) throw new Error('固定封尾被移除，请恢复原模板封尾。');
     presentation.slides.reorder([...presentation.slides.items.filter(s=>s!==closing).map(s=>s.id),closing.id]);
@@ -232,6 +236,9 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     return slide;
   }
 
+  function addSchoolScene({title,summary='',section=''}) {
+    return addPage({title,summary,section,purpose:'report'});
+  }
   function addReportPage({title, summary, section = ''}) {
     const slide=addPage({title,summary,section,purpose:'report'});
     return {slide,areas:{evidence:{x:48,y:196,w:1184,h:356},note:{x:48,y:572,w:1184,h:80}}};
@@ -339,35 +346,113 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     return [top,rule,bottom];
   }
 
-  async function addStage({title: pageTitle, subtitle: sub = '', section = '',
-    imagePath, imageAlt, heading = '', titleSize = imagePath ? 52 : 60,
-    subtitleSize = imagePath ? 28 : 30, brandBacking = true,
-    stageLayout = 'split', imageFit = 'contain'}) {
-    if (!pageTitle) throw new Error('addStage requires the actual page title.');
-    if (heading) assertTopicTitle(heading);
-    if (/(^先|先.+再|然后|接着)/.test(pageTitle)) throw new Error('演讲主句不采用流程口播句式。');
-    const slide = addContentSlide();
-    slide.background.fill = colors.purple;
-    if (imagePath && stageLayout === 'split') {
-      await image(slide,imagePath,{x:538,y:142,w:694,h:472,alt:imageAlt,fit:imageFit});
-      deckText(slide,pageTitle,{x:48,y:240,w:448,h:182,size:titleSize,color:colors.white,bold:true});
-      line(slide,{x:48,y:453,w:140,color:colors.gold,width:2});
-      if(sub) deckText(slide,sub,{x:48,y:496,w:448,h:140,size:subtitleSize,color:colors.white});
-    } else if (imagePath) {
-      if(stageLayout !== 'banner') throw new Error('stageLayout must be split or banner.');
-      await image(slide, imagePath, {x: 0, y: 0, w: 1280, h: 480, alt: imageAlt, fit:imageFit});
-      deckText(slide, pageTitle, {x: 55, y: 510, w: 1170, h: 92, size: titleSize, color: colors.white, bold: true});
-      if (sub) deckText(slide, sub, {x: 59, y: 615, w: 1100, h: 56, size: subtitleSize, color: colors.white});
-      if (brandBacking) slide.shapes.add({geometry: 'rect', name: 'brand-backing',
-        position: {left: 1080, top: 12, width: 165, height: 74}, fill: colors.purple, line: noLine});
-    } else {
-      line(slide, {x: 60, y: 159, w: 1160, color: colors.gold, width: 2});
-      deckText(slide, pageTitle, {x: 60, y: 250, w: 1130, h: 244, size: titleSize, color: colors.white, bold: true});
-      if (sub) deckText(slide, sub, {x: 64, y: 555, w: 1110, h: 104, size: subtitleSize, color: colors.gold});
+  function schoolIcon(slide,kind,{x,y,size=52,color=colors.purple,badge=false,fill=colors.purple}={}){
+    const out=[],scale=size/64;
+    if(badge)out.push(slide.shapes.add({geometry:'ellipse',position:{left:x-13*scale,top:y-13*scale,width:size+26*scale,height:size+26*scale},fill,line:noLine}));
+    const stroke=badge?colors.white:color;
+    const ln=(a,b,c,d)=>out.push(slide.shapes.add({geometry:'custom',position:{left:x,top:y,width:size,height:size},fill:'none',line:{fill:stroke,width:2.4*scale},customPaths:[{width:64,height:64,commands:[{moveTo:{x:a,y:b}},{lineTo:{x:c,y:d}}]}]}));
+    const rect=(a,b,w,h)=>out.push(slide.shapes.add({geometry:'rect',position:{left:x+a*scale,top:y+b*scale,width:w*scale,height:h*scale},fill:'none',line:{fill:stroke,width:2.4*scale}}));
+    const circle=(a,b,r)=>out.push(slide.shapes.add({geometry:'ellipse',position:{left:x+(a-r)*scale,top:y+(b-r)*scale,width:r*2*scale,height:r*2*scale},fill:'none',line:{fill:stroke,width:2.4*scale}}));
+    const poly=(p,closed=false)=>out.push(slide.shapes.add({geometry:'custom',position:{left:x,top:y,width:size,height:size},fill:'none',line:{fill:stroke,width:2.4*scale},customPaths:[{width:64,height:64,commands:[{moveTo:{x:p[0][0],y:p[0][1]}},...p.slice(1).map(v=>({lineTo:{x:v[0],y:v[1]}})),...(closed?[{close:{}}]:[])]}]}));
+    if(kind==='book'){poly([[8,15],[27,15],[32,20],[37,15],[56,15],[56,51],[37,51],[32,56],[27,51],[8,51]],true);ln(32,20,32,56);ln(14,25,25,25);ln(14,32,25,32);ln(39,25,50,25);ln(39,32,50,32);}
+    else if(kind==='people'){circle(24,18,9);circle(46,21,7);poly([[7,54],[7,43],[14,34],[34,34],[41,43],[41,54]],false);poly([[42,36],[50,36],[57,44],[57,54]],false);}
+    else if(kind==='target'){circle(32,32,23);circle(32,32,14);circle(32,32,4);ln(32,32,54,10);poly([[45,10],[54,10],[54,19]],false);}
+    else if(kind==='globe'){circle(32,32,24);out.push(slide.shapes.add({geometry:'ellipse',position:{left:x+21*scale,top:y+8*scale,width:22*scale,height:48*scale},fill:'none',line:{fill:stroke,width:2*scale}}));ln(8,32,56,32);ln(13,19,51,19);ln(13,45,51,45);}
+    else if(kind==='chart'){ln(9,9,9,56);ln(9,56,59,56);rect(17,35,8,21);rect(32,24,8,32);rect(47,12,8,44);}
+    else if(kind==='cap'){poly([[6,24],[32,10],[58,24],[32,38]],true);poly([[17,31],[17,45],[32,52],[47,45],[47,31]],false);ln(58,24,58,47);circle(58,50,3);}
+    else if(kind==='case'){rect(7,21,50,33);poly([[22,21],[22,12],[42,12],[42,21]],false);ln(7,35,57,35);rect(28,31,8,9);}
+    else if(kind==='calendar'){rect(8,14,48,43);ln(8,27,56,27);ln(19,7,19,21);ln(45,7,45,21);rect(18,35,8,8);rect(36,35,8,8);}
+    else if(kind==='science'){poly([[23,8],[41,8],[41,13],[37,13],[37,27],[53,52],[50,57],[14,57],[11,52],[27,27],[27,13],[23,13]],true);ln(19,42,45,42);circle(32,48,2);}
+    else throw new Error('Unknown school icon '+kind);
+    return out;
+  }
+  function numberBadge(slide,label,{x,y,size=56,fill=colors.purple,color=colors.white}={}){
+    return [slide.shapes.add({geometry:'ellipse',position:{left:x,top:y,width:size,height:size},fill,line:noLine}),deckText(slide,label,{x,y:y+size*.23,w:size,h:size*.5,size:size*.35,bold:true,color,font:latinFont,align:'center'})];
+  }
+  function iconLabel(slide,kind,title,body,{x,y,w=340,iconSize=42,fill=colors.purple}={}){
+    const out=schoolIcon(slide,kind,{x:x+10,y:y+10,size:iconSize,badge:true,fill});
+    out.push(deckText(slide,title,{x:x+iconSize+38,y:y-1,w:w-iconSize-38,h:42,size:27,bold:true,color:colors.purple}));
+    if(body)out.push(deckText(slide,body,{x:x+iconSize+38,y:y+48,w:w-iconSize-38,h:70,size:22,color:colors.ink}));return out;
+  }
+  function sectionRule(slide,label,{x=48,y=109,w=1184,size=41}={}){
+    const out=[slide.shapes.add({geometry:'rect',position:{left:x,top:y+5,width:7,height:46},fill:colors.purple,line:noLine}),deckText(slide,label,{x:x+23,y,w:w-23,h:66,size,bold:true,color:colors.purple})];return out;
+  }
+  function photoLabel(slide,label,{x,y,w,h=42,fill=colors.purple}={}){
+    return [slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:w,height:h},fill,line:noLine}),deckText(slide,label,{x:x+17,y:y+9,w:w-34,h:h-12,size:20,bold:true,color:colors.white})];
+  }
+  function pointBand(slide,items,{x=48,y=570,w=1184,h=90,fill=colors.purple}={}){
+    const out=[slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:w,height:h},fill,line:noLine})],cw=w/items.length;
+    items.forEach((it,i)=>{const sx=x+i*cw;out.push(...schoolIcon(slide,it.icon,{x:sx+30,y:y+25,size:40,color:colors.white}),deckText(slide,it.text,{x:sx+92,y:y+27,w:cw-118,h:45,size:27,bold:true,color:colors.white}));if(i)out.push(line(slide,{x:sx,y:y+20,w:0,h:h-40,color:'#796A91',width:1}));});return out;
+  }
+
+  function purpleRibbon(slide,label,{x,y,w,h=54,size=25,fill=colors.purple}={}){
+    const bg=slide.shapes.add({geometry:'parallelogram',position:{left:x,top:y,width:w,height:h},fill,line:noLine});
+    const tx=deckText(slide,label,{x:x+28,y:y+(h-size*1.2)/2,w:w-56,h:size*1.35,size,bold:true,color:colors.white});return [bg,tx];
+  }
+  function lightFrame(slide,{x,y,w,h,offset=15,color=colors.purple}={}){
+    return [line(slide,{x,y,w,color,width:3}),line(slide,{x,y,w:0,h,color,width:3}),
+      line(slide,{x:x+w,y:y+offset,w:0,h:h-offset,color,width:3}),
+      line(slide,{x:x+offset,y:y+h,w:w-offset,color,width:3}),
+      line(slide,{x:x-offset,y:y+offset,w:0,h:h-2*offset,color:colors.gold,width:5})];
+  }
+  function focusPanel(slide,{x,y,w,h,kicker='',main,detail='',size=42}={}){
+    const out=[slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:w,height:h},fill:colors.purple,line:noLine})];
+    if(kicker)out.push(deckText(slide,kicker,{x:x+28,y:y+23,w:w-56,h:30,size:20,color:colors.gold}));
+    out.push(deckText(slide,main,{x:x+28,y:y+(kicker?70:26),w:w-56,h:h-(detail?95:40),size,bold:true,color:colors.white}));
+    if(detail)out.push(deckText(slide,detail,{x:x+28,y:y+h-60,w:w-56,h:42,size:20,color:colors.white}));return out;
+  }
+  function numberFlag(slide,value,label,{x,y,w=315,h=300,caption=''}={}){
+    const out=[slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:w,height:h},fill:colors.purple,line:noLine}),line(slide,{x:x+25,y:y+30,w:65,color:colors.gold,width:4}),
+      deckText(slide,value,{x:x+25,y:y+55,w:w-50,h:135,size:96,bold:true,color:colors.white,font:latinFont}),
+      deckText(slide,label,{x:x+25,y:y+198,w:w-50,h:60,size:30,bold:true,color:colors.white})];
+    if(caption)out.push(deckText(slide,caption,{x:x+25,y:y+h-43,w:w-50,h:31,size:18,color:colors.white}));return out;
+  }
+  function starOrbit(slide,{cx,cy,r=170,main='每生\n一案',nodes=[]}={}){
+    const out=[slide.shapes.add({geometry:'ellipse',position:{left:cx-r,top:cy-r,width:r*2,height:r*2},fill:'none',line:{fill:colors.gold,width:2}}),
+      slide.shapes.add({geometry:'ellipse',position:{left:cx-109,top:cy-109,width:218,height:218},fill:colors.purple,line:noLine}),
+      deckText(slide,main,{x:cx-95,y:cy-62,w:190,h:145,size:43,bold:true,color:colors.white,align:'center'})];
+    for(const n of nodes){const a=n.angle*Math.PI/180,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;
+      out.push(slide.shapes.add({geometry:'ellipse',position:{left:x-11,top:y-11,width:22,height:22},fill:colors.purple,line:{fill:colors.paper,width:3}}),deckText(slide,n.text,{x:n.tx,y:n.ty,w:n.tw??230,h:45,size:27,bold:true,color:colors.purple,align:n.align??'center'}));
+    }return out;
+  }
+  function stepBands(slide,stages,{x=48,y=520,w=1184,rise=52,boxHeight=122}={}){
+    const gap=20,cw=(w-gap*(stages.length-1))/stages.length,out=[];
+    stages.forEach((st,i)=>{const sx=x+i*(cw+gap),sy=y-i*rise;
+      out.push(slide.shapes.add({geometry:'rect',position:{left:sx,top:sy,width:cw,height:boxHeight},fill:i<2?'#796A91':colors.purple,line:noLine}),
+        deckText(slide,st.title,{x:sx+20,y:sy+20,w:cw-40,h:48,size:32,bold:true,color:colors.white}),
+        deckText(slide,st.body,{x:sx+20,y:sy+76,w:cw-40,h:36,size:21,color:colors.white}));
+      if(i<stages.length-1)out.push(line(slide,{x:sx+cw,y:sy+boxHeight/2,w:gap,color:colors.gold,width:3}));
+    });return out;
+  }
+  function evidenceStrip(slide,label,body,{x=48,y=608,w=1184,h=52}={}){
+    const labelW=190;return [slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:labelW,height:h},fill:colors.purple,line:noLine}),
+      deckText(slide,label,{x:x+18,y:y+12,w:labelW-36,h:33,size:23,bold:true,color:colors.white}),
+      line(slide,{x:x+labelW,y:y+h,w:w-labelW,color:colors.purple,width:2}),
+      deckText(slide,body,{x:x+labelW+22,y:y+11,w:w-labelW-30,h:36,size:23,color:colors.ink})];
+  }
+  function facetCorner(slide,{x,y,w=220,h=100,color=colors.purple}={}){
+    return slide.shapes.add({geometry:'parallelogram',position:{left:x,top:y,width:w,height:h},fill:color,line:noLine});
+  }
+
+  async function addCanvas({purpose='stage',section=''}={}) {
+    const slide=addContentSlide();pageProfiles.set(slide.id,purpose);
+    slide.background.fill=colors.paper;
+    await brand(slide,false);
+    if(section) footer(slide,section,false);
+    return slide;
+  }
+  async function addStage({title:pageTitle,subtitle:sub='',section='',imagePath,imageAlt,
+    titleSize=76,subtitleSize=28,stageLayout=imagePath?'hero':'statement',imageFit='cover'}) {
+    if(!pageTitle) throw new Error('addStage requires the actual main phrase.');
+    const slide=await addCanvas({purpose:'stage',section});
+    if(imagePath){
+      await image(slide,imagePath,{x:48,y:190,w:1184,h:456,alt:imageAlt,fit:imageFit});
+      deckText(slide,pageTitle,{x:48,y:92,w:1184,h:90,size:titleSize,bold:true,color:colors.ink,name:'stage-phrase'});
+      if(sub) deckText(slide,sub,{x:48,y:654,w:1130,h:28,size:18,color:colors.secondary});
+    }else{
+      deckText(slide,pageTitle,{x:80,y:215,w:1120,h:240,size:titleSize,bold:true,color:colors.ink,name:'stage-phrase',align:stageLayout==='statement'?'center':'left'});
+      if(sub) deckText(slide,sub,{x:90,y:510,w:1100,h:95,size:subtitleSize,color:colors.secondary,align:'center'});
     }
-    await brand(slide, true);
-    if (heading) deckText(slide, heading, {x:48,y:32,w:900,h:50,size:32,color:colors.white,bold:true,name:'scene-title'});
-    footer(slide, section, true);
     return slide;
   }
   async function writeDraft({candidatePath, renderDir, scale = 1.5}) {
@@ -388,6 +473,6 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     return {candidatePath, renderPaths, slideCount: presentation.slides.items.length};
   }
   return {presentation, cover, closing, lessonBand, methodStrip, stepMarker, addLessonPlanPage, addPage, addReportPage, addLessonPage, addParentPage, addStage, addMathPage,
-    addPhotoEssay,addEditorial,registerReveal,writeRevealManifest,fraction,text: deckText,image,
+    addPhotoEssay,addEditorial,addCanvas,addSchoolScene,schoolIcon,numberBadge,iconLabel,sectionRule,photoLabel,pointBand,purpleRibbon,lightFrame,focusPanel,numberFlag,starOrbit,stepBands,evidenceStrip,facetCorner,registerReveal,writeRevealManifest,fraction,text: deckText,image,
     nativeTable: deckTable, chart: deckChart, line, arrow, writeDraft};
 }

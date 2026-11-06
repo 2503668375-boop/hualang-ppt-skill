@@ -16,7 +16,7 @@ except Exception:
 spec=importlib.util.spec_from_file_location('contract',here/'check_style_contract.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 c=json.loads((here.parent/'assets/style-contract.json').read_text())
 with zipfile.ZipFile(source) as z:
- last=m.slide_parts(z)[-1];check=m.closing_check(z,last,c['closing']['assetSha256'])
+ last=m.slide_parts(z)[-1];check=m.closing_check(z,last,c['closing']['assetSha256'],c['closing'])
 allowed=[];remaining=[]
 for finding in report.get('findings',[]):
  if finding.get('code')=='slide_has_no_drawable_objects' and finding.get('part')==last and check['passed']:

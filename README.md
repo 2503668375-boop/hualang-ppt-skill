@@ -1,56 +1,40 @@
 # 华朗学校汇报与教学 Skill
 
-当前版本 **v6.0**。按华朗固定品牌制作内部汇报，以及初中、高中、国际高中的分学科教案与课件；家长招生和对外演讲采用对应的图文表达。
+当前版本 **v7.0**。用于华朗内部汇报、分学科教案与课件、家长成果反馈、招生说明和对外交流。各场景沿用既定华朗正文模板，按实际材料安排密度与组件。
 
-## V6重点
+## 本版改动
 
-- **先研究、审改技能，再生成案例**：依据真实教案与教学资料，结合用户要求和已验证的公司汇报方法，重审规则、工具及验收。见[调研与全局审查](docs/v6-research-and-review.md)。
-- **学段×学科×用途**：教师教案、课堂讲解、练习、内部审议和对外展示分别组织。教案写清目标、具体活动、预期回应、评价和调整。
-- **完整内容与合适密度**：短题可以成组，常规例题可保留完整解答与变式。一页放多少由题长、图形、推理与观看方式决定，不统一成大字号提词页。
-- **紫色搭配、黑色阅读**：紫色用于标题、任务带、方法提示、步骤与表头；普通正文和公式黑色，少量红色强调，深蓝用于分析图形。
-- **可调用教学组件与原生揭示**：任务带、步骤、方法条、原生表图及图文区域可复用；答案、曲线和批注按点击出现。
-- **固定首尾与全局检查**：封面默认一个主标题，汇报人与时间左下同组；保留原模板封尾。检查真实行高、断行、符号、裁切与动画各状态。
+- **保留原模板框架**：左标题、右校徽、金色分隔线和近白正文底保持一致，版式变化发生在正文区。
+- **提高有效内容密度**：同页保留材料、解释、比较和条件。教学短题成组、完整解答尽量同屏；不靠大字和空白增加页数。
+- **区分家长与招生任务**：家长成果保留同口径数据、作品改进与家校支持；招生活动的体验、课程选择和办理信息分别组织。
+- **华朗紫组件组合**：根据用户指定研究深大公开模板的主题色方法，新增9类原生线性图标、编号、图标说明、图片色标和横向要点带，与蜂窝关系、比较矩阵、主次照片、指标和曲线路径配合。
+- **连续长稿验证**：新增32页《一次函数单元复习》，含30页正文，三课时计划各45分钟。检查相邻重复、四页循环、完整题解和揭示状态；实际课时仍须按学情调整。
+- **封底完整收束**：保留原底图，加入“华夏俊采，朗若星辰”及场合结束语。该句为培养目标；校训为“春华秋实，弘朗日新”。
 
-## 分学科规则
+## 下载与预览
 
-| 范围 | 参考 |
-|---|---|
-| 教师教案、课堂、练习、说课 | [教学设计与单页容量](artifact-template-hualang-school/references/teaching-design.md) |
-| 初中 | [语数英、理化生、史地道法、技术与艺体](artifact-template-hualang-school/references/junior-subjects.md) |
-| 高中 | [完整推理、综合材料、模型与证据](artifact-template-hualang-school/references/senior-subjects.md) |
-| 国际高中 | [课程体系、层级、考试年与各学科表达](artifact-template-hualang-school/references/international-subjects.md) |
-| 数学题库 | [给题、给章节、题库整理与解答揭示](artifact-template-hualang-school/references/math-teaching.md) |
-| 学校内部汇报 | [概论、依据、图表、条件与落实](artifact-template-hualang-school/references/internal-report.md) |
-| 家长与对外 | [照片、作品、数字与适用条件](artifact-template-hualang-school/references/parent-admissions.md) |
+[![场景预览](demo/scene-comparison.png)](demo/hualang-skill-introduction.pptx?raw=true)
 
-## 介绍与示例
+- [26页技能介绍与场景示范](demo/hualang-skill-introduction.pptx?raw=true)
+- [32页连续教学实测](demo/linear-functions-32.pptx?raw=true)
+- [完整仓库ZIP](https://github.com/2503668375-boop/hualang-ppt-skill/archive/refs/heads/main.zip)
 
-[![V6介绍预览](demo/overview.jpg)](demo/hualang-skill-introduction.pptx?raw=true)
+介绍稿第6页为教师教案，第7—11页为课堂与学科示例，第12—13页为内部汇报，第14—16页为家长成果反馈，第17—22页为校园、培养、招生与交流案例，第23—25页说明组件和使用，第26页为固定封底。公开业务数据与原创题例均标明性质；实际活动、照片和校情附必要出处。
 
-[下载18页介绍PPT](demo/hualang-skill-introduction.pptx?raw=true) · [下载教学点击预览HTML](demo/teaching-preview.html?raw=true)
+## 使用
 
-第4页为教师教案；第5—10页为初中数学、高中数学、语文、物理、生物及国际数学；第11页为国际经济材料分析；第13—14页为内部管理/资源汇报；第15—16页为家长与演讲。最后一页为原固定封尾。
-
-HTML下载后用浏览器打开，可前进、返回和重置。它展示对应PPT的逐步画面，不等于PowerPoint应用内放映测试。现行场景库保留同一完整演示，避免在裁取页面时丢失动画或图表数据。
-
-![现行场景](demo/scene-comparison.png)
-
-## 安装与调用
-
-首次在支持本地技能的Codex环境发送：
+首次安装时发送：
 
 > 从 https://github.com/2503668375-boop/hualang-ppt-skill 安装 artifact-template-hualang-school，保留完整模板和素材。
 
-[下载完整仓库ZIP](https://github.com/2503668375-boop/hualang-ppt-skill/archive/refs/heads/main.zip) · [安装说明](artifact-template-hualang-school/references/getting-started.md)
+制作时附上实际材料，说明用途、听众、学段学科、课时或汇报目标，以及署名和日期。例如：
 
-调用示例：
+> 用华朗学校汇报技能，把附件做成家长会成果反馈。保留同口径变化、匿名作品对照、原因和支持安排，沿用华朗正文模板，相关内容尽量同页。
 
-> 用华朗学校汇报技能，按附件设计高三导数复习课。先给教师的课时教案，再制作学生课件。完整题干、解答和函数图尽量同页，答案按关键推理点击出现，署名与日期按附件。
+> 用华朗学校汇报技能制作初中一次函数复习课。完整题干、推理和变式尽量同屏，答案按关键步骤揭示，另给教师的活动与评价安排。
 
-> 用华朗学校汇报技能，把方案与报价做成校务会审议稿。保留正式概论、同口径依据、图表、费用范围与责任节点，不改变已定和待定状态。
+## 规则与验证
 
-## 规则和验证
+[技能入口](artifact-template-hualang-school/SKILL.md) · [单页容量](artifact-template-hualang-school/references/teaching-design.md) · [长篇编排](artifact-template-hualang-school/references/longform-layout.md) · [家长与招生](artifact-template-hualang-school/references/parent-admissions.md) · [深大样例研究与华朗应用](artifact-template-hualang-school/references/szu-reference.md) · [制作API](artifact-template-hualang-school/references/production-api.md) · [本轮验证](tests/v7-validation.md)
 
-[技能入口](artifact-template-hualang-school/SKILL.md) · [视觉规范](artifact-template-hualang-school/references/design.md) · [制作API](artifact-template-hualang-school/references/production-api.md) · [固定首尾](artifact-template-hualang-school/references/cover-layout.md) · [本轮验证](tests/v6-validation.md) · [研究依据](artifact-template-hualang-school/references/research-basis.md)
-
-公开题例和业务数据均有示例标识，生成情境图不代表学校实际活动或成果。实际课程体系、教材与考试年须按任务核实。已检查最终文件、页面与动画状态，未完成Microsoft PowerPoint应用内放映或真实教室投影测试。历史V4/V5记录保留，但当前规范以V6为准。
+已检查保存后的文件、页面、品牌框架、相邻构图和揭示状态；未完成 Microsoft PowerPoint 应用内放映或真实教室投影测试。示例可用于理解方法，具体课程、活动、招生条件与数据须按实际任务更新。历史版本记录保留，当前以v7.0规则及上述两份案例为准。

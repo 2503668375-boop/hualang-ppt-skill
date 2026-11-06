@@ -30,7 +30,7 @@ def slide_parts(z):
  rel={rid:dest for rid,typ,dest in relationships(z,'ppt/presentation.xml') if typ=='slide'}
  return [rel[s.get('{'+NS['r']+'}id')] for s in E.fromstring(z.read('ppt/presentation.xml')).find('p:sldIdLst',NS)]
 
-def closing_check(z,part,expected_sha):
+def closing_check(z,part,expected_sha,contract=None):
  root=E.fromstring(z.read(part));tree=root.find('p:cSld/p:spTree',NS)
  added=[n.tag.rsplit('}',1)[-1] for n in tree if n.tag.rsplit('}',1)[-1] not in ['nvGrpSpPr','grpSpPr']]
  seen=set();hashes=[]
@@ -41,7 +41,17 @@ def closing_check(z,part,expected_sha):
    if typ=='image':hashes.append(hashlib.sha256(z.read(dest)).hexdigest())
    elif typ in ['slideLayout','slideMaster']:walk(dest)
  walk(part)
- return {'original_asset_present':expected_sha in hashes,'added_objects':added,'passed':expected_sha in hashes and not added}
+ obs=shapes(z.read(part));valid=not added;detail=[]
+ if contract and contract.get('allowAddedContent'):
+  names=[o['name'] for o in obs];valid=sorted(names)==sorted(contract['allowedObjectNames']) and len(added)==2
+  for ob in obs:
+   x,y,w,h=ob['position'] or [-1,-1,-1,-1]
+   sx,sy,sw,sh=contract['safeArea']
+   valid=valid and x>=sx and y>=sy and x+w<=sx+sw and y+h<=sy+sh
+   if ob['name']=='closing-motto':valid=valid and ob['text']==contract['motto']
+   if ob['name']=='closing-message':valid=valid and bool(ob['text'].strip())
+   detail.append({'name':ob['name'],'text':ob['text']})
+ return {'original_asset_present':expected_sha in hashes,'added_objects':added,'text':detail,'passed':expected_sha in hashes and valid}
 
 def check(pptx,c,title,presenter,date,template=False,allow_titles=(),allow_subtitle=False):
  errors=[];headers=[]
@@ -64,8 +74,8 @@ def check(pptx,c,title,presenter,date,template=False,allow_titles=(),allow_subti
     if t in allow_titles:continue
     units=len(re.findall(r'[\u3400-\u9fff]|[A-Za-z0-9]+',t))
     if units>c['heading']['maxUnits'] or re.search(r'[：:？?，,；;]',t) or any(re.search(p,t) for p in c['heading']['forbiddenPatterns']):errors.append(f'第{number}页题名不符合规范：{t}')
-  closing=closing_check(z,parts[-1],c['closing']['assetSha256'])
-  if not closing['passed']:errors.append('最后一页未完整保留原模板封尾，或添加了自拟内容')
+  closing=closing_check(z,parts[-1],c['closing']['assetSha256'],c['closing'])
+  if not closing['passed']:errors.append('封尾原图、培养目标、结束语或安全区不符合规范')
  return {'ok':not errors,'cover_expected':expected,'headings':headers,'closing':closing,'errors':errors,'scope':'首尾、字段、位置及已命名标题；仍需人工检查内容、重复语义、密度和视觉'}
 
 def main():

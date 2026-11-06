@@ -1,4 +1,6 @@
-# 原生制作工具 V6
+# 原生制作工具 V7
+
+常规华朗内容页先使用 `addPage`；家长、招生与对外材料也可使用 `addSchoolScene({title,summary,section})`，它保留同一页眉、校徽、分隔线与正文底。组件在正文内组合，标题/说明/材料尽量同屏，不自动切换另一套整页模板。
 
 `scripts/hualang-kit.mjs` 使用当前可用的 `@oai/artifact-tool`，封面与封尾均从原始模板保留。调用者决定内容、学科与具体构图，工具提供用途对应的默认值。
 
@@ -26,8 +28,8 @@ await deck.writeDraft({candidatePath,renderDir});
 | lessonPlan | 28 | 20 | 21 | 教师教案/备课 |
 | classroom | 30 | 25 | 25 | 学生课堂 |
 | worksheet | 28 | 24 | 24 | 练习题组 |
-| parent | 34 | 28 | 28 | 家长现场/招生 |
-| stage | 52 | 30 | 30 | 舞台表达 |
+| parent | 28 | 28 | 28 | 家长现场/招生 |
+| stage | 28 | 30 | 30 | 舞台表达 |
 
 `deck.text` 对通过入口创建的页面采用对应正文起点，可按真实材料显式调整。正文默认 `colors.ink`，标题和教学组件用 `colors.purple` / `colors.pale`，重点 `colors.red`，分析图形 `colors.blue`。字号起点不等于配额，见[教学设计](teaching-design.md)及[视觉规范](design.md)。
 
@@ -36,6 +38,7 @@ await deck.writeDraft({candidatePath,renderDir});
 | 方法 | 返回与用途 |
 |---|---|
 | `addPage({title,purpose,summary,section,titleSize})` | 普通页，单题名；summary为正文层级概论 |
+| `addSchoolScene({title,summary,section})` | 保留固定正文框架，用于家长、招生与对外交流 |
 | `addReportPage({title,summary,section})` | 题名、概论、依据与落实区域，内部完整论证 |
 | `addLessonPlanPage({title,section})` | context、sequence、assessment三个区域；可以按具体学科改变安排 |
 | `addMathPage({title,mode,purpose,section})` | mode为single/pair/proof，分别给完整题干+推导/图形、双题或通栏推导 |
@@ -77,6 +80,41 @@ python3 scripts/apply_reveals.py base.pptx reveals.json state0.pptx --state 0
 
 任务/步骤/方法是内容组织，不能代替完整题目、论证或活动。组件只在对应信息存在时使用。可将返回对象登记为同一揭示步骤。场景选择决定组合，不强制全稿套一套条带。
 
-演讲图文默认stageLayout=split、imageFit=contain，优先完整保留人物与动作。只有适合宽幅裁切的素材才用banner/cover，必须实看人脸、手部和证据未被裁掉。
+图片按具体场景选择contain或cover，并实看人物、动作、关键证据和原图署名；图像裁切不能破坏内容。常规对外页面使用addSchoolScene保留原模板。
 
 `createDeck`用于完整稿。单页或局部任务可从品牌正文页起稿并按用户指定页数导出，保留正文品牌；不强加完整稿的封面封尾。
+
+## V7连续稿与封尾
+
+`createDeck({...,closingText:"感谢聆听，期待同行"})`保留封尾原底图并叠加培养目标与结束语。每页登记实际构图并调用序列审查脚本，不仅使用一种题干条或两栏。低层开放画布与舞台接口只为用户明确要求的局部特殊设计保留，不作为常规页入口。
+
+
+## V7紫色组件接口
+
+所有接口接受slide并返回可编辑对象（或对象数组）。
+
+```js
+deck.purpleRibbon(slide,'课程体验',{x:48,y:200,w:330,h:64,size:28});
+deck.lightFrame(slide,{x:440,y:120,w:790,h:520});
+deck.focusPanel(slide,{x:48,y:350,w:440,h:260,kicker:'实际事件',main:'核心主张',detail:'具体支持'});
+deck.numberFlag(slide,'50+','参展高校',{x:48,y:220,w:315,h:324,caption:'统计范围与时间'});
+deck.starOrbit(slide,{cx:960,cy:410,r:165,main:'每生\n一案',nodes:[{angle:-90,text:'成长目标',tx:850,ty:195}]});
+deck.stepBands(slide,[{title:'阶段一',body:'具体内容'},{title:'阶段二',body:'具体内容'}],{x:48,y:500,w:1184,rise:50});
+deck.evidenceStrip(slide,'事实类别','完整的关键事实',{x:48,y:610,w:1184,h:52});
+deck.facetCorner(slide,{x:48,y:540,w:220,h:100});
+```
+
+数值和示例词替换成本次真实内容，不复制示例事件作当期事实。浅色内容与深紫组件要保持对比；画布边界、标签和原图署名仍逐页检查。
+
+## 编号、图标与图文组合
+
+| 接口 | 用途 |
+|---|---|
+| `schoolIcon(slide,kind,{x,y,size,color,badge,fill})` | 原生线性图标；kind为book/people/target/globe/chart/cap/case/calendar/science |
+| `numberBadge(slide,label,{x,y,size,fill,color})` | 圆形编号或短符号，不代表占比 |
+| `iconLabel(slide,kind,title,body,{x,y,w,iconSize,fill})` | 图标、短标题和必要说明就近组合 |
+| `photoLabel(slide,label,{x,y,w,h,fill})` | 图片图注或主题色标 |
+| `pointBand(slide,items,{x,y,w,h,fill})` | 横向主题组，items包含icon/text |
+| `sectionRule(slide,label,{x,y,w,size})` | 无既定页眉的局部标题工具；常规正文不重复添加第二标题区 |
+
+复杂关系可用原生customPaths、连接线、表图及上述组件组合。文字、图形和线条保持可编辑，不能以组件数量代替信息完整和实际页面检查。
