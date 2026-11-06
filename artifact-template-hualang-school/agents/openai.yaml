@@ -1,7 +1,7 @@
 interface:
   display_name: "华朗学校 Hualang School"
-  short_description: "华朗汇报与分学科教案课件，主体构图、深入教学与内容复核"
+  short_description: "华朗汇报与分学科教案课件，充分分析、多样构图与内容复核"
   icon_large: "./assets/preview.png"
-  default_prompt: "使用 $artifact-template-hualang-school，先确定本次读者动作与主证据对象，再选择主体构图和局部组件，保留完整内容与条件，制作华朗汇报或教案课件。联排检查真实页面的重复骨架；教学在实际能力支持时使用动画辅助理解。交付前核对知识、案例、题解和数据，发现问题主动说明并给建议。"
+  default_prompt: "使用 $artifact-template-hualang-school，先从材料展开充分的比较、解释、取舍与落实，再按读者动作选择主体构图和局部组件。图与相关分析同屏，短页按需要深化或合并，保留完整内容与条件；不虚构缺少的原因和承诺。联排检查真实页面的重复骨架；教学按实际能力使用有理解收益的动画。交付前核对知识、案例、题解和数据，发现问题主动说明并给建议。"
 policy:
   allow_implicit_invocation: true

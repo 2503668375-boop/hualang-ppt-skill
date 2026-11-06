@@ -2,7 +2,7 @@
 
 先决定使用方式，再定位学段/学科。`assets/scene-examples.pptx` 为现行16页应用示例，第3—14页展示具体对象与组件，表格只在第3页数字查阅时使用，不能替代本次内容分析；全稿制作使用固定首尾。
 
-管理汇报另见[12页模拟连续示例](../assets/report-layout-example.pptx)及[联排](../assets/report-layout-preview.jpg)，按[内容与版式](report-layouts.md)理解主对象、比较、解释与条件怎样同屏，不能照抄它的模拟数据、页数或固定页序。该示例用于证明有内容的连续页面，教学与对外场景仍按本次真实用途选择。
+管理汇报先看[内容深化连续示例](../assets/report-depth-example.pptx)及[联排](../assets/report-depth-preview.jpg)，理解[充分分析与容量](content-depth.md)和[主体构图](report-layouts.md)怎样同时实现。上一版[12页构图示例](../assets/report-layout-example.pptx)保留作对照。不能照抄模拟数据、页数或固定页序；教学与对外仍按本次真实用途选择。
 
 | 类型 | 页面主体 | 与其他场景的区别 |
 |---|---|---|

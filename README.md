@@ -1,8 +1,14 @@
 # 华朗学校汇报与教学 Skill
 
-当前版本 **v8.1**。用于华朗内部汇报、分学科教案与课件、家长成果反馈、招生说明和对外交流。保留左标题、右校徽、金色分隔线、近白底及原始固定首尾。
+当前版本 **v8.2**。用于华朗内部汇报、分学科教案与课件、家长成果反馈、招生说明和对外交流。保留左标题、右校徽、金色分隔线、近白底及原始固定首尾。
 
 ## 本版改动
+
+- **内容先展开再分页**：沿已有材料补比较、构成、过程/案例、解释、取舍与落实；主动复算有意义的关系，保留推断与建议的条件，缺少原因资料不补造。
+- **一页形成完整分析**：图表和近邻段落共同承担内容。少量节点的小图不默认铺满；结果与解释、日期与责任等相关短页，在允许范围和可读字号下优先合并。用户指定页数优先遵守。
+- **深化和排版一起验收**：逐页试读新增了什么证据与解释，检查结果的含义、建议的机制与代价、安排的完成物与检查；不靠重复数字、空话、缩字或增页增加信息。
+
+继续保留V8.1的主体构图与工具：
 
 - **主体构图先于组件**：从读者要比较、追踪、观察、选择还是查数起稿。主证据可以跨栏，说明靠近实际对象；补充趋势、差异、贡献、证据、关系、方案、节点与完整字段的整页选择及旧稿转换方法。卡片只用于适合的独立并列项。
 - **开放式制作入口**：新增开放数字、同轴点比较、按真实日期定位的时间线和就近引注。正文完整工作区可以自由编排，历史接口继续兼容；不循环同一方块网格制作全稿。
@@ -17,9 +23,11 @@
 
 ## 下载与预览
 
-[![V8.1管理汇报版式示例](demo/report-layout-overview.jpg)](demo/report-layout-example.pptx?raw=true)
+[![V8.2管理汇报内容深化示例](demo/report-depth-overview.jpg)](demo/report-depth-example.pptx?raw=true)
 
-- [12页管理汇报版式示例](demo/report-layout-example.pptx?raw=true)：以一份完整模拟材料连续验证开放概览、同轴比较、趋势、贡献桥、教学证据、协作关系、资源取舍、日期轴和责任查阅。全部数字和安排为模拟。
+- [10页管理汇报内容深化示例](demo/report-depth-example.pptx?raw=true)：原始数字、案例与安排不变，展开可复算比较、解释和实施条件；正文由10页整合为8页，保留4张必要原生表与1张季度趋势图。全部为模拟，未添加学校实绩或未提供的原因。
+
+- [V8.1版式示例](demo/report-layout-example.pptx?raw=true)：保留12页原版，供查看上一版的主体构图与本轮深化前的内容。
 
 - [16页应用示例](demo/hualang-skill-introduction.pptx?raw=true)：管理、教师备课、物理、文本研读、国际经济学、家长与校园说明。只保留1张必要查数表，6页含分步揭示。
 - [32页二次函数连续课件](demo/quadratic-functions-32.pptx?raw=true)：30页正文，仅1张函数数值表，30页有原生点击出现，共77步。
@@ -40,10 +48,12 @@
 
 > 用华朗学校汇报技能，把附件制作成年度管理报告。先按每页的读者动作选择主证据与主体构图，保留完整比较、解释与条件。查看连续四页及整稿，修正反复的方块拼装；不要靠换色、增加版型名称或删内容制造变化。
 
+> 用华朗学校汇报技能，把附件制作成管理层留阅报告。先展开有依据的比较、分析、取舍与落实，再定页数和构图。每页保留完整阅读关系，简单图表旁补足解释；相关短页按需要合并。不能补造原因、数字、责任或承诺。
+
 > 用华朗学校汇报技能制作高中二次函数复习课。完整题干、推理、比较反例与迁移尽量同屏，重点图形和条件按教学节奏揭示，另给教师活动与诊断反馈安排。资料或题解有错时先指出并建议修正。
 
 ## 规则与验证
 
-[技能入口](artifact-template-hualang-school/SKILL.md) · [内容与版式](artifact-template-hualang-school/references/report-layouts.md) · [构图修订说明](docs/v8.1-layout-review.md) · [V8.1验证](tests/v8.1-validation.md) · [教学设计](artifact-template-hualang-school/references/teaching-design.md) · [教学深度](artifact-template-hualang-school/references/teaching-depth.md) · [内容正确性](artifact-template-hualang-school/references/content-accuracy.md) · [教学动画](artifact-template-hualang-school/references/teaching-animation.md) · [制作API](artifact-template-hualang-school/references/production-api.md)
+[技能入口](artifact-template-hualang-school/SKILL.md) · [内容深化与容量](artifact-template-hualang-school/references/content-depth.md) · [V8.2验证](tests/v8.2-validation.md) · [内容与版式](artifact-template-hualang-school/references/report-layouts.md) · [构图修订说明](docs/v8.1-layout-review.md) · [教学设计](artifact-template-hualang-school/references/teaching-design.md) · [教学深度](artifact-template-hualang-school/references/teaching-depth.md) · [内容正确性](artifact-template-hualang-school/references/content-accuracy.md) · [教学动画](artifact-template-hualang-school/references/teaching-animation.md) · [制作API](artifact-template-hualang-school/references/production-api.md)
 
 已完成独立内容复算、最终文件回读、逐页及联排、关键揭示状态、原生对象与工具行为验证。未完成Microsoft PowerPoint实际放映、真实教室投影或教学效果验证；不能由本轮数学与局部学科示例推定所有教材、学科或考试局均已验证。公开项目图不自动证明当前校园状态或课程安排，来源与属性按实际任务核实。
