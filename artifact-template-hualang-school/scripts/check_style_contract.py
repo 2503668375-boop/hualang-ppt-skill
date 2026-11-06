@@ -54,7 +54,7 @@ def closing_check(z,part,expected_sha,contract=None):
  return {'original_asset_present':expected_sha in hashes,'added_objects':added,'text':detail,'passed':expected_sha in hashes and valid}
 
 def check(pptx,c,title,presenter,date,template=False,allow_titles=(),allow_subtitle=False):
- errors=[];headers=[]
+ errors=[];warnings=[];headers=[]
  expected={'title':title,'presenter':'汇报人：'+re.sub(r'^汇报人[：:]\s*','',presenter),'date':'汇报时间：'+re.sub(r'^汇报时间[：:]\s*','',date)}
  with zipfile.ZipFile(pptx) as z:
   parts=slide_parts(z);cover=shapes(z.read(parts[0]))
@@ -73,10 +73,13 @@ def check(pptx,c,title,presenter,date,template=False,allow_titles=(),allow_subti
     t=ob['text'];headers.append({'slide':number,'title':t})
     if t in allow_titles:continue
     units=len(re.findall(r'[\u3400-\u9fff]|[A-Za-z0-9]+',t))
-    if units>c['heading']['maxUnits'] or re.search(r'[：:？?，,；;]',t) or any(re.search(p,t) for p in c['heading']['forbiddenPatterns']):errors.append(f'第{number}页题名不符合规范：{t}')
+    if not t.strip():errors.append(f'第{number}页题名为空')
+    if re.search(r'[\u3400-\u9fff]',t):
+     if re.search(r'^(先.+再|然后|接着|怎样|怎么|如何|本页|我们|你[们的要可]|哪些|什么|它[的是]|从.+开始)',t) or re.search(r'[？?]',t):errors.append(f'第{number}页自动题名为口播或问句：{t}')
+     if units>c['heading']['maxUnits']:warnings.append(f'第{number}页题名较长，结合学科术语和实际换行复核：{t}')
   closing=closing_check(z,parts[-1],c['closing']['assetSha256'],c['closing'])
   if not closing['passed']:errors.append('封尾原图、培养目标、结束语或安全区不符合规范')
- return {'ok':not errors,'cover_expected':expected,'headings':headers,'closing':closing,'errors':errors,'scope':'首尾、字段、位置及已命名标题；仍需人工检查内容、重复语义、密度和视觉'}
+ return {'ok':not errors,'cover_expected':expected,'headings':headers,'closing':closing,'errors':errors,'warnings':warnings,'scope':'首尾、字段、位置及已命名标题；短中文题名为偏好，学科和英文题名按语义与实际换行复核；仍需人工检查内容、重复语义、密度和视觉'}
 
 def main():
  ap=argparse.ArgumentParser();ap.add_argument('pptx',type=Path);ap.add_argument('--title',required=True);ap.add_argument('--presenter',required=True);ap.add_argument('--date',required=True);ap.add_argument('--contract',type=Path,default=Path(__file__).resolve().parents[1]/'assets/style-contract.json');ap.add_argument('--template',action='store_true');ap.add_argument('--allow-title',action='append',default=[]);ap.add_argument('--allow-subtitle',action='store_true');a=ap.parse_args()

@@ -6,7 +6,7 @@
 |---|---|---|
 | [教育部：义务教育课程方案与标准（2022）](https://hudong.moe.gov.cn/srcsite/A26/s8001/202204/t20220420_619921.html)及[数学课标](https://www.moe.gov.cn/srcsite/A26/s8001/202204/W020220420582346895190.pdf) | 分学科的内容、学业要求、教学提示及教学评价联系 | 初中教案明确目标、活动与评价，按本次年级/教材选任务；真实授课核对适用版本 |
 | [教育部：高中课程方案与标准修订通知（2020）](https://jsj.moe.gov.cn/n2/1/1/1507.shtml) | 高中课程与学科差异、适用文本 | 高中按实际课程模块与材料组织，后续学年更新另核实，不把旧版冻结为常量 |
-| [Cambridge IGCSE Biology Teacher Guide，Planning lessons](https://learning.cambridgeinternational.org/classroom/pluginfile.php/162707/mod_resource/content/1/0610_Teacher_Guide.pdf) | 教案考虑学习目标、前置知识、学习监测、差异支持、语言与时间 | 教案表写出具体活动、预期回应与评价；旧教师指南用于一般设计方法，不作为当前考纲或考试规则 |
+| [Cambridge IGCSE Biology Teacher Guide，Planning lessons](https://learning.cambridgeinternational.org/classroom/pluginfile.php/162707/mod_resource/content/1/0610_Teacher_Guide.pdf) | 教案考虑学习目标、前置知识、学习监测、差异支持、语言与时间 | 教案组件写出具体活动、预期回应与评价，确需交叉查阅时再用表格；旧教师指南用于一般设计方法，不作为当前考纲或考试规则 |
 | [Cambridge：Teaching, learning and assessment](https://www.cambridgeinternational.org/support-and-training-for-schools/support-for-teachers/teaching-and-assessment/) | 课程、任务、评价、指令词及考生回应示例的联系 | 国际课程保留作答动作与评价要求；未登录资源不声称已读 |
 | [Cambridge AS & A Level Mathematics 9709，2026—2027](https://www.cambridgeinternational.org/Images/697427-2026-2027-syllabus.pdf) | 科目范围、路线、符号和评估信息 | 示例数学按当前已读取版本核对；真实任务仍对准考试年与路线 |
 | [IB DP Mathematics](https://www.ibo.org/programmes/diploma-programme/curriculum/mathematics/) | AA/AI、SL/HL及不同首次评估年份的课程资料 | 国际教案显式区分科目、层级与届别，不能把最新课程直接套给旧届学生 |

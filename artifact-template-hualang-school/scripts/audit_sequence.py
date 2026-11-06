@@ -11,7 +11,7 @@ def audit(pptx,manifest):
  errors=[];warnings=[];entries=manifest['slides'];by={r['slide']:r for r in entries};rows=[];sigs=[]
  with zipfile.ZipFile(pptx) as z:
   parts=slide_parts(z)
-  if sorted(by)!=list(range(2,len(parts))):errors.append('构图清单必须覆盖全部正文页，页码不能重复或缺失')
+  if len(by)!=len(entries) or sorted(by)!=list(range(2,len(parts))):errors.append('构图清单必须覆盖全部正文页，页码不能重复或缺失')
   for i,part in enumerate(parts,1):
    root=E.fromstring(z.read(part));obs=shapes(z.read(part));body=[o for o in obs if o['position'] and 100<=o['position'][1]<666]
    boxes=[['text' if o['text'] else 'shape',*[round(v/8) for v in o['position']]] for o in body if o['position'][2]>3 and o['position'][3]>3]
@@ -25,11 +25,11 @@ def audit(pptx,manifest):
   families=[e.get('family') for e in entries]
   for i in range(len(entries)-1):
    a,b=entries[i:i+2]
-   if a.get('family')==b.get('family') and not b.get('continuationReason'):errors.append(f"第{a['slide']}、{b['slide']}页连续同构，且没有必要的续页说明")
-   if sigs[a['slide']-1]==sigs[b['slide']-1] and not b.get('continuationReason'):errors.append(f"第{a['slide']}、{b['slide']}页正文原生几何完全重复")
+   if a.get('family')==b.get('family') and not b.get('continuationReason'):warnings.append(f"第{a['slide']}、{b['slide']}页连续同构，实看学习连续性和内容负载；不要仅为换版式重排")
+   if sigs[a['slide']-1]==sigs[b['slide']-1] and not b.get('continuationReason'):warnings.append(f"第{a['slide']}、{b['slide']}页正文原生几何完全重复，须复核是否为必要对照或套版")
   for i in range(len(entries)-3):
    f=families[i:i+4]
-   if f[0]==f[2] and f[1]==f[3]:errors.append(f"第{entries[i]['slide']}—{entries[i+3]['slide']}页存在ABAB重复")
+   if f[0]==f[2] and f[1]==f[3] and not all(e.get('continuationReason') for e in entries[i+1:i+4]):warnings.append(f"第{entries[i]['slide']}—{entries[i+3]['slide']}页存在ABAB重复，结合实际任务复核")
   for i in range(len(entries)-7):
    c=collections.Counter(families[i:i+8]);fam,count=c.most_common(1)[0]
    if count>4:warnings.append(f"第{entries[i]['slide']}—{entries[i+7]['slide']}页中，{fam}出现{count}次，须实看复核")

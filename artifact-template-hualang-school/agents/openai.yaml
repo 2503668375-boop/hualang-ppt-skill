@@ -1,7 +1,7 @@
 interface:
   display_name: "华朗学校 Hualang School"
-  short_description: "华朗内部汇报与初中、高中、国际高中分学科教案课件，按用途排版"
+  short_description: "华朗汇报与分学科教案课件，小组件排版、深入教学与内容复核"
   icon_large: "./assets/preview.png"
-  default_prompt: "使用 $artifact-template-hualang-school，根据本次内容、材料与要求完成可直接应用的华朗汇报PPT。"
+  default_prompt: "使用 $artifact-template-hualang-school，按本次用途以小组件组织充分内容，制作华朗汇报或教案课件。教学在实际能力支持时使用动画辅助理解；交付前核对输入材料与成品的知识、案例、题解和数据，发现问题主动说明并给建议。"
 policy:
   allow_implicit_invocation: true

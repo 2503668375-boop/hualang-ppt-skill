@@ -23,10 +23,11 @@ export function assertTopicTitle(value, {userSupplied = false} = {}) {
   const title = String(value ?? '').trim();
   if (!title) throw new Error('页面题名不能为空。');
   if (userSupplied) return title;
-  const prohibited = /(^先|先.+再|然后|接着|怎样|怎么|如何|本页|我们|你|哪些|什么|^它|从.+开始)/;
-  const units = (title.match(/[\u3400-\u9fff]|[A-Za-z0-9]+/g) ?? []).length;
-  if (prohibited.test(title) || /[：:？?，,；;]/.test(title) || units > 12) {
-    throw new Error('自动题名须为具体短语，通常4、6或8字；不用口播、问句或长结论：' + title);
+  // Short Chinese phrases are an editorial preference, not a word limit for
+  // subject terminology, formulas or English headings. Check fit after export.
+  const conversational = /^(先.+再|然后|接着|怎样|怎么|如何|本页|我们|你[们的要可]|哪些|什么|它[的是]|从.+开始)/;
+  if (/[\u3400-\u9fff]/.test(title) && (conversational.test(title) || /[？?]/.test(title))) {
+    throw new Error('自动题名使用具体议题短语，课堂问句放在任务区：' + title);
   }
   return title;
 }
@@ -163,7 +164,8 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
   const pageProfiles = new Map();
   const deckText = (owner,value,options={}) => text(owner,value,
     {size:profiles[pageProfiles.get(owner.id) ?? 'report'].body,color:colors.ink,...fontOptions,...options});
-  const deckTable = (slide, values, options) => nativeTable(slide, values, {...fontOptions, ...options});
+  const deckTable = (slide, values, options={}) => nativeTable(slide, values,
+    {size:profiles[pageProfiles.get(slide.id) ?? 'report'].table,...fontOptions,...options});
   const deckChart = (slide, type, options, overrides = {}) => chart(slide, type, options, {...fontOptions, ...overrides});
   const assets = path.join(skillDir, 'assets');
   const presentation = await PresentationFile.importPptx(await FileBlob.load(path.join(assets, 'source-original.pptx')));
@@ -217,8 +219,15 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     {x: 1093, y: 25, w: 139, h: 49, alt: '深圳市华朗学校原始标识'});
   const layout = presentation.layouts.add('华朗统一紫金正文');
   layout.background.fill = colors.paper;
-  await brand(layout);
-  line(layout, {x: 48, y: 86, w: 1184, color: colors.gold, width: 1.4});
+  // Materialize the unchanged brand on each content slide. Some renderers omit
+  // inherited layout objects on shape-only pages, including after re-import.
+  const bodyLogo = await fs.readFile(path.join(assets, 'logo-horizontal.png'));
+  const bodyLogoBlob = bodyLogo.buffer.slice(bodyLogo.byteOffset, bodyLogo.byteOffset + bodyLogo.byteLength);
+  const pageBrand = slide => {
+    slide.images.add({blob:bodyLogoBlob,contentType:'image/png',
+      position:{left:1093,top:25,width:139,height:49},alt:'深圳市华朗学校原始标识',fit:'contain'});
+    line(slide,{x:48,y:86,w:1184,color:colors.gold,width:1.4});
+  };
 
   const footer = (slide, section, dark = false) => {
     const color = dark ? colors.line : colors.secondary;
@@ -230,14 +239,15 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     assertTopicTitle(pageTitle, {userSupplied:userSuppliedTitle});
     if (!profiles[purpose]) throw new Error('Unknown page purpose: '+purpose);
     const slide=addContentSlide({layoutId:layout.id});pageProfiles.set(slide.id,purpose);
+    pageBrand(slide);
     deckText(slide,pageTitle,{x:48,y:30,w:1010,h:43,size:titleSize ?? profiles[purpose].title,bold:true,color:colors.purple,name:'title'});
     if(summary) deckText(slide,summary,{x:48,y:108,w:1184,h:70,size:profiles[purpose].summary,name:'summary'});
     footer(slide, section);
     return slide;
   }
 
-  function addSchoolScene({title,summary='',section=''}) {
-    return addPage({title,summary,section,purpose:'report'});
+  function addSchoolScene({title,summary='',section='',purpose='report',userSuppliedTitle=false}) {
+    return addPage({title,summary,section,purpose,userSuppliedTitle});
   }
   function addReportPage({title, summary, section = ''}) {
     const slide=addPage({title,summary,section,purpose:'report'});

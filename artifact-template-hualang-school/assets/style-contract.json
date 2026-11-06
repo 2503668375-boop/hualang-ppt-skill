@@ -48,21 +48,9 @@
     ],
     "maxUnits": 12,
     "forbiddenPatterns": [
-      "^先",
-      "先.+再",
-      "然后",
-      "接着",
-      "怎样",
-      "怎么",
-      "如何",
-      "本页",
-      "我们",
-      "你",
-      "从.+开始",
-      "哪些",
-      "什么",
-      "^它"
-    ]
+      "^(先.+再|然后|接着|怎样|怎么|如何|本页|我们|你[们的要可]|哪些|什么|它[的是]|从.+开始)"
+    ],
+    "lengthPolicy": "Chinese phrase preference; review long subject titles, no word-count limit for English"
   },
   "closing": {
     "source": "assets/source-original.pptx",

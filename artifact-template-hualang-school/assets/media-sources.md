@@ -13,9 +13,9 @@
 
 `student-dialogue.png`：虚构中学生图书馆讨论，横向3:2，人物围绕同一讨论任务，温暖自然光，无标志与文字。
 
-## V7华朗真实素材
+## 华朗公开项目与活动素材
 
-- `hualang-light-court.jpg`、`hualang-light-corridor.jpg`、`hualang-learning-street.jpg`、`hualang-campus-path.jpg`：CREDAWARD华朗学校项目公开建筑摄影，分别对应光庭、光廊、公共学习空间与校园景观；原图保持。设计：坊城设计。摄影署名依据同一项目有方授权报道：曾天培。https://www.credaward.com/project/245591/ ；https://www.archiposition.com/items/20220930031617 。
+- `hualang-light-court.jpg`、`hualang-light-corridor.jpg`、`hualang-learning-street.jpg`、`hualang-campus-path.jpg`：CREDAWARD华朗学校项目公开项目图，分别对应光庭、光廊、公共学习空间与校园景观；原图保持。设计：坊城设计。同一项目报道包含摄影、设计示意和效果图；单图性质与署名应按该图题注核验，不能把项目摄影署名套用到全部图片。用于现状或传播时还须核实当期状态和授权。https://www.credaward.com/project/245591/ ；https://www.archiposition.com/items/20220930031617 。
 - `hualang-academician-20260408.jpg`：2026年4月8日华朗院士大讲堂现场，来源深圳新闻网2026-04-09报道。https://www.sznews.com/news/content/2026-04/09/content_32009795.htm 。
 - `hualang-university-fair-20260510.png`：2026年5月10日华朗高校招生咨询会现场，来源深圳新闻网2026-05-12报道，保留原图水印。https://www.sznews.com/news/content/mb/2026-05/12/content_32046825.htm 。
 

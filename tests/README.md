@@ -1,12 +1,14 @@
-> 现行规范与检查结果见[V6验证](v6-validation.md)。以下仅为历史V4/V4.1记录。
+# 验证入口与历史记录
 
-> 本页为V4及V4.1历史测试。现行V5检查见[本轮检查记录](v5-validation.md)，当前介绍为18页V5版本。历史产物可通过对应Git提交查阅。
+本轮完整性审查及验证范围见[V8审查](../docs/v8-completeness-review.md)。本轮新增[原生工具行为测试](test_tool_behavior.py)及[制作夹具](tool-behavior-fixture.mjs)，实际导出后核对题名、场景默认字号、显式覆盖和序列检查的成功/失败行为。按当前环境发现的路径传入 `HUALANG_NODE` 和 `HUALANG_NODE_MODULES` 后运行；未提供原生运行库时该组测试会明确跳过。
+
+历史检查分别见[V7](v7-validation.md)、[V6](v6-validation.md)和[V5](v5-validation.md)。以下保留V4/V4.1记录，原来记录的版本、页数与验证范围仅指当轮产物，不代表现行示例。
 
 # v4.1 规范检查
 
 本轮增加固定封面与短题名核对，保存文件中的三个封面字段和12个普通题名均已检查。缺署名、口播式题名、日期移位负例可被拦截。四类实际页面逐页与并排查看，说明稿仍覆盖使用、痛点、内容组织、场景、版式及下载启动。机器检查不判断审美。
 
-以下保留V4历史独立输入记录；原介绍产物可在 [V4提交](https://github.com/2503668375-boop/hualang-ppt-skill/tree/a89c6e0f1eac750b204393e3b52a1e5802b7c078) 查看。对应历史demo见V4.1提交；当前demo介绍已更新为V5。
+以下保留V4历史独立输入记录；原介绍产物可在 [V4提交](https://github.com/2503668375-boop/hualang-ppt-skill/tree/a89c6e0f1eac750b204393e3b52a1e5802b7c078) 查看。对应历史demo见V4.1提交，现行demo以仓库首页说明为准。
 
 # 三份独立材料的实际制作检验
 

@@ -1,6 +1,6 @@
-# 原生制作工具 V7
+# 原生制作工具 V8
 
-常规华朗内容页先使用 `addPage`；家长、招生与对外材料也可使用 `addSchoolScene({title,summary,section})`，它保留同一页眉、校徽、分隔线与正文底。组件在正文内组合，标题/说明/材料尽量同屏，不自动切换另一套整页模板。
+常规华朗内容页先使用 `addPage`；家长、招生与对外材料也可使用 `addSchoolScene({title,summary,section,purpose})`，它保留同一页眉、校徽、分隔线与正文底。默认purpose为report供留阅；现场家长说明显式用parent、舞台用stage，课堂用classroom。固定页眉保持不变，正文和表格随用途使用相应起点。组件在正文内组合，标题/说明/材料尽量同屏，不自动切换另一套整页模板。
 
 `scripts/hualang-kit.mjs` 使用当前可用的 `@oai/artifact-tool`，封面与封尾均从原始模板保留。调用者决定内容、学科与具体构图，工具提供用途对应的默认值。
 
@@ -35,10 +35,12 @@ await deck.writeDraft({candidatePath,renderDir});
 
 ## 主要入口
 
+先按实际对象组合小组件。表格接口只在真实行列查阅需要时使用；教案、推理、方法、反馈和文本并不因接口方便而默认套表。内容完整与密度由关系、条件及完整解释保证，不能靠删网格、缩字或等宽卡片替代组织。
+
 | 方法 | 返回与用途 |
 |---|---|
 | `addPage({title,purpose,summary,section,titleSize})` | 普通页，单题名；summary为正文层级概论 |
-| `addSchoolScene({title,summary,section})` | 保留固定正文框架，用于家长、招生与对外交流 |
+| `addSchoolScene({title,summary,section,purpose})` | 保留固定正文框架，用于家长、招生与对外交流 |
 | `addReportPage({title,summary,section})` | 题名、概论、依据与落实区域，内部完整论证 |
 | `addLessonPlanPage({title,section})` | context、sequence、assessment三个区域；可以按具体学科改变安排 |
 | `addMathPage({title,mode,purpose,section})` | mode为single/pair/proof，分别给完整题干+推导/图形、双题或通栏推导 |
@@ -49,7 +51,7 @@ await deck.writeDraft({candidatePath,renderDir});
 | `text / image / nativeTable / chart / line / arrow` | 原生文字、图片、表格、数据图与关系图，具体坐标由内容决定 |
 | `fraction(slide,num,den,{x,y,w,size,color})` | 简单可编辑分式：分子/横线/分母；复杂数学对象按数学专项 |
 
-原生表格必须给按内容分配的columnWidths且合计为w，可给rowHeights。表头默认紫底白字，可选headerStyle=tint为浅紫深紫字；表身黑色，数字列右对齐。cellPadding控制内边距，按真实换行确定rowHeights，不能让自动增高压住后续内容。图表数值轴使用min/max；函数采用scatter与xValues。默认蓝/灰系列，重点需要时才显式用红。
+`deck.nativeTable` 的默认size跟随当前页面profile.table，显式size仍优先；底层独立nativeTable按自身默认值。原生表格必须给按内容分配的columnWidths且合计为w，可给rowHeights。表头默认紫底白字，可选headerStyle=tint为浅紫深紫字；表身黑色，数字列右对齐。cellPadding控制内边距，按真实换行确定rowHeights，不能让自动增高压住后续内容。图表数值轴使用min/max；函数采用scatter与xValues。默认蓝/灰系列，重点需要时才显式用红。
 
 ## 点击揭示
 
@@ -84,12 +86,12 @@ python3 scripts/apply_reveals.py base.pptx reveals.json state0.pptx --state 0
 
 `createDeck`用于完整稿。单页或局部任务可从品牌正文页起稿并按用户指定页数导出，保留正文品牌；不强加完整稿的封面封尾。
 
-## V7连续稿与封尾
+## 连续稿与封尾
 
-`createDeck({...,closingText:"感谢聆听，期待同行"})`保留封尾原底图并叠加培养目标与结束语。每页登记实际构图并调用序列审查脚本，不仅使用一种题干条或两栏。低层开放画布与舞台接口只为用户明确要求的局部特殊设计保留，不作为常规页入口。
+`createDeck({...,closingText:"感谢聆听，期待同行"})`保留封尾原底图并叠加培养目标与结束语。连续稿登记实际构图并调用序列审查脚本；重复是实看提示，清单缺漏/重复页码仍失败。合理同题推理保留题干与对象，不为通过检查换版式或改标签。低层开放画布与舞台接口只为用户明确要求的局部特殊设计保留，不作为常规页入口。
 
 
-## V7紫色组件接口
+## 紫金组件接口
 
 所有接口接受slide并返回可编辑对象（或对象数组）。
 
@@ -118,3 +120,9 @@ deck.facetCorner(slide,{x:48,y:540,w:220,h:100});
 | `sectionRule(slide,label,{x,y,w,size})` | 无既定页眉的局部标题工具；常规正文不重复添加第二标题区 |
 
 复杂关系可用原生customPaths、连接线、表图及上述组件组合。文字、图形和线条保持可编辑，不能以组件数量代替信息完整和实际页面检查。
+
+## 题名与草稿
+
+自动中文题名用具体议题短语，课堂问句放任务区；四、六、八字是编辑偏好。正常英文与学科专名不按12字位硬截，长中文由保存后检查提示实看实际换行。用户给定正式题名可用userSuppliedTitle保留，并在验收时对应原要求。
+
+署名或日期缺失时可先准备完整主体内容与页面底稿；需要构建时传明确的待填草稿值，不虚构真实身份或日期。正式验收仍拒绝未补字段。

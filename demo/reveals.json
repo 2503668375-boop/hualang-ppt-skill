@@ -3,12 +3,55 @@
   "effect": "appear",
   "slides": [
     {
+      "slide": 6,
+      "steps": [
+        {
+          "label": "第一阶段，摩擦力向右",
+          "objects": [
+            "reveal-s6-step1-1",
+            "reveal-s6-step1-2",
+            "reveal-s6-step1-3"
+          ]
+        },
+        {
+          "label": "停点与第二阶段",
+          "objects": [
+            "reveal-s6-step2-1",
+            "reveal-s6-step2-2",
+            "reveal-s6-step2-3"
+          ]
+        }
+      ]
+    },
+    {
       "slide": 7,
       "steps": [
         {
-          "label": "解答与反馈",
+          "label": "先形成向左运动的负面积",
           "objects": [
-            "reveal-s7-step1-1"
+            "reveal-s7-step1-1",
+            "reveal-s7-step1-2"
+          ]
+        },
+        {
+          "label": "再形成向右运动的正面积",
+          "objects": [
+            "reveal-s7-step2-1",
+            "reveal-s7-step2-2"
+          ]
+        },
+        {
+          "label": "比较面积、位移、路程及功动能",
+          "objects": [
+            "reveal-s7-step3-1",
+            "reveal-s7-step3-2",
+            "reveal-s7-step3-3",
+            "reveal-s7-step3-4",
+            "reveal-s7-step3-5",
+            "reveal-s7-step3-6",
+            "reveal-s7-step3-7",
+            "reveal-s7-step3-8",
+            "reveal-s7-step3-9"
           ]
         }
       ]
@@ -17,31 +60,23 @@
       "slide": 8,
       "steps": [
         {
-          "label": "设式",
+          "label": "独立作答后的比较与纠错",
           "objects": [
             "reveal-s8-step1-1",
-            "reveal-s8-step1-2"
-          ]
-        },
-        {
-          "label": "代入",
-          "objects": [
-            "reveal-s8-step2-1",
-            "reveal-s8-step2-2"
-          ]
-        },
-        {
-          "label": "求解",
-          "objects": [
-            "reveal-s8-step3-1",
-            "reveal-s8-step3-2"
-          ]
-        },
-        {
-          "label": "检验",
-          "objects": [
-            "reveal-s8-step4-1",
-            "reveal-s8-step4-2"
+            "reveal-s8-step1-2",
+            "reveal-s8-step1-3",
+            "reveal-s8-step1-4",
+            "reveal-s8-step1-5",
+            "reveal-s8-step1-6",
+            "reveal-s8-step1-7",
+            "reveal-s8-step1-8",
+            "reveal-s8-step1-9",
+            "reveal-s8-step1-10",
+            "reveal-s8-step1-11",
+            "reveal-s8-step1-12",
+            "reveal-s8-step1-13",
+            "reveal-s8-step1-14",
+            "reveal-s8-step1-15"
           ]
         }
       ]
@@ -50,24 +85,15 @@
       "slide": 9,
       "steps": [
         {
-          "label": "开头与主题",
+          "label": "动作关系与证据",
           "objects": [
-            "reveal-s9-step1-1",
-            "reveal-s9-step1-2",
-            "reveal-s9-step1-3"
+            "reveal-s9-step1-1"
           ]
         },
         {
-          "label": "主旨证据",
+          "label": "证据强度与解释边界",
           "objects": [
-            "reveal-s9-step2-1",
-            "reveal-s9-step2-2"
-          ]
-        },
-        {
-          "label": "材料解释",
-          "objects": [
-            "reveal-s9-step3-1"
+            "reveal-s9-step2-1"
           ]
         }
       ]
@@ -76,26 +102,48 @@
       "slide": 10,
       "steps": [
         {
-          "label": "受力与合力",
+          "label": "对照带证据与解释的回应",
           "objects": [
             "reveal-s10-step1-1",
-            "reveal-s10-step1-2",
-            "reveal-s10-step1-3"
+            "reveal-s10-step1-2"
           ]
         },
         {
-          "label": "加速度与速度",
+          "label": "修订任务与评价依据",
           "objects": [
             "reveal-s10-step2-1",
             "reveal-s10-step2-2",
-            "reveal-s10-step2-3"
+            "reveal-s10-step2-3",
+            "reveal-s10-step2-4",
+            "reveal-s10-step2-5",
+            "reveal-s10-step2-6",
+            "reveal-s10-step2-7"
+          ]
+        }
+      ]
+    },
+    {
+      "slide": 11,
+      "steps": [
+        {
+          "label": "按已知价格与数量计算弹性和收入",
+          "objects": [
+            "reveal-s11-step1-1",
+            "reveal-s11-step1-2"
           ]
         },
         {
-          "label": "位移",
+          "label": "解释数量与价格的比例关系",
           "objects": [
-            "reveal-s10-step3-1",
-            "reveal-s10-step3-2"
+            "reveal-s11-step2-1",
+            "reveal-s11-step2-2"
+          ]
+        },
+        {
+          "label": "引入替代解释和利润边界",
+          "objects": [
+            "reveal-s11-step3-1",
+            "reveal-s11-step3-2"
           ]
         }
       ]

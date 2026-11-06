@@ -2,213 +2,274 @@
   "slides": [
     {
       "slide": 2,
-      "title": "函数知识联系",
-      "family": "relationship-map",
+      "title": "表式互证",
+      "family": "table-form-graph",
       "lesson": 1,
-      "minutes": 4
+      "minutes": 4,
+      "objective": "能由同一函数的三种表示提取顶点、零点，并代入互证。",
+      "diagnosis": "若只背形式，要求用一个数值说明式、表、图对应；根与顶点混淆则定位纵坐标。"
     },
     {
       "slide": 3,
-      "title": "基础诊断",
-      "family": "four-problems",
+      "title": "配方依据",
+      "family": "derivation-with-reasons",
       "lesson": 1,
-      "minutes": 4
+      "minutes": 5,
+      "objective": "能写出配方的等价变形并说明a非零、顶点式与判别式的关系。",
+      "diagnosis": "若提取a时漏除，代入a=2复算；若忽略定义，追问a=0时为何不能套用。"
     },
     {
       "slide": 4,
-      "title": "概念辨析",
-      "family": "wide-table",
+      "title": "图像与判别",
+      "family": "three-parabolas",
       "lesson": 1,
-      "minutes": 5
+      "minutes": 4,
+      "objective": "能比较顶点纵坐标、实根个数与判别式，不凭图像替代代数。",
+      "diagnosis": "若把相切理解为无根，代入顶点横坐标；解释重根的计数口径。"
     },
     {
       "slide": 5,
-      "title": "表图互译",
-      "family": "table-plot-evidence",
+      "title": "条件重建",
+      "family": "paired-reasoning",
       "lesson": 1,
-      "minutes": 5
+      "minutes": 4,
+      "objective": "能据条件选择待定系数形式，并解释同根函数为何仍不唯一。",
+      "diagnosis": "只写出根式未定a时，要求检验给定点；遇顶点条件优先选顶点式。"
     },
     {
       "slide": 6,
-      "title": "系数与图像",
-      "family": "three-graphs",
+      "title": "区间最值",
+      "family": "graph-with-reasoning",
       "lesson": 1,
-      "minutes": 4
+      "minutes": 6,
+      "objective": "能定位顶点与定义域并比较端点，给最值及对应自变量。",
+      "diagnosis": "把全实数最值直接搬入区间时，先把区间画在图上；漏最大值则比较两端。"
     },
     {
       "slide": 7,
-      "title": "截距与象限",
-      "family": "plot-left-solution-right",
+      "title": "动轴分类",
+      "family": "spatial-axis-cases",
       "lesson": 1,
-      "minutes": 5
+      "minutes": 5,
+      "objective": "能按顶点相对区间的位置推导最小值分段式，并验证接点。",
+      "diagnosis": "若只背三个式子，要求说明每一支取值点；边界漏等号则代入t=0、2。"
     },
     {
       "slide": 8,
-      "title": "两点确定解析式",
-      "family": "full-derivation",
+      "title": "端点比较",
+      "family": "endpoint-comparison-numberline",
       "lesson": 1,
-      "minutes": 5
+      "minutes": 4,
+      "objective": "能用端点差求区间最大值，区分最小值与最大值的分类分界。",
+      "diagnosis": "若沿用t=0、2分类最大值，比较f(2)−f(0)，说明分界为何变成1。"
     },
     {
       "slide": 9,
-      "title": "错解订正",
-      "family": "error-correction",
+      "title": "错解与反例",
+      "family": "paired-reasoning",
       "lesson": 1,
-      "minutes": 4
+      "minutes": 4,
+      "objective": "能用定义域或开口方向反驳错解，再补完整答案。",
+      "diagnosis": "对应两类误区分别要求检查“候选点是否合法”和“开口向上还是向下”。"
     },
     {
       "slide": 10,
-      "title": "条件与参数",
-      "family": "conditions-rows",
+      "title": "分层练习",
+      "family": "tiered-practice",
       "lesson": 1,
-      "minutes": 5
+      "minutes": 5,
+      "objective": "独立写出候选点、比较和参数范围，用过程区分计算错与条件错。",
+      "diagnosis": "先撤去配方提示；若分类困难，可仅提示使用上一页最小值函数，不能直接给答案。"
     },
     {
       "slide": 11,
-      "title": "第一课反馈",
-      "family": "vertical-problem-set",
+      "title": "量词初探",
+      "family": "paired-reasoning",
       "lesson": 1,
-      "minutes": 4
+      "minutes": 4,
+      "objective": "能把存在不等式转化为最小值条件，合并参数并检验等号。",
+      "diagnosis": "若将存在写为最大值条件，画一条函数段，要求指出至少一个低于零的点。"
     },
     {
       "slide": 12,
-      "title": "交点坐标",
-      "family": "central-graph",
+      "title": "交点与差函数",
+      "family": "graph-with-reasoning",
       "lesson": 2,
-      "minutes": 4
+      "minutes": 4,
+      "objective": "能从两图交点转化为差函数零点，再解释区间大小关系。",
+      "diagnosis": "将交点坐标当成方程解时，区分x与(x,y)；图像只作检验。"
     },
     {
       "slide": 13,
-      "title": "方程的图像解释",
-      "family": "wide-table",
+      "title": "水平线交点",
+      "family": "graph-with-reasoning",
       "lesson": 2,
-      "minutes": 4
+      "minutes": 5,
+      "objective": "能解含参数的水平线交点，给根数与临界值，并连接判别式。",
+      "diagnosis": "若写m≥−1均有两个不同交点，要求单列m=−1。",
+      "continuationReason": "沿用同一抛物线，比较斜直线与水平线交点，固定图与代数推导位置有助于对照。"
     },
     {
       "slide": 14,
-      "title": "不等式与图像",
-      "family": "wide-plot-bottom-pair",
+      "title": "符号与方法",
+      "family": "signline-with-paired-proofs",
       "lesson": 2,
-      "minutes": 5
+      "minutes": 5,
+      "objective": "能比较因式分解与图像解法，识别负系数改变符号区间。",
+      "diagnosis": "若只记“两根之间”，要求在外侧与内侧各取一点验证系数符号。"
     },
     {
       "slide": 15,
-      "title": "双线数量比较",
-      "family": "plot-left-solution-right",
+      "title": "正根条件",
+      "family": "joint-condition-components",
       "lesson": 2,
-      "minutes": 5
+      "minutes": 5,
+      "objective": "能用判别式、和、积联合筛选两个不等正实根，写交集与边界。",
+      "diagnosis": "只查Δ>0时，给t=−3反例；只查和积时，给无实根反例。"
     },
     {
       "slide": 16,
-      "title": "系数条件归纳",
-      "family": "wide-table",
+      "title": "根的区间",
+      "family": "paired-reasoning",
       "lesson": 2,
-      "minutes": 4
+      "minutes": 6,
+      "objective": "能解释两根均在闭区间的充要条件，知道端点值条件为何不足。",
+      "diagnosis": "若只看端点，用f(x)=(x−4)(x−5)、区间[0,2]说明两端均正仍可能两根在右侧，须补轴位置；用x²+1说明还须保证实根存在。"
     },
     {
       "slide": 17,
-      "title": "平移规律",
-      "family": "paired-graphs",
+      "title": "区间参数",
+      "family": "derivation-with-reasons",
       "lesson": 2,
-      "minutes": 5
+      "minutes": 5,
+      "objective": "能将根区间四条件应用于参数，并验算重复根与端点根。",
+      "diagnosis": "若只解Δ≥0，要求和区间轴条件取交集；边界不能只用小数判断。"
     },
     {
       "slide": 18,
-      "title": "坐标与面积",
-      "family": "plot-right-solution-left",
+      "title": "量词对照",
+      "family": "parameter-axis-branches",
       "lesson": 2,
-      "minutes": 5
+      "minutes": 4,
+      "objective": "能将恒成立与存在分别转为最小值条件，并求同一临界参数。",
+      "diagnosis": "若给两问同一开闭范围，代入t=3/2，定位x=1处等号。"
     },
     {
       "slide": 19,
-      "title": "面积问题变式",
-      "family": "two-worked-problems",
+      "title": "条件边界",
+      "family": "paired-reasoning",
       "lesson": 2,
-      "minutes": 4
+      "minutes": 4,
+      "objective": "能用具体反例辨析判别式与端点检查的适用范围。",
+      "diagnosis": "学生须指出被忽略的范围或内部点；只说结论错误不算完成。"
     },
     {
       "slide": 20,
-      "title": "图像综合练习",
-      "family": "vertical-problem-set",
+      "title": "参数检测",
+      "family": "tiered-practice",
       "lesson": 2,
-      "minutes": 5
+      "minutes": 4,
+      "objective": "独立迁移正根到负根、闭区间到开区间、非严格到严格。",
+      "diagnosis": "按漏条件类型返练：和积符号、Δ严格性、端点是否取到。"
     },
     {
       "slide": 21,
-      "title": "第二课反馈",
-      "family": "diagnosis-and-transfer",
+      "title": "证据与反馈",
+      "family": "four-evidence-components",
       "lesson": 2,
-      "minutes": 4
+      "minutes": 3,
+      "objective": "能据题目目标选择方法，并以完整条件和边界说明作为学习证据。",
+      "diagnosis": "若会计算但漏范围，先圈出题干量词和区间；若只背结果，要求构造失败例。"
     },
     {
       "slide": 22,
-      "title": "计费模型",
-      "family": "formula-above-table",
+      "title": "利润模型",
+      "family": "paired-reasoning",
       "lesson": 3,
-      "minutes": 4
+      "minutes": 4,
+      "objective": "能区分收入与利润，建立目标函数，并写清降价变量和可行域。",
+      "diagnosis": "若用收入替利润，要求列单位成本；若漏界限，将变量翻回售价检验。"
     },
     {
       "slide": 23,
-      "title": "方案选择",
-      "family": "plot-right-solution-left",
+      "title": "连续与整数",
+      "family": "graph-with-reasoning",
       "lesson": 3,
-      "minutes": 4
+      "minutes": 5,
+      "objective": "能求连续最优，再按整数约束比较相邻点，给经营量的解释。",
+      "diagnosis": "把3.5直接四舍五入时，要求计算左右相邻整数；若x非法则先限可行集。"
     },
     {
       "slide": 24,
-      "title": "分段计费",
-      "family": "wide-graph-bottom-triple",
+      "title": "目标与产能",
+      "family": "objectives-with-constraint",
       "lesson": 3,
-      "minutes": 5
+      "minutes": 6,
+      "objective": "能区分收入目标与利润目标，并在增加产能上限后重做可行域。",
+      "diagnosis": "若目标改变仍用旧顶点，先重写目标式；若只比最优值不验产能，回代销量。"
     },
     {
       "slide": 25,
-      "title": "相向行程",
-      "family": "timeline-equations",
+      "title": "几何约束",
+      "family": "diagram-and-model",
       "lesson": 3,
-      "minutes": 5
+      "minutes": 4,
+      "objective": "能把沿墙长度限制写进可行域，识别无约束顶点失效。",
+      "diagnosis": "若仍取正方形或x=10，要求代回沿墙长y≤16；先画三边与墙。"
     },
     {
       "slide": 26,
-      "title": "数据与解析式",
-      "family": "data-derivation",
+      "title": "面积达标",
+      "family": "derivation-with-domain",
       "lesson": 3,
-      "minutes": 4
+      "minutes": 5,
+      "objective": "能求达标区间与可行域交集，并将边界解释为实际尺寸。",
+      "diagnosis": "若把代数区间直接作为实际答案，圈出x≥12；平方开根保留两侧。"
     },
     {
       "slide": 27,
-      "title": "模型的适用范围",
-      "family": "table-left-evidence-right",
+      "title": "双方案比较",
+      "family": "graph-with-reasoning",
       "lesson": 3,
-      "minutes": 5
+      "minutes": 4,
+      "objective": "能先比较两个模型再写出较小值的分段，认识目标不同于单项最大。",
+      "diagnosis": "若分别求最大再取小，要求在同一个x上同时比较两个值。"
     },
     {
       "slide": 28,
-      "title": "开放建模",
-      "family": "branching-method",
+      "title": "最小值最大",
+      "family": "paired-reasoning",
       "lesson": 3,
-      "minutes": 5
+      "minutes": 6,
+      "objective": "能用分段单调性证明最大化较小值的最优点，解释不同目标结果。",
+      "diagnosis": "若仅凭交点猜最优，要求分别证明左右段不能更大；交点并非所有题都最优。"
     },
     {
       "slide": 29,
-      "title": "综合应用",
-      "family": "integrated-material",
+      "title": "迁移任务",
+      "family": "tiered-practice",
       "lesson": 3,
-      "minutes": 4
+      "minutes": 6,
+      "objective": "能在撤去部分支架后独立写目标、约束、候选点和结论。",
+      "diagnosis": "只报数值时要求补变量与单位；按漏约束、离散处理或目标误读分别反馈。"
     },
     {
       "slide": 30,
-      "title": "单元自测",
-      "family": "six-question-grid",
+      "title": "反馈与修订",
+      "family": "four-evidence-components",
       "lesson": 3,
-      "minutes": 6
+      "minutes": 3,
+      "objective": "能根据具体错误定位需修订的环节，而非仅对照统一答案。",
+      "diagnosis": "要求学生从自己解答中圈出一处条件或理由并修订；表中错误是假设诊断，不是学测结果。"
     },
     {
       "slide": 31,
-      "title": "自测讲评",
-      "family": "wide-table",
+      "title": "结构迁移",
+      "family": "synthesis-relationship",
       "lesson": 3,
-      "minutes": 3
+      "minutes": 2,
+      "objective": "用目标—条件—方法建立知识联系，以一个独立出口题检验区间与量词。",
+      "diagnosis": "若只给t≤√2，要求补最小值分类与等号点；这是课末快检，未完成者转课后延伸。"
     }
   ]
 }
