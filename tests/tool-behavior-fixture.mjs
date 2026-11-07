@@ -10,7 +10,7 @@ const [skillDir, outputDir] = process.argv.slice(2);
 if (!skillDir || !outputDir) throw new Error('Provide skillDir and outputDir.');
 const english = 'A model of how data and theory can be used in one science lesson';
 const longChinese = '先秦文化与秦汉政治制度比较';
-for (const title of ['先秦文化', english, longChinese]) {
+for (const title of ['先秦文化', '从一条请求开始', english, longChinese]) {
   assert.equal(assertTopicTitle(title), title);
 }
 for (const title of ['', '先读材料再比较证据', '如何理解模型', '本页讨论证据']) {
@@ -23,7 +23,7 @@ const fixtures = [
   {title:'先秦文化', purpose:'parent'},
   {title:english, purpose:'classroom'},
   {title:longChinese, purpose:'parent', tableSize:29, bodySize:31},
-  {title:'边界条件', purpose:'classroom', tableSize:26},
+  {title:'从一条请求开始', purpose:'classroom', tableSize:26},
 ];
 for (const [i, fixture] of fixtures.entries()) {
   const slide = deck.addSchoolScene({title:fixture.title, purpose:fixture.purpose});

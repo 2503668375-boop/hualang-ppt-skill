@@ -1,4 +1,4 @@
-# 原生制作工具 V8.5
+# 原生制作工具 V8.6
 
 常规华朗内容页使用`addPage`；`addSchoolScene`同样只保留页眉、校徽、分隔线与正文底。混合场景创建时指定`sceneMode:'mixed'`，通用入口漏传`purpose`会报错；单一场景可用`defaultPurpose`整稿指定。为兼容旧稿，未传这些参数仍保留report默认。用途参数只设置字号起点，不决定主体和构图，也不证明场景设计已经完成。
 
@@ -8,7 +8,7 @@
 
 `addPage`只提供品牌框架，没有默认卡片网格。`addReportPage(...).areas.content`给出完整正文区；历史`evidence/note`保留兼容，调用者无需将一页切成证据块和底备注块。内容选择见[内容与版式](report-layouts.md)。
 
-桌面环境读取 `load_workspace_dependencies` 返回的运行库。可将辅助库复制到本次临时制作目录，并让该目录解析已有依赖；不要把依赖目录打入技能包。字体先核实，中文默认PingFang SC，英数Arial，简单分式默认Times New Roman；缺失时用 `zhFont / latinFont / mathFont` 传入实际可用字体。
+桌面环境读取`load_workspace_dependencies`返回的运行库，确认其中已有`@oai/artifact-tool`再调用辅助库；不将从公共npm安装此包作为前置要求。可将辅助库复制到本次临时制作目录，并让该目录解析已有依赖；不要把依赖目录打入技能包。缺少运行库时采用当前原生工具，按[跨工具最小实现](production.md#跨工具的最小实现)及[样式契约](../assets/style-contract.json)执行。字体先核实，中文默认PingFang SC，英数Arial，简单分式默认Times New Roman；缺失时用 `zhFont / latinFont / mathFont` 传入实际可用字体。
 
 ```js
 import {createDeck,renderSavedDeck,colors,profiles} from './hualang-kit.mjs';
@@ -28,7 +28,7 @@ const preview=await deck.writeDraft({candidatePath,renderDir});
 
 ## 用途与默认字号
 
-坐标/字号单位为CSS像素，24px=18pt。画布1280×720。标题区约y=30—73，分隔线y=86，主体可从y=108至650。不要复制V5的第二个大标题或y=210才开始正文的布局。
+坐标/字号单位为逻辑CSS像素；模板映射1px=9525EMU=0.75pt，24px=18pt。画布1280×720。完整单位、字体、profile和边界以[样式契约](../assets/style-contract.json)的`implementation`为准。标题区约y=30—73，分隔线y=86，主体区y=112—650。不要复制V5的第二个大标题或y=210才开始正文的布局。
 
 | purpose | 题名px | 正文px | 概论px | 典型用途 |
 |---|---|---|---|---|
@@ -100,7 +100,7 @@ deck.evidenceNote(slide,'解释这个具体转折及其条件。',{
 |---|---|
 | `addPage({title,purpose,summary,section,titleSize})` | 普通页，单题名；summary为正文层级概论 |
 | `addSchoolScene({title,summary,section,purpose})` | 保留固定正文框架，用于家长、招生与对外交流 |
-| `addReportPage({title,summary,section})` | 题名、概论、依据与落实区域，内部完整论证 |
+| `addReportPage({title,summary,section})` | 品牌页与开放content正文区；历史evidence/note仅兼容旧稿，不决定论证或分区 |
 | `addLessonPlanPage({title,section})` | 历史分区便捷入口，不代表所有教案固定三块；按实际活动与反馈重组 |
 | `addMathPage({title,mode,purpose,section})` | mode为single/pair/proof，分别给完整题干+推导/图形、双题或通栏推导 |
 | `addLessonPage({title,task,section})` | 观察对象与任务页，只适用于相应观察任务 |
@@ -182,7 +182,7 @@ deck.facetCorner(slide,{x:48,y:540,w:220,h:100});
 
 ## 题名与草稿
 
-`writeDraft`保存候选PPTX后，调用`renderSavedDeck`从保存文件重新导入。每次使用新的run目录，返回PNG、实际layout及`render-manifest.json`，记录源文件和各页图片SHA-256，状态始终为`unreviewed`。不再渲染保存前的内存对象充当最终证据。
+`writeDraft`保存候选PPTX后，调用`renderSavedDeck`从保存文件重新导入。每次使用新的run目录，返回PNG、实际layout及`render-manifest.json`，记录源文件和各页图片SHA-256，并声明`renderEvidence.kind:'saved_file_render'`、引擎及从最终PPTX导入的入口，状态始终为`unreviewed`。不再渲染保存前的内存对象充当最终证据。
 
 对已有或随后补附件/动画的最终文件，只读重渲染，不重新导出PPT：
 
@@ -190,6 +190,8 @@ deck.facetCorner(slide,{x:48,y:540,w:220,h:100});
 const preview=await renderSavedDeck({candidatePath:finalPptx,renderDir,scale:1.5});
 // 局部修复可传slides:[受影响页码]；只声明该范围复查。
 ```
+
+其他工具的真实应用导出可登记`application_export`；结构镜像用`structural_mirror`，无来源为`unknown`。后两者不支持视觉签收，处理见[无实际渲染环境](production.md#无实际渲染环境时)。
 
 预览成功后按[四项验收](review.md)看实际页面，并按[记录格式](review-record.md)补真实观察。混合场景若全部页使用同一用途，应复核选择是否合理；即使不同用途参数齐全，主体仍同构也需修改。`addParentPage`等历史便捷布局只适合其特定照片材料，不替代家长作品反馈的构图选择。
 

@@ -1,6 +1,6 @@
 # 华朗学校汇报与教学 Skill
 
-当前版本 **v8.5**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
+当前版本 **v8.6**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
 
 ## 本版构图应用
 
@@ -9,6 +9,17 @@
 [可编辑样张](artifact-template-hualang-school/assets/layout-atlas.pptx?raw=true) · [关系、密度与主题统一](artifact-template-hualang-school/references/layout-atlas.md) · [排版研究与吸收](artifact-template-hualang-school/references/layout-research.md) · [交给其他 AI 的试用任务](artifact-template-hualang-school/references/other-ai-trial.md)
 
 六种正文分别呈现中心支撑、范围包含、阶段递进、作答对照、校园图文和数据解读。机制、课程安排与学习数据均为原创模拟或拟议，校园照片来自既有品牌素材；不代表学校实绩。样张用于观察构图方法，不要求新稿按顺序套用。
+
+## v8.6 更新
+
+- **从实际成稿修正规则**：增加[介绍与培训](artifact-template-hualang-school/references/skill-intro.md)，区分初次了解、使用培训和专业维护；用可辨认成品证明能力，合并无信息增量的重复页，内部规范留在技能包。
+- **让关系与组件可检查**：逐页写出具体关系、主对象、主要组件及新增作用，补充任务带、方法条、指标、点比较、里程碑、批注、辐射、旗标、聚焦面板与阶梯的语义；遮页标题复核主体，按本次指定上限清点重复，不把局部配额强加给所有课堂。
+- **清理跨场景冲突**：备课与课堂分别组织，比较保留可比尺度而不强制等分；报告入口明确开放正文，阅读同屏与讲述/揭示单元分别判断。
+- **补上跨工具实现依据**：统一画布、EMU/逻辑px/pt换算、字号起点、品牌几何和原生对象要求；模拟标识贴近主体。现有运行库可用才调用辅助库，不要求从公共npm安装。
+- **区分实际渲染与结构镜像**：验收记录声明预览方式，镜像、未知及未声明来源不能进入待签收；程序只核声明与证据，不自动识破虚假声明、不认证美观。
+- **修正标题误拦并索引样张**：“从……开始”转人工复核，保留口播问句规则；[样张索引](artifact-template-hualang-school/references/sample-index.md)列出实际页数、选页、用途与示例性质。
+
+本轮范围与验证见[V8.6记录](tests/v8.6-validation.md)。品牌原资产及旧示例保留；本次审查用户提供的介绍稿，没有将其重制或标为已通过。
 
 ## v8.5 更新
 
@@ -20,7 +31,7 @@
 
 实际检查与边界见 [V8.5验证](tests/v8.5-validation.md)。既有介绍和学科示例保留其原版本范围。
 
-## 简短了解
+## 既有六页介绍
 
 [![华朗Skill六页简明介绍](demo/brief-introduction-overview.jpg)](demo/brief-introduction.pptx?raw=true)
 
@@ -69,4 +80,4 @@
 
 [技能入口](artifact-template-hualang-school/SKILL.md) · [内容策划](artifact-template-hualang-school/references/workflow.md) · [构图](artifact-template-hualang-school/references/composition.md) · [组件选用](artifact-template-hualang-school/references/component-index.md) · [四项验收](artifact-template-hualang-school/references/review.md) · [V8.4验证](tests/v8.4-validation.md) · [V8.3验证](tests/v8.3-validation.md) · [教学设计](artifact-template-hualang-school/references/teaching-design.md) · [教学深度](artifact-template-hualang-school/references/teaching-depth.md) · [内容正确性](artifact-template-hualang-school/references/content-accuracy.md) · [制作API](artifact-template-hualang-school/references/production-api.md)
 
-本轮检查构图样张的最终保存文件、静态实页、数据与关系对象、公开包完整性和本地安装副本。未做 Microsoft PowerPoint 应用内放映、真实投影、其他AI平台实际制作或教学效果验证；软件响应和检查程序不能认证审美。
+本轮检查技能规则、预览来源与标题行为、原生对象导出，以及用户提供介绍稿的内容和实际静态导出页。既有样张不自动获得本版重新验收；未做 Microsoft PowerPoint 应用内放映、真实投影、其他AI平台的完整重制或教学效果验证。软件响应和检查程序不能认证审美。

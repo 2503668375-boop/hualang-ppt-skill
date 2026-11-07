@@ -80,6 +80,9 @@ class PreviewContractTests(unittest.TestCase):
             self.assertEqual(Path(manifest['artifact']['path']),source.resolve())
             self.assertEqual(manifest['artifact']['sha256'],self.source_before)
             self.assertEqual(manifest['renderSourceSha256'],self.source_before)
+            self.assertEqual(manifest['renderEvidence']['kind'],'saved_file_render')
+            self.assertIn('importPptx',manifest['renderEvidence']['entryPoint'])
+            self.assertEqual(manifest['renderEvidence']['engine'],'@oai/artifact-tool')
 
     def test_manifest_is_unreviewed_and_covers_only_the_requested_real_page(self):
         with zipfile.ZipFile(SKILL/'assets'/'source-original.pptx') as source:

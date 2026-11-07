@@ -46,6 +46,8 @@ export async function renderSavedDeck({candidatePath, renderDir, scale = 1.5, sl
   }
   if (sha(await fs.readFile(source)) !== sourceHash) throw new Error('PPTX changed during preview export; render the saved version again.');
   const manifest = {schemaVersion:1,status:'unreviewed',artifact:{path:source,sha256:sourceHash},
+    renderEvidence:{kind:'saved_file_render',engine:'@oai/artifact-tool',
+      entryPoint:'PresentationFile.importPptx(final PPTX) -> saved.export({slide,format:png})'},
     renderSourceSha256:sourceHash,slideCount:saved.slides.items.length,scope:selected,pages,
     notice:'预览由保存文件重导入，仅记录文件证据；内容、场景和视觉尚未审查。'};
   const renderManifestPath = path.join(runDir,'render-manifest.json');
@@ -60,7 +62,9 @@ export function assertTopicTitle(value, {userSupplied = false} = {}) {
   if (userSupplied) return title;
   // Short Chinese phrases are an editorial preference, not a word limit for
   // subject terminology, formulas or English headings. Check fit after export.
-  const conversational = /^(先.+再|然后|接着|怎样|怎么|如何|本页|我们|你[们的要可]|哪些|什么|它[的是]|从.+开始)/;
+  // A concrete start/progression title needs editorial review, not rejection by
+  // syntax alone. The saved-file checker reports that review from the contract.
+  const conversational = /^(先.+再|然后|接着|怎样|怎么|如何|本页|我们|你[们的要可]|哪些|什么|它[的是])/;
   if (/[\u3400-\u9fff]/.test(title) && (conversational.test(title) || /[？?]/.test(title))) {
     throw new Error('自动题名使用具体议题短语，课堂问句放在任务区：' + title);
   }

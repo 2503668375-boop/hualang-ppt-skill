@@ -48,9 +48,14 @@
     ],
     "maxUnits": 12,
     "forbiddenPatterns": [
-      "^(先.+再|然后|接着|怎样|怎么|如何|本页|我们|你[们的要可]|哪些|什么|它[的是]|从.+开始)"
+      "^(先.+再|然后|接着|怎样|怎么|如何|本页|我们|你[们的要可]|哪些|什么|它[的是])",
+      "[？?]"
     ],
-    "lengthPolicy": "Chinese phrase preference; review long subject titles, no word-count limit for English"
+    "lengthPolicy": "Chinese phrase preference; review long subject titles, no word-count limit for English",
+    "reviewPatterns": [
+      "^从.+开始"
+    ],
+    "reviewPolicy": "Review whether a concrete subject or actual progression is named; regex cannot determine semantic usefulness. Prefer a direct topic phrase where clearer."
   },
   "closing": {
     "source": "assets/source-original.pptx",
@@ -82,5 +87,100 @@
       "table-header",
       "step-marker"
     ]
+  },
+  "implementation": {
+    "coordinateUnit": "logical_px",
+    "slideSizeEmu": {
+      "width": 12192000,
+      "height": 6858000
+    },
+    "unitConversion": {
+      "emuPerLogicalPx": 9525,
+      "ptPerLogicalPx": 0.75,
+      "emuPerPt": 12700,
+      "note": "Derived from the fixed template slide size and 1280×720 logical canvas; independent of monitor DPI. Font sizes in this contract and kit profiles are logical px; OOXML a:rPr sz uses hundredths of pt."
+    },
+    "fonts": {
+      "zh": "PingFang SC",
+      "latin": "Arial",
+      "math": "Times New Roman",
+      "replacementPolicy": "Select actually installed fonts consistently; inspect line breaks, missing glyphs and formula symbols after replacement. Font substitution is not validated by this JSON."
+    },
+    "bodyFrame": {
+      "background": "FDFDFE",
+      "title": {
+        "x": 48,
+        "y": 30,
+        "w": 1010,
+        "h": 43
+      },
+      "logo": {
+        "asset": "assets/logo-horizontal.png",
+        "x": 1093,
+        "y": 25,
+        "w": 139,
+        "h": 49,
+        "fit": "contain"
+      },
+      "divider": {
+        "x": 48,
+        "y": 86,
+        "w": 1184,
+        "color": "BCA36D",
+        "width": 1.4
+      },
+      "content": {
+        "x": 48,
+        "y": 112,
+        "w": 1184,
+        "h": 538
+      }
+    },
+    "profilesPx": {
+      "report": {
+        "title": 28,
+        "body": 21,
+        "summary": 22,
+        "table": 19
+      },
+      "lessonPlan": {
+        "title": 28,
+        "body": 20,
+        "summary": 21,
+        "table": 19
+      },
+      "classroom": {
+        "title": 30,
+        "body": 25,
+        "summary": 25,
+        "table": 23
+      },
+      "worksheet": {
+        "title": 28,
+        "body": 24,
+        "summary": 24,
+        "table": 22
+      },
+      "parent": {
+        "title": 28,
+        "body": 28,
+        "summary": 28,
+        "table": 24
+      },
+      "stage": {
+        "title": 28,
+        "body": 30,
+        "summary": 30,
+        "table": 26
+      }
+    },
+    "profilePolicy": "Helper starting values, not fixed pass thresholds. Use design.md scene ranges and actual viewing distance; enlarged stage statements are separate content objects.",
+    "nativeObjects": [
+      "editable text",
+      "native tables",
+      "data charts with editable series and numeric scales",
+      "editable relation nodes and lines"
+    ],
+    "scope": "Cross-tool implementation reference; the current style checker verifies only the fields named in its scope and does not validate every value in this block."
   }
 }

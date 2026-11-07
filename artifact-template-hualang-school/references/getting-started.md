@@ -7,7 +7,7 @@
 - [公开仓库与说明](https://github.com/2503668375-boop/hualang-ppt-skill)
 - [下载完整仓库 ZIP](https://github.com/2503668375-boop/hualang-ppt-skill/archive/refs/heads/main.zip)
 - 仓库中的技能子目录为 `artifact-template-hualang-school`。需要完整目录，包含模板、图片和参考文件；单独复制 `SKILL.md` 不够。
-- v8.5包含[构图样张与选用方法](layout-atlas.md)及[其他AI试用任务](other-ai-trial.md)。将完整目录交给具有文件读取和原生PPT制作能力的助手；按它的实际环境安装或读取，不假定所有平台共享同一安装目录。
+- v8.6包含[样张索引](sample-index.md)、[介绍与培训](skill-intro.md)、[跨工具最小要求](production.md#跨工具的最小实现)及[其他AI试用任务](other-ai-trial.md)。将完整目录交给具有文件读取和原生PPT制作能力的助手；按它的实际环境安装或读取，不假定所有平台共享同一安装目录。
 
 ## 在 Codex 中安装
 

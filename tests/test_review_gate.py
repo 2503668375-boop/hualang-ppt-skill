@@ -46,6 +46,8 @@ class ReviewGateTests(unittest.TestCase):
             'schemaVersion': 1,
             'artifact': {'path': 'deck.pptx', 'sha256': gate.digest(self.deck)},
             'renderSourceSha256': gate.digest(self.deck),
+            'renderEvidence': {'kind': 'saved_file_render', 'engine': 'test renderer',
+                               'entryPoint': 'import final deck.pptx and export page PNGs'},
             'pages': [{'slide': number, 'render': image.name,
                        'renderSha256': gate.digest(image), 'scene': 'report',
                        'subject': subject, 'verdict': 'pass'}
@@ -86,6 +88,33 @@ class ReviewGateTests(unittest.TestCase):
         self.record['gates']['content']['verdict'] = 'revise'
         self.assert_returns()
         self.assertEqual(self.record['gates']['file']['verdict'], 'pass')
+
+    def test_structural_mirror_cannot_claim_final_page_review(self):
+        self.record['renderEvidence']['kind'] = 'structural_mirror'
+        outcome = self.assert_returns()
+        self.assertEqual(outcome['renderEvidenceKind'], 'structural_mirror')
+        self.assertTrue(any('结构镜像' in e for e in outcome['errors']))
+
+    def test_legacy_unknown_and_missing_render_provenance_require_declaration(self):
+        for evidence in (None, {}, {'kind': 'unknown'}, {'kind': 'not-a-kind'}):
+            with self.subTest(evidence=evidence):
+                self.record['renderEvidence'] = evidence
+                self.assert_returns()
+
+    def test_real_render_requires_engine_and_final_file_entry_point(self):
+        original = copy.deepcopy(self.record['renderEvidence'])
+        for key in ('engine', 'entryPoint'):
+            self.record['renderEvidence'] = copy.deepcopy(original)
+            self.record['renderEvidence'][key] = ' '
+            self.assert_returns()
+
+    def test_application_export_is_valid_evidence_without_claiming_playback(self):
+        self.record['renderEvidence'] = {'kind': 'application_export',
+                                        'engine': 'presentation application',
+                                        'entryPoint': 'open final deck.pptx and export PDF, then rasterize'}
+        outcome = self.run_record()
+        self.assertEqual(outcome['decision'], 'ready_for_human_signoff')
+        self.assertEqual(outcome['renderEvidenceKind'], 'application_export')
 
     def test_open_problem_overrides_all_pass_verdicts(self):
         self.issue()

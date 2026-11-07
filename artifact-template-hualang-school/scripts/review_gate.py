@@ -14,6 +14,7 @@ P = 'http://schemas.openxmlformats.org/presentationml/2006/main'
 R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 AREAS = ('content', 'expression', 'visual', 'file')
 NOTICE = '只核审查记录一致性与文件证据，不能代替内容、审美或场景的人工判断。'
+RENDER_KINDS = ('saved_file_render', 'application_export', 'structural_mirror', 'unknown')
 
 
 def digest(path):
@@ -68,6 +69,7 @@ def check(review_path):
     count = 0
     scope = []
     full = False
+    render_kind = 'unknown'
 
     def fail(message):
         errors.append(message)
@@ -79,6 +81,7 @@ def check(review_path):
         return {'schemaVersion': 1,
                 'decision': 'return_for_revision' if errors else 'ready_for_human_signoff',
                 'coversWholeDeck': full, 'slideCount': count, 'scope': scope,
+                'renderEvidenceKind': render_kind,
                 'errors': errors, 'notice': notice}
 
     try:
@@ -106,6 +109,22 @@ def check(review_path):
         fail('artifact.sha256与当前PPTX不一致')
     if not valid_hash(record.get('renderSourceSha256')) or record['renderSourceSha256'].lower() != actual_hash:
         fail('渲染来源不是当前PPTX版本')
+    # A source hash binds a declaration to a file version; it does not establish
+    # that a renderer, rather than a recreated layout, produced the images.
+    provenance = record.get('renderEvidence')
+    if not isinstance(provenance, dict):
+        fail('缺少renderEvidence；旧记录须补声明实际预览方式，不能由摘要推定实页渲染')
+    else:
+        kind = provenance.get('kind')
+        if kind not in RENDER_KINDS:
+            fail('renderEvidence.kind须声明实页渲染、应用导出、结构镜像或未知')
+        else:
+            render_kind = kind
+        if kind in ('saved_file_render', 'application_export'):
+            if not nonempty(provenance.get('engine')) or not nonempty(provenance.get('entryPoint')):
+                fail('实页预览须声明渲染引擎与读取最终PPTX的导出入口')
+        elif kind in ('structural_mirror', 'unknown'):
+            fail('结构镜像或未知来源仅能辅助检查；视觉与文件呈现仍待最终PPTX实页核验')
 
     def page_number(value):
         return type(value) is int and 1 <= value <= count

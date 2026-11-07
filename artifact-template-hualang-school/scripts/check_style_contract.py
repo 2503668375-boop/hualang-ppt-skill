@@ -75,7 +75,8 @@ def check(pptx,c,title,presenter,date,template=False,allow_titles=(),allow_subti
     units=len(re.findall(r'[\u3400-\u9fff]|[A-Za-z0-9]+',t))
     if not t.strip():errors.append(f'第{number}页题名为空')
     if re.search(r'[\u3400-\u9fff]',t):
-     if re.search(r'^(先.+再|然后|接着|怎样|怎么|如何|本页|我们|你[们的要可]|哪些|什么|它[的是]|从.+开始)',t) or re.search(r'[？?]',t):errors.append(f'第{number}页自动题名为口播或问句：{t}')
+     if any(re.search(pattern,t) for pattern in c['heading'].get('forbiddenPatterns',[])):errors.append(f'第{number}页自动题名为口播或问句：{t}')
+     if any(re.search(pattern,t) for pattern in c['heading'].get('reviewPatterns',[])):warnings.append(f'第{number}页题名需人工复核具体对象及信息量；句式本身不作禁用依据：{t}')
      if units>c['heading']['maxUnits']:warnings.append(f'第{number}页题名较长，结合学科术语和实际换行复核：{t}')
   closing=closing_check(z,parts[-1],c['closing']['assetSha256'],c['closing'])
   if not closing['passed']:errors.append('封尾原图、培养目标、结束语或安全区不符合规范')
