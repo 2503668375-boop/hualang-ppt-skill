@@ -1,4 +1,4 @@
-# 原生制作工具 V9.0
+# 原生制作工具 V9.1
 
 常规华朗内容页使用`addPage`；`addSchoolScene`同样只保留页眉、校徽、分隔线与正文底。混合场景创建时指定`sceneMode:'mixed'`，通用入口漏传`purpose`会报错；单一场景可用`defaultPurpose`整稿指定。为兼容旧稿，未传这些参数仍保留report默认。用途参数只设置字号起点，不决定主体和构图，也不证明场景设计已经完成。
 
@@ -237,3 +237,23 @@ await renderSavedDeck({candidatePath:finalPath,renderDir});
 ```
 
 本例来自单页独立试作，当前页码几何与品牌模板绑定；模板更换时重新核对，不泛用于别的模板。
+
+## 图片留位
+
+先按[图片与留位](image-planning.md)确定用途。用原生可编辑框和文字标明缺图，图面不写像素坐标、文件路径和核验日志。
+
+```js
+const slot = deck.imageSlot(slide, {
+  x:48,y:180,w:720,h:405,
+  title:'学生讨论近景',
+  brief:'保留书本与交流动作\n对应本页的具体学习任务',
+  fit:'cover',name:'reading-photo'
+});
+// slot = {objects, frame:{x,y,w,h}, fit}
+// 素材补齐时，可使用相同frame，置入后移除该slot.objects并复看裁切。
+await deck.image(slide,photoPath,{...slot.frame,fit:slot.fit,alt:'照片实际呈现的内容'});
+```
+
+`title/brief`必须具体，固定显示“待补图片”。可调`size/titleSize/padding/lineHeight`；宽高按真实留图需求给定，支持横竖。`h`校验只覆盖显式换行，不推断字体自然折行。返回的原生形状集合可用于揭示或整体替换，它不是PowerPoint的一键替图占位符；上述插图示例不自动删除图位文字。
+
+独立配图清单保留页码、用途、frame、fit、来源/匿名要求及是否已补；补图后复看图、图注与条件是否仍一致。留位版可按用户要求交付，未补核心证据不得写成已经证明的事实。

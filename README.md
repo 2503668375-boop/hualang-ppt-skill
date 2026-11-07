@@ -1,6 +1,6 @@
 # 华朗学校汇报与教学 Skill
 
-当前版本 **v9.0**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
+当前版本 **v9.1**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
 
 ## 本版构图应用
 
@@ -9,6 +9,16 @@
 [可编辑样张](artifact-template-hualang-school/assets/layout-atlas.pptx?raw=true) · [关系、密度与主题统一](artifact-template-hualang-school/references/layout-atlas.md) · [排版研究与吸收](artifact-template-hualang-school/references/layout-research.md) · [交给其他 AI 的试用任务](artifact-template-hualang-school/references/other-ai-trial.md)
 
 六种正文分别呈现中心支撑、范围包含、阶段递进、作答对照、校园图文和数据解读。机制、课程安排与学习数据均为原创模拟或拟议，校园照片来自既有品牌素材；不代表学校实绩。样张用于观察构图方法，不要求新稿按顺序套用。
+
+## V9.1 对象、场景与图文设计
+
+[![六类场景与图片留位](artifact-template-hualang-school/assets/scene-design-v9.1.jpg)](artifact-template-hualang-school/assets/scene-design-v9.1.pptx?raw=true)
+
+[可编辑留位版样张](artifact-template-hualang-school/assets/scene-design-v9.1.pptx?raw=true) · [场景设计](artifact-template-hualang-school/references/scene-layouts.md) · [图片与留位](artifact-template-hualang-school/references/image-planning.md) · [验证范围](tests/v9.1-validation.md)
+
+延续用户认可改善的V9视觉方向，继续将不同对象的内容和页面分别设计：管理关注判断与取舍，备课关注活动及评价，课堂关注学习对象与推理，家长关注作品变化与支持，招生和演讲按体验、选择或讲述节奏组织。丰富度来自必要证据、解释、过程与条件，不用同一套分栏换标题。
+
+新增原生可编辑图片留位，记录具体主体、用途和素材要求，可按相同位置填图。样张正文有1张已有校园品牌图片和4处明确待补图位；它是用户允许的留位版，未将缺图当作已有证据或宣称可直接正式对外发布。配图后需同步核对相关文字与判断。
 
 ## V9 视觉与组件整改
 
@@ -23,7 +33,7 @@
 - **以实页对照验证**：组成、费用、数学和请求四类样张分别检验成果焦点、数字主次、图式关系及精确批注。中途发现的单位缺失、浮空箭头、单位距离和底部余量问题已修正。
 - **审查不再只排除硬错**：同材料前后对照、长短标签/不同负载/左右批注变体，分别记录改动及限制；软件测试和AI审查不能替代用户认可。
 
-样张保留原品牌首尾、近白底和原生对象，使用模拟数据及原创题例。它们是本轮整改证据，尚未取得用户对新版视觉的确认，不保证所有输入自动得到同样效果。
+样张保留原品牌首尾、近白底和原生对象，使用模拟数据及原创题例。它们是本轮整改证据，用户已反馈V9排版明显改善；新材料仍须实际检查，不保证所有输入自动得到同样效果。
 
 ## v8.6 更新
 

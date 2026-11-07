@@ -326,6 +326,43 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
       diagram:mode === 'proof' ? null : {x:824,y:236,w:408,h:416}}};
   }
 
+  // An editable image reservation, not a native click-to-replace picture
+  // placeholder. Dimensions transfer directly to image(); no photo is invented.
+  function imageSlot(slide,{x,y,w,h,title,brief,fit='cover',name='image-slot',
+    size=22,titleSize=26,padding=24,lineHeight=1.2}={}) {
+    const finite=v=>typeof v==='number'&&Number.isFinite(v);
+    const nonempty=v=>typeof v==='string'&&v.trim().length>0;
+    if(![x,y,w,h,size,titleSize,padding,lineHeight].every(finite)||
+       w<=0||h<=0||size<=0||titleSize<=0||padding<0||lineHeight<1||
+       ![title,brief,name].every(nonempty)||!['contain','cover'].includes(fit)) {
+      throw new Error('imageSlot needs a title, image brief, finite geometry and a contain/cover fit.');
+    }
+    const innerW=w-2*padding,statusH=24,gap=12;
+    const titleH=title.split('\n').length*titleSize*lineHeight;
+    const briefH=brief.split('\n').length*size*lineHeight;
+    const contentH=titleH+gap+briefH,bodyTop=y+padding+statusH+gap;
+    const bodyH=h-2*padding-statusH-gap;
+    if(x<0||y<0||x+w>canvas.width||y+h>canvas.height||innerW<120||bodyH<contentH) {
+      throw new Error('imageSlot needs a canvas-bounded frame and enough room for its explicit text lines.');
+    }
+    // Explicit line breaks supply a height floor. Actual font wrapping still
+    // requires inspection of the saved-file render, as with ordinary text.
+    const contentY=bodyTop+(bodyH-contentH)/2;
+    const frame={x,y,w,h};
+    const objects=[
+      slide.shapes.add({name:name+'-frame',geometry:'rect',
+        position:{left:x,top:y,width:w,height:h},fill:colors.paper,
+        line:{fill:'#C9C1D3',width:1.2}}),
+      deckText(slide,'待补图片',{x:x+padding,y:y+padding,w:120,h:statusH,
+        size:18,color:colors.purple,bold:true,name:name+'-status'}),
+      deckText(slide,title,{x:x+padding,y:contentY,w:innerW,h:titleH,
+        size:titleSize,color:colors.purple,bold:true,lineSpacing:lineHeight,name:name+'-title'}),
+      deckText(slide,brief,{x:x+padding,y:contentY+titleH+gap,w:innerW,h:briefH,
+        size,color:colors.secondary,lineSpacing:lineHeight,name:name+'-brief'})
+    ];
+    return {objects,frame,fit};
+  }
+
   // Component dimensions use the caller's explicit line breaks, never an
   // estimated character count. Final font wrapping still needs rendered review.
   function bandGeometry(label,body,{x,y,w,size,labelSize,padding,gap,labelWidth,labelPadding=0}) {
@@ -741,5 +778,5 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
   }
   return {presentation, cover, closing, lessonBand, methodStrip, stepMarker, addLessonPlanPage, addPage, addReportPage, addLessonPage, addParentPage, addStage, addMathPage,
     addPhotoEssay,addEditorial,addCanvas,addSchoolScene,schoolIcon,numberBadge,iconLabel,sectionRule,photoLabel,pointBand,purpleRibbon,lightFrame,focusPanel,numberFlag,starOrbit,stepBands,evidenceStrip,facetCorner,metricInline,evidenceNote,dotComparison,milestoneTimeline,hubSpoke,registerReveal,writeRevealManifest,fraction,text: deckText,image,
-    nativeTable: deckTable, chart: deckChart, line, arrow, writeDraft};
+    nativeTable: deckTable, chart: deckChart, line, arrow, imageSlot, writeDraft};
 }
