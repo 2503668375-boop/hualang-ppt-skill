@@ -1,6 +1,24 @@
 # 华朗学校汇报与教学 Skill
 
-当前版本 **v8.4**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
+当前版本 **v8.5**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
+
+## 本版构图应用
+
+[![六种主体构图](artifact-template-hualang-school/assets/layout-atlas-preview.jpg)](artifact-template-hualang-school/assets/layout-atlas.pptx?raw=true)
+
+[可编辑样张](artifact-template-hualang-school/assets/layout-atlas.pptx?raw=true) · [关系、密度与主题统一](artifact-template-hualang-school/references/layout-atlas.md) · [排版研究与吸收](artifact-template-hualang-school/references/layout-research.md) · [交给其他 AI 的试用任务](artifact-template-hualang-school/references/other-ai-trial.md)
+
+六种正文分别呈现中心支撑、范围包含、阶段递进、作答对照、校园图文和数据解读。机制、课程安排与学习数据均为原创模拟或拟议，校园照片来自既有品牌素材；不代表学校实绩。样张用于观察构图方法，不要求新稿按顺序套用。
+
+## v8.5 更新
+
+- **增加关系驱动的构图库**：说明辐射、包含、分流、汇聚、递进、循环、比较及图文组合的适用条件、负载与误用；吸收 Microsoft、Duarte、TED、Slidesgo 的可观察实例和本机相关技能方法。
+- **补上可用的中心组件**：新增可编辑 `hubSpoke`，外围区域按材料分配，保留关系词与完整说明，可省连接线，不自动画外围闭环；旧入口保留兼容。
+- **密度和主题同时检查**：固定品牌、字体角色、色彩与间距，主体随问题改变。去框后重复横线、线性分行或圆阵同样复核；不设组件数或版型配额。
+- **继续精修实际部件**：收紧中心与外围比例，连接落到明确锚点，阶梯让位给具体证据；作答共享基线，照片图注移出证据区域，数据只保留一个主要强调入口。相应方法进入微观精修，不能只凭版式种类判定完成。
+- **提供完整试用入口**：完整技能包内含实际样张、预览、制作参考和独立任务；其他 AI 可使用自己的原生PPT工具，不能只读取一个入口文档便宣称安装或制作完成。
+
+实际检查与边界见 [V8.5验证](tests/v8.5-validation.md)。既有介绍和学科示例保留其原版本范围。
 
 ## 简短了解
 
@@ -51,4 +69,4 @@
 
 [技能入口](artifact-template-hualang-school/SKILL.md) · [内容策划](artifact-template-hualang-school/references/workflow.md) · [构图](artifact-template-hualang-school/references/composition.md) · [组件选用](artifact-template-hualang-school/references/component-index.md) · [四项验收](artifact-template-hualang-school/references/review.md) · [V8.4验证](tests/v8.4-validation.md) · [V8.3验证](tests/v8.3-validation.md) · [教学设计](artifact-template-hualang-school/references/teaching-design.md) · [教学深度](artifact-template-hualang-school/references/teaching-depth.md) · [内容正确性](artifact-template-hualang-school/references/content-accuracy.md) · [制作API](artifact-template-hualang-school/references/production-api.md)
 
-本轮检查最终保存文件、静态实页、内容去重与公开包完整性。未做 Microsoft PowerPoint 应用内放映、真实投影或教学效果验证；软件响应和检查程序不能认证审美。
+本轮检查构图样张的最终保存文件、静态实页、数据与关系对象、公开包完整性和本地安装副本。未做 Microsoft PowerPoint 应用内放映、真实投影、其他AI平台实际制作或教学效果验证；软件响应和检查程序不能认证审美。

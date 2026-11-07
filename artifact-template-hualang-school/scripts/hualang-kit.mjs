@@ -498,6 +498,71 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     return slide.shapes.add({geometry:'custom',position:{left,top,width:w,height:h},fill:'none',line:{fill:color,width},
       customPaths:[{width:w,height:h,commands:[{moveTo:{x:x1-left,y:y1-top}},{lineTo:{x:x2-left,y:y2-top}}]}]});
   }
+  // A semantic hub with open, unequal satellite regions; no decorative orbit.
+  // Validate all geometry before adding native shapes, so a failed call is atomic.
+  function hubSpoke(slide,{center,nodes,size=21,titleSize=23}={}) {
+    const finite = v => typeof v === 'number' && Number.isFinite(v);
+    const nonempty = v => typeof v === 'string' && v.trim().length > 0;
+    const rect = b => b && ['x','y','w','h'].every(k=>finite(b[k])) && b.w>0 && b.h>0;
+    const inside = b => b.x>=0 && b.y>=0 && b.x+b.w<=canvas.width && b.y+b.h<=canvas.height;
+    const overlaps = (a,b) => a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y;
+    if(!center || !['x','y','r'].every(k=>finite(center[k])) || center.r<=0 || !nonempty(center.title) ||
+      ![size,titleSize,center.size??30].every(v=>finite(v)&&v>0) || size<=2 || !Array.isArray(nodes) || !nodes.length) {
+      throw new Error('hubSpoke requires a finite center, positive type sizes and named satellite nodes.');
+    }
+    const hub={x:center.x-center.r,y:center.y-center.r,w:center.r*2,h:center.r*2};
+    if(!inside(hub)) throw new Error('hubSpoke center must fit the canvas.');
+    const titleH=titleSize*1.3, relationH=(size-2)*1.3;
+    const prepared=nodes.map(n=>{
+      if(!rect(n) || !inside(n) || !nonempty(n.title) || !nonempty(n.body) || !nonempty(n.relation)) {
+        throw new Error('hubSpoke nodes need canvas regions, title, body and an actual relationship.');
+      }
+      if(n.anchor && (!finite(n.anchor.x)||!finite(n.anchor.y)||
+        !(((n.anchor.x===n.x||n.anchor.x===n.x+n.w)&&n.anchor.y>=n.y&&n.anchor.y<=n.y+n.h)||
+          ((n.anchor.y===n.y||n.anchor.y===n.y+n.h)&&n.anchor.x>=n.x&&n.anchor.x<=n.x+n.w)))) {
+        throw new Error('hubSpoke anchor must be on the satellite region boundary.');
+      }
+      const closestX=Math.max(n.x,Math.min(n.x+n.w,center.x)),closestY=Math.max(n.y,Math.min(n.y+n.h,center.y));
+      const ax=n.anchor?.x??closestX,ay=n.anchor?.y??closestY;
+      const distance=Math.hypot(ax-center.x,ay-center.y);
+      if(Math.hypot(closestX-center.x,closestY-center.y)<=center.r+16 || n.h<titleH+(n.label?0:relationH+4)+size*1.3+8) {
+        throw new Error('hubSpoke needs separation from the center and room for readable node content.');
+      }
+      if(n.label && (!rect({...n.label,h:n.label.h??relationH}) || !inside({...n.label,h:n.label.h??relationH}))) {
+        throw new Error('hubSpoke relationship labels need finite canvas regions.');
+      }
+      return {...n,ax,ay,distance};
+    });
+    for(let i=0;i<prepared.length;i++) {
+      for(let j=0;j<i;j++) if(overlaps(prepared[i],prepared[j])) throw new Error('hubSpoke node regions must not overlap.');
+      const n=prepared[i];
+      if(n.label){
+        const label={...n.label,h:n.label.h??relationH};
+        if(overlaps(label,hub)||prepared.some(p=>overlaps(label,p))||prepared.slice(0,i).some(p=>p.label&&overlaps(label,{...p.label,h:p.label.h??relationH}))) {
+          throw new Error('hubSpoke relationship labels must not cover a node or each other.');
+        }
+      }
+    }
+    const out=[];
+    for(const n of prepared) if(n.connect!==false) {
+      const dx=(n.ax-center.x)/n.distance,dy=(n.ay-center.y)/n.distance;
+      out.push(segment(slide,center.x+dx*(center.r+6),center.y+dy*(center.r+6),n.ax-dx*8,n.ay-dy*8,{color:colors.gold,width:1.6}));
+    }
+    out.push(slide.shapes.add({name:'hub-center',geometry:'ellipse',position:{left:hub.x,top:hub.y,width:hub.w,height:hub.h},fill:colors.purple,line:noLine}));
+    const cs=center.size??30,ch=String(center.title).split('\n').length*cs*1.25;
+    const bh=center.body?String(center.body).split('\n').length*(size-2)*1.3:0,total=ch+(bh?12+bh:0);
+    out.push(deckText(slide,center.title,{x:center.x-center.r*.72,y:center.y-total/2,w:center.r*1.44,h:ch,size:cs,bold:true,color:colors.white,align:'center',name:'hub-title'}));
+    if(center.body)out.push(deckText(slide,center.body,{x:center.x-center.r*.72,y:center.y-total/2+ch+12,w:center.r*1.44,h:bh,size:size-2,color:colors.white,align:'center',name:'hub-body'}));
+    prepared.forEach((n,i)=>{
+      out.push(deckText(slide,n.title,{x:n.x,y:n.y,w:n.w,h:titleH,size:titleSize,bold:true,color:colors.purple,name:`hub-node-${i}-title`}));
+      const label=n.label?{...n.label,h:n.label.h??relationH}:{x:n.x,y:n.y+titleH+4,w:n.w,h:relationH};
+      if(n.label)out.push(slide.shapes.add({name:`hub-relation-${i}-back`,geometry:'rect',position:{left:label.x-3,top:label.y,width:label.w+6,height:label.h},fill:colors.paper,line:noLine}));
+      out.push(deckText(slide,n.relation,{...label,size:size-2,color:colors.purple,name:`hub-relation-${i}`}));
+      const by=n.y+titleH+(n.label?8:relationH+12);
+      out.push(deckText(slide,n.body,{x:n.x,y:by,w:n.w,h:n.y+n.h-by,size,name:`hub-node-${i}-body`}));
+    });
+    return out;
+  }
   function evidenceNote(slide,body,{x,y,w=280,h=96,anchor,title='',size=21}={}) {
     if(!String(body??'').trim()) throw new Error('evidenceNote requires an explanation.');
     const out=[];
@@ -594,6 +659,6 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
       slide:i+1,scene:s===cover?'cover':s===closing?'closing':pageProfiles.get(s.id) ?? ''}))});
   }
   return {presentation, cover, closing, lessonBand, methodStrip, stepMarker, addLessonPlanPage, addPage, addReportPage, addLessonPage, addParentPage, addStage, addMathPage,
-    addPhotoEssay,addEditorial,addCanvas,addSchoolScene,schoolIcon,numberBadge,iconLabel,sectionRule,photoLabel,pointBand,purpleRibbon,lightFrame,focusPanel,numberFlag,starOrbit,stepBands,evidenceStrip,facetCorner,metricInline,evidenceNote,dotComparison,milestoneTimeline,registerReveal,writeRevealManifest,fraction,text: deckText,image,
+    addPhotoEssay,addEditorial,addCanvas,addSchoolScene,schoolIcon,numberBadge,iconLabel,sectionRule,photoLabel,pointBand,purpleRibbon,lightFrame,focusPanel,numberFlag,starOrbit,stepBands,evidenceStrip,facetCorner,metricInline,evidenceNote,dotComparison,milestoneTimeline,hubSpoke,registerReveal,writeRevealManifest,fraction,text: deckText,image,
     nativeTable: deckTable, chart: deckChart, line, arrow, writeDraft};
 }
