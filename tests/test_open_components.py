@@ -136,8 +136,12 @@ class OpenComponentTests(unittest.TestCase):
 
     def test_report_content_area_expands_and_legacy_areas_remain(self):
         areas = self.metadata['areas']
-        self.assertEqual(areas['withoutSummary']['content'], {'x':48,'y':108,'w':1184,'h':544})
-        self.assertEqual(areas['withSummary']['content'], {'x':48,'y':196,'w':1184,'h':456})
+        frame = json.loads((SKILL / 'assets/style-contract.json').read_text())['implementation']['bodyFrame']['content']
+        self.assertEqual(areas['withoutSummary']['content'], frame)
+        with_lead = areas['withSummary']['content']
+        self.assertGreater(with_lead['y'], frame['y'])
+        self.assertEqual(with_lead['y'] + with_lead['h'], frame['y'] + frame['h'])
+        self.assertEqual((with_lead['x'], with_lead['w']), (frame['x'], frame['w']))
         for group in areas.values():
             self.assertEqual(group['evidence'], {'x':48,'y':196,'w':1184,'h':356})
             self.assertEqual(group['note'], {'x':48,'y':572,'w':1184,'h':80})

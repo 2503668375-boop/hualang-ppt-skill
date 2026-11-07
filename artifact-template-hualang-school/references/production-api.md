@@ -1,4 +1,4 @@
-# 原生制作工具 V9.1
+# 原生制作工具 V10.0
 
 常规华朗内容页使用`addPage`；`addSchoolScene`同样只保留页眉、校徽、分隔线与正文底。混合场景创建时指定`sceneMode:'mixed'`，通用入口漏传`purpose`会报错；单一场景可用`defaultPurpose`整稿指定。为兼容旧稿，未传这些参数仍保留report默认。用途参数只设置字号起点，不决定主体和构图，也不证明场景设计已经完成。
 
@@ -22,7 +22,7 @@ const preview=await deck.writeDraft({candidatePath,renderDir});
 // preview.reviewStatus始终为unreviewed；按实际预览继续审查。
 ```
 
-概论可省略。`summary`的固定文本区及旧`evidence/note`区域仅为兼容便捷入口，不把所有页都推成“题名＋长概论＋分栏”。内容需要概论时确定真实行数和位置，短概论不预留无用高度；也可在完整正文区用`deck.text`自行安排。文字高度不等于实际字形边界，需检查最终换行和末行。
+概论可省略。`lead`为黑色/深紫、适当加粗的核心判断，`summary`兼容同一角色；`contextLine`专用于灰色属性/口径。`contentArea(slide)`返回概论后可用区域。旧`evidence/note`区域仅为兼容便捷入口，不把所有页都推成“题名＋长概论＋分栏”。内容需要概论时确定真实行数和位置，短概论不预留无用高度；也可在完整正文区用`deck.text`自行安排。文字高度不等于实际字形边界，需检查最终换行和末行。
 
 封面不传subtitle。确有独立范围或用户明确要求时同时传 `subtitlePurpose:'scope'` 或 `'user_request'`；这表示已有语义依据，不要求额外审批。不要把版本、使用介绍或演示标签当成副题。
 
@@ -32,12 +32,12 @@ const preview=await deck.writeDraft({candidatePath,renderDir});
 
 | purpose | 题名px | 正文px | 概论px | 典型用途 |
 |---|---|---|---|---|
-| report | 28 | 21 | 22 | 正式内部阅读汇报 |
-| lessonPlan | 28 | 20 | 21 | 教师教案/备课 |
-| classroom | 30 | 25 | 25 | 学生课堂 |
-| worksheet | 28 | 24 | 24 | 练习题组 |
-| parent | 28 | 28 | 28 | 家长现场/招生 |
-| stage | 28 | 30 | 30 | 舞台表达 |
+| report | 28 | 21 | 28 | 正式内部阅读汇报 |
+| lessonPlan | 28 | 20 | 26 | 教师教案/备课 |
+| classroom | 30 | 25 | 28 | 学生课堂 |
+| worksheet | 28 | 24 | 26 | 练习题组 |
+| parent | 28 | 28 | 30 | 家长现场/招生 |
+| stage | 28 | 30 | 32 | 舞台表达 |
 
 `deck.text` 对通过入口创建的页面采用对应正文起点，可按真实材料显式调整。正文默认 `colors.ink`，标题和教学组件用 `colors.purple` / `colors.pale`，重点 `colors.red`，分析图形 `colors.blue`。字号起点不等于配额，见[教学设计](teaching-design.md)及[视觉规范](design.md)。
 
@@ -100,7 +100,7 @@ deck.evidenceNote(slide,'解释这个具体转折及其条件。',{
 
 | 方法 | 返回与用途 |
 |---|---|
-| `addPage({title,purpose,summary,section,titleSize})` | 普通页，单题名；summary为正文层级概论 |
+| `addPage({title,purpose,summary,section,titleSize})` | 普通页，单题名；lead/summary为黑色、适当加粗的统领概论，contextLine为辅助口径 |
 | `addSchoolScene({title,summary,section,purpose})` | 保留固定正文框架，用于家长、招生与对外交流 |
 | `addReportPage({title,summary,section})` | 品牌页与开放content正文区；历史evidence/note仅兼容旧稿，不决定论证或分区 |
 | `addLessonPlanPage({title,section})` | 历史分区便捷入口，不代表所有教案固定三块；按实际活动与反馈重组 |
@@ -240,6 +240,14 @@ await renderSavedDeck({candidatePath:finalPath,renderDir});
 
 本例来自单页独立试作，当前页码几何与品牌模板绑定；模板更换时重新核对，不泛用于别的模板。
 
+明确仅正文的一页或多页文件，使用正文范围检查，不补首尾来满足完整稿检查：
+
+```text
+python scripts/check_style_contract.py 正文.pptx --content-only
+```
+
+此模式覆盖所有现有页的正文题名及页眉位置，不要求`--title/--presenter/--date`，也不检查封面或封尾；校徽、金线、背景、内容及视觉继续实看。完整稿默认仍要求这些字段和原首尾。函数可用`check(pptx, contract, content_only=True)`；既有完整稿调用保持兼容。
+
 ## 图片留位
 
 先按[图片与留位](image-planning.md)确定用途。用原生可编辑框和文字标明缺图，图面不写像素坐标、文件路径和核验日志。
@@ -259,3 +267,17 @@ await deck.image(slide,photoPath,{...slot.frame,fit:slot.fit,alt:'照片实际�
 `title/brief`必须具体，固定显示“待补图片”。可调`size/titleSize/padding/lineHeight`；宽高按真实留图需求给定，支持横竖。`h`校验只覆盖显式换行，不推断字体自然折行。返回的原生形状集合可用于揭示或整体替换，它不是PowerPoint的一键替图占位符；上述插图示例不自动删除图位文字。
 
 独立配图清单保留页码、用途、frame、fit、来源/匿名要求及是否已补；补图后复看图、图注与条件是否仍一致。留位版可按用户要求交付，未补核心证据不得写成已经证明的事实。
+
+## 概论与口径的两个入口
+
+```js
+const s=deck.addPage({title:'开放日费用',purpose:'report',
+  lead:'费用增加25%，实到增加31.3%；B场每位实到费用约低4.8%'});
+const area=deck.contentArea(s); // 按概论实际负载预留高度，仍须检查实页
+deck.contextLine(s,'模拟资料 · 非学校实绩',{x:area.x,y:area.y,w:area.w,h:30});
+// 主图、明细与解释围绕本次比较组织，不调用固定三栏包装。
+```
+
+不要把概论和统计期混放在灰色包装函数中。独立调用`lead/contextLine`时由调用者提供几何并检查实际行高；只有`addPage`内的概论会预留正文区。
+
+分类图重排时，图级`categories`与各系列的`categories/values`须同步；原生图创建入口会默认给系列写入相同类别。导出后从PPTX重导入核对标签和值的配对，不能只检查内存截图。

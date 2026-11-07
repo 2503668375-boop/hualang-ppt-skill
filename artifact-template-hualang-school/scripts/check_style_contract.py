@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check fixed cover, single page headings and original closing in a saved deck."""
+"""Check a saved full deck, or explicitly scoped content-only pages."""
 import argparse,hashlib,json,posixpath,re,sys,zipfile
 from pathlib import Path
 import xml.etree.ElementTree as E
@@ -53,24 +53,34 @@ def closing_check(z,part,expected_sha,contract=None):
    detail.append({'name':ob['name'],'text':ob['text']})
  return {'original_asset_present':expected_sha in hashes,'added_objects':added,'text':detail,'passed':expected_sha in hashes and valid}
 
-def check(pptx,c,title,presenter,date,template=False,allow_titles=(),allow_subtitle=False):
+def check(pptx,c,title='',presenter='',date='',template=False,allow_titles=(),allow_subtitle=False,content_only=False):
  errors=[];warnings=[];headers=[]
- expected={'title':title,'presenter':'汇报人：'+re.sub(r'^汇报人[：:]\s*','',presenter),'date':'汇报时间：'+re.sub(r'^汇报时间[：:]\s*','',date)}
+ expected=None if content_only else {'title':title,'presenter':'汇报人：'+re.sub(r'^汇报人[：:]\s*','',presenter),'date':'汇报时间：'+re.sub(r'^汇报时间[：:]\s*','',date)}
+ closing=None
+ if not content_only and not all(str(v).strip() for v in (title,presenter,date)):errors.append('完整稿须提供题名、汇报人和日期')
  with zipfile.ZipFile(pptx) as z:
-  parts=slide_parts(z);cover=shapes(z.read(parts[0]))
-  for key,want_text in expected.items():
-   rule=c['cover'][key];match=[o for o in cover if o['name']==rule['name']]
-   if len(match)!=1:errors.append('封面固定字段缺失或重复：'+key);continue
-   ob=match[0]
-   if ob['text']!=want_text:errors.append('封面字段与要求不一致：'+key)
-   if ob['position'] is None or any(abs(x-y)>1 for x,y in zip(ob['position'],[rule[k] for k in ['x','y','w','h']])):errors.append('封面字段位置错误：'+key)
-   if not template and re.search(r'待补|待填|姓名或团队|按需填写|\[.+\]|［.+］',ob['text']):errors.append('正式封面仍有待补字段：'+key)
-  if not allow_subtitle and any(o['name']=='cover-subtitle' and o['text'].strip() for o in cover):errors.append('封面存在未声明必要性的副题')
-  for number,part in enumerate(parts[1:-1],2):
+  parts=slide_parts(z)
+  if not parts:errors.append('没有可检查的页面')
+  if not content_only and parts:
+   cover=shapes(z.read(parts[0]))
+   for key,want_text in expected.items():
+    rule=c['cover'][key];match=[o for o in cover if o['name']==rule['name']]
+    if len(match)!=1:errors.append('封面固定字段缺失或重复：'+key);continue
+    ob=match[0]
+    if ob['text']!=want_text:errors.append('封面字段与要求不一致：'+key)
+    if ob['position'] is None or any(abs(x-y)>1 for x,y in zip(ob['position'],[rule[k] for k in ['x','y','w','h']])):errors.append('封面字段位置错误：'+key)
+    if not template and re.search(r'待补|待填|姓名或团队|按需填写|\[.+\]|［.+］',ob['text']):errors.append('正式封面仍有待补字段：'+key)
+   if not allow_subtitle and any(o['name']=='cover-subtitle' and o['text'].strip() for o in cover):errors.append('封面存在未声明必要性的副题')
+  body_parts=enumerate(parts,1) if content_only else enumerate(parts[1:-1],2)
+  for number,part in body_parts:
    titles=[o for o in shapes(z.read(part)) if o['name'] in ['title','scene-title']]
+   if content_only and not titles:errors.append(f'第{number}页缺少正文页标题')
    if len(titles)>1:errors.append(f'第{number}页存在多个页标题')
    for ob in titles:
     t=ob['text'];headers.append({'slide':number,'title':t})
+    if content_only:
+     frame=c.get('implementation',{}).get('bodyFrame',{}).get('title')
+     if frame and (ob['position'] is None or any(abs(x-y)>1 for x,y in zip(ob['position'],[frame[k] for k in ['x','y','w','h']]))):errors.append(f'第{number}页正文题名位置不符合页眉框架')
     if t in allow_titles:continue
     units=len(re.findall(r'[\u3400-\u9fff]|[A-Za-z0-9]+',t))
     if not t.strip():errors.append(f'第{number}页题名为空')
@@ -78,12 +88,15 @@ def check(pptx,c,title,presenter,date,template=False,allow_titles=(),allow_subti
      if any(re.search(pattern,t) for pattern in c['heading'].get('forbiddenPatterns',[])):errors.append(f'第{number}页自动题名为口播或问句：{t}')
      if any(re.search(pattern,t) for pattern in c['heading'].get('reviewPatterns',[])):warnings.append(f'第{number}页题名需人工复核具体对象及信息量；句式本身不作禁用依据：{t}')
      if units>c['heading']['maxUnits']:warnings.append(f'第{number}页题名较长，结合学科术语和实际换行复核：{t}')
-  closing=closing_check(z,parts[-1],c['closing']['assetSha256'],c['closing'])
-  if not closing['passed']:errors.append('封尾原图、培养目标、结束语或安全区不符合规范')
- return {'ok':not errors,'cover_expected':expected,'headings':headers,'closing':closing,'errors':errors,'warnings':warnings,'scope':'首尾、字段、位置及已命名标题；短中文题名为偏好，学科和英文题名按语义与实际换行复核；仍需人工检查内容、重复语义、密度和视觉'}
+  if not content_only and parts:
+   closing=closing_check(z,parts[-1],c['closing']['assetSha256'],c['closing'])
+   if not closing['passed']:errors.append('封尾原图、培养目标、结束语或安全区不符合规范')
+ scope='全部现有正文页的已命名题名及其页眉位置；不要求封面、封尾、署名或日期，不认证校徽、金线、背景或实际视觉' if content_only else '首尾、字段、位置及已命名标题；短中文题名为偏好，学科和英文题名按语义与实际换行复核；仍需人工检查内容、重复语义、密度和视觉'
+ return {'ok':not errors,'content_only':content_only,'cover_expected':expected,'headings':headers,'closing':closing,'errors':errors,'warnings':warnings,'scope':scope}
 
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('pptx',type=Path);ap.add_argument('--title',required=True);ap.add_argument('--presenter',required=True);ap.add_argument('--date',required=True);ap.add_argument('--contract',type=Path,default=Path(__file__).resolve().parents[1]/'assets/style-contract.json');ap.add_argument('--template',action='store_true');ap.add_argument('--allow-title',action='append',default=[]);ap.add_argument('--allow-subtitle',action='store_true');a=ap.parse_args()
- result=check(a.pptx,json.loads(a.contract.read_text()),a.title,a.presenter,a.date,a.template,a.allow_title,a.allow_subtitle)
+ ap=argparse.ArgumentParser();ap.add_argument('pptx',type=Path);ap.add_argument('--title',default='');ap.add_argument('--presenter',default='');ap.add_argument('--date',default='');ap.add_argument('--content-only',action='store_true',help='仅检查文件中现有正文页的题名和页眉位置，不要求首尾、署名日期');ap.add_argument('--contract',type=Path,default=Path(__file__).resolve().parents[1]/'assets/style-contract.json');ap.add_argument('--template',action='store_true');ap.add_argument('--allow-title',action='append',default=[]);ap.add_argument('--allow-subtitle',action='store_true');a=ap.parse_args()
+ if not a.content_only and not all(v.strip() for v in (a.title,a.presenter,a.date)):ap.error('完整稿必须提供--title、--presenter和--date；仅正文文件须显式使用--content-only')
+ result=check(a.pptx,json.loads(a.contract.read_text()),a.title,a.presenter,a.date,a.template,a.allow_title,a.allow_subtitle,a.content_only)
  print(json.dumps(result,ensure_ascii=False,indent=2));return int(not result['ok'])
 if __name__=='__main__':sys.exit(main())

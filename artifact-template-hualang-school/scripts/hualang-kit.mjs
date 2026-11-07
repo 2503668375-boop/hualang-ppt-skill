@@ -11,12 +11,12 @@ export const colors = Object.freeze({
 export const fonts = Object.freeze({zh: 'PingFang SC', latin: 'Arial'});
 export const canvas = Object.freeze({width: 1280, height: 720});
 export const profiles = Object.freeze({
-  report:{title:28,body:21,summary:22,table:19},
-  lessonPlan:{title:28,body:20,summary:21,table:19},
-  classroom:{title:30,body:25,summary:25,table:23},
-  worksheet:{title:28,body:24,summary:24,table:22},
-  parent:{title:28,body:28,summary:28,table:24},
-  stage:{title:28,body:30,summary:30,table:26},
+  report:{title:28,body:21,summary:28,table:19},
+  lessonPlan:{title:28,body:20,summary:26,table:19},
+  classroom:{title:30,body:25,summary:28,table:23},
+  worksheet:{title:28,body:24,summary:26,table:22},
+  parent:{title:28,body:28,summary:30,table:24},
+  stage:{title:28,body:30,summary:32,table:26},
 });
 const noLine = {fill: 'none', width: 0};
 
@@ -99,6 +99,24 @@ export function line(owner, {x, y, w, h = 0, color = colors.line, width = 1}) {
     position: {left: x, top: y, width: w, height: h}, line: {fill: color, width}});
 }
 
+// A message and its data context have different reading roles. Neither helper
+// decides the page's subject, layout, or content completeness.
+export function lead(owner, value, options = {}) {
+  return text(owner, value, {size:28, color:colors.ink, bold:true, name:'lead', ...options});
+}
+
+export function contextLine(owner, value, options = {}) {
+  return text(owner, value, {size:19, color:colors.secondary, name:'context', ...options});
+}
+
+function leadHeight(value, size, width) {
+  const lines = String(value).split('\n').reduce((sum, row) => {
+    const units = [...row].reduce((n, ch) => n + (/^[\x20-\x7e]$/.test(ch) ? 0.58 : 1), 0);
+    return sum + Math.max(1, Math.ceil(units * size / width));
+  }, 0);
+  return Math.ceil(lines * size * 1.35);
+}
+
 export async function image(owner, file, {x, y, w, h, alt, fit = 'contain'}) {
   if (!alt) throw new Error('image requires a useful alt description.');
   const type = {'.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png'}[path.extname(file).toLowerCase()];
@@ -151,7 +169,8 @@ export function chart(slide, type, options, {font, zhFont = fonts.zh, latinFont 
   const c = slide.charts.add(type, {chartFill: 'none', chartLine: noLine,
     plotAreaFill: 'none', plotAreaLine: noLine, hasLegend: false,
     titlePlacement: options.title ? 'aboveChart' : 'none', ...options,
-    series: options.series?.map((s, i) => ({fill: [colors.blue, colors.secondary, colors.red][i % 3], ...s})),
+    series: options.series?.map((s, i) => ({fill: [colors.blue, colors.secondary, colors.red][i % 3],
+      categories: s.categories ?? options.categories, ...s})),
     xAxis: axis(options.xAxis), yAxis: axis(options.yAxis)});
   const styles = [c.legend?.textStyle, c.dataLabels?.textStyle, c.xAxis?.textStyle,
     c.yAxis?.textStyle];
@@ -204,6 +223,7 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
   }
   const fontOptions = {zhFont, latinFont};
   const pageProfiles = new Map();
+  const pageContentAreas = new Map();
   const deckText = (owner,value,options={}) => text(owner,value,
     {size:profiles[pageProfiles.get(owner.id) ?? 'report'].body,color:colors.ink,...fontOptions,...options});
   const deckTable = (slide, values, options={}) => nativeTable(slide, values,
@@ -277,26 +297,33 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     deckText(slide, String(presentation.slides.items.indexOf(slide)+1).padStart(2, '0'),
       {x: 1190, y: 677, w: 42, h: 24, size: 15, color, align: 'right'});
   };
-  function addPage({title: pageTitle, summary = '', section = '', titleSize, purpose, userSuppliedTitle = false}) {
+  function addPage({title: pageTitle, lead: message = '', summary = '', section = '', titleSize,
+    purpose, userSuppliedTitle = false}) {
     assertTopicTitle(pageTitle, {userSupplied:userSuppliedTitle});
+    if (message && summary && message !== summary) throw new Error('lead与summary是同一概论的两个入口，请只提供一项。');
     if (purpose == null && sceneMode === 'mixed') throw new Error('混合场景须逐页显式选择purpose；该参数仍不能代替主体构图。');
     purpose ??= defaultPurpose;
     if (!profiles[purpose]) throw new Error('Unknown page purpose: '+purpose);
     const slide=addContentSlide({layoutId:layout.id});pageProfiles.set(slide.id,purpose);
     pageBrand(slide);
     deckText(slide,pageTitle,{x:48,y:30,w:1010,h:43,size:titleSize ?? profiles[purpose].title,bold:true,color:colors.purple,name:'title'});
-    if(summary) deckText(slide,summary,{x:48,y:108,w:1184,h:70,size:profiles[purpose].summary,name:'summary'});
+    const value = message || summary;
+    const height = value ? leadHeight(value, profiles[purpose].summary, 1184) : 0;
+    if(value) deckText(slide,value,{x:48,y:108,w:1184,h:height,size:profiles[purpose].summary,
+      bold:true,color:colors.ink,name:message?'lead':'summary'});
+    const top = value ? 108 + height + 20 : 112;
+    pageContentAreas.set(slide.id,{x:48,y:top,w:1184,h:650-top});
     footer(slide, section);
     return slide;
   }
 
-  function addSchoolScene({title,summary='',section='',purpose,userSuppliedTitle=false}) {
-    return addPage({title,summary,section,purpose,userSuppliedTitle});
+  function addSchoolScene({title,lead='',summary='',section='',purpose,userSuppliedTitle=false}) {
+    return addPage({title,lead,summary,section,purpose,userSuppliedTitle});
   }
-  function addReportPage({title, summary, section = ''}) {
-    const slide=addPage({title,summary,section,purpose:'report'});
+  function addReportPage({title, lead='', summary='', section = ''}) {
+    const slide=addPage({title,lead,summary,section,purpose:'report'});
     // content is the open working area; evidence/note remain for older callers.
-    return {slide,areas:{content:{x:48,y:summary?196:108,w:1184,h:summary?456:544},
+    return {slide,areas:{content:{...pageContentAreas.get(slide.id)},
       evidence:{x:48,y:196,w:1184,h:356},note:{x:48,y:572,w:1184,h:80}}};
   }
   // Observation is one lesson pattern. Mathematics and text analysis have
@@ -778,5 +805,8 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
   }
   return {presentation, cover, closing, lessonBand, methodStrip, stepMarker, addLessonPlanPage, addPage, addReportPage, addLessonPage, addParentPage, addStage, addMathPage,
     addPhotoEssay,addEditorial,addCanvas,addSchoolScene,schoolIcon,numberBadge,iconLabel,sectionRule,photoLabel,pointBand,purpleRibbon,lightFrame,focusPanel,numberFlag,starOrbit,stepBands,evidenceStrip,facetCorner,metricInline,evidenceNote,dotComparison,milestoneTimeline,hubSpoke,registerReveal,writeRevealManifest,fraction,text: deckText,image,
-    nativeTable: deckTable, chart: deckChart, line, arrow, imageSlot, writeDraft};
+    nativeTable: deckTable, chart: deckChart, line, arrow, imageSlot, writeDraft,
+    lead:(slide,value,options={})=>lead(slide,value,{...fontOptions,size:profiles[pageProfiles.get(slide.id)??'report'].summary,...options}),
+    contextLine:(slide,value,options={})=>contextLine(slide,value,{...fontOptions,...options}),
+    contentArea:slide=>({...pageContentAreas.get(slide.id)})};
 }

@@ -1,7 +1,7 @@
 interface:
   display_name: "华朗学校 Hualang School"
-  short_description: "按听众与场景制作华朗汇报、教案课件和沟通材料，重视内容、构图与实页验收"
+  short_description: "按对象组织华朗汇报、教案课件和沟通材料，突出概论、学科对象与完整学习单元"
   icon_large: "./assets/preview.png"
-  default_prompt: "使用 $artifact-template-hualang-school，按听众、内容关系与负载选择主体和局部组件，兼顾密度与主题统一；保留依据和条件，避免连续同款方框、线条或圆阵，分别审内容、场景、实际页面与文件。"
+  default_prompt: "使用 $artifact-template-hualang-school，分别组织管理判断、教师实施、学生学习、家长支持或招生选择；概论保持清楚的主体层级，围绕实际图表、原文、作品和任务设计页面，保留必要推理与反馈，并检查最终实页。"
 policy:
   allow_implicit_invocation: true

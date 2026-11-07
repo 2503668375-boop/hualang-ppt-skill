@@ -140,37 +140,37 @@
       "report": {
         "title": 28,
         "body": 21,
-        "summary": 22,
+        "summary": 28,
         "table": 19
       },
       "lessonPlan": {
         "title": 28,
         "body": 20,
-        "summary": 21,
+        "summary": 26,
         "table": 19
       },
       "classroom": {
         "title": 30,
         "body": 25,
-        "summary": 25,
+        "summary": 28,
         "table": 23
       },
       "worksheet": {
         "title": 28,
         "body": 24,
-        "summary": 24,
+        "summary": 26,
         "table": 22
       },
       "parent": {
         "title": 28,
         "body": 28,
-        "summary": 28,
+        "summary": 30,
         "table": 24
       },
       "stage": {
         "title": 28,
         "body": 30,
-        "summary": 30,
+        "summary": 32,
         "table": 26
       }
     },
@@ -181,6 +181,18 @@
       "data charts with editable series and numeric scales",
       "editable relation nodes and lines"
     ],
-    "scope": "Cross-tool implementation reference; the current style checker verifies only the fields named in its scope and does not validate every value in this block."
+    "scope": "Cross-tool implementation reference; the current style checker verifies only the fields named in its scope and does not validate every value in this block.",
+    "textRoles": {
+      "lead": {
+        "color": "222222",
+        "bold": true,
+        "role": "核心概论或判断，非口径说明"
+      },
+      "contextLine": {
+        "color": "666666",
+        "size": 19,
+        "role": "模拟属性、统计期或辅助口径"
+      }
+    }
   }
 }

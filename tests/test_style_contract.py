@@ -1,4 +1,4 @@
-import copy,importlib.util,json,tempfile,unittest,zipfile
+import copy,importlib.util,json,subprocess,sys,tempfile,unittest,zipfile
 from pathlib import Path
 from xml.etree import ElementTree as E
 ROOT=Path(__file__).resolve().parents[1];S=ROOT/'artifact-template-hualang-school'
@@ -8,14 +8,52 @@ class ContractTests(unittest.TestCase):
   self.tmp=tempfile.TemporaryDirectory();self.dir=Path(self.tmp.name);self.source=S/'assets/reference.pptx';self.rules=json.loads((S/'assets/style-contract.json').read_text())
  def tearDown(self):self.tmp.cleanup()
  def check(self,p):return m.check(p,self.rules,'汇报主题','姓名或团队','日期待填',template=True)
- def edit(self,name,part_index,fn):
+ def edit(self,name,part_index,fn,source=None):
   dst=self.dir/name
-  with zipfile.ZipFile(self.source) as z:
+  with zipfile.ZipFile(source or self.source) as z:
    parts=m.slide_parts(z);part=parts[part_index];root=E.fromstring(z.read(part));fn(root)
    with zipfile.ZipFile(dst,'w',zipfile.ZIP_DEFLATED) as out:
     for entry in z.infolist():out.writestr(entry,E.tostring(root) if entry.filename==part else z.read(entry.filename))
   return dst
+ def content_fixture(self):
+  """Retain two real body slides; do not synthesize cover-shaped placeholders."""
+  src=S/'assets/design-craft-v9.2.pptx';dst=self.dir/'content-only.pptx'
+  with zipfile.ZipFile(src) as z:
+   root=E.fromstring(z.read('ppt/presentation.xml'));listing=root.find('p:sldIdLst',m.NS)
+   for slide in list(listing)[2:]:listing.remove(slide)
+   with zipfile.ZipFile(dst,'w',zipfile.ZIP_DEFLATED) as out:
+    for entry in z.infolist():out.writestr(entry,E.tostring(root) if entry.filename=='ppt/presentation.xml' else z.read(entry.filename))
+  return dst
  def test_actual_brand_template(self):self.assertTrue(self.check(self.source)['ok'])
+ def test_content_only_accepts_actual_two_page_body_without_cover_fields(self):
+  fixture=self.content_fixture();result=m.check(fixture,self.rules,content_only=True)
+  self.assertTrue(result['ok'],result['errors'])
+  self.assertTrue(result['content_only'])
+  self.assertIsNone(result['cover_expected']);self.assertIsNone(result['closing'])
+  self.assertEqual([row['slide'] for row in result['headings']],[1,2])
+  run=subprocess.run([sys.executable,str(S/'scripts/check_style_contract.py'),str(fixture),'--content-only'],capture_output=True,text=True)
+  self.assertEqual(run.returncode,0,run.stderr+run.stdout)
+  self.assertTrue(json.loads(run.stdout)['content_only'])
+ def test_content_only_checks_first_and_last_body_header_positions(self):
+  fixture=self.content_fixture()
+  def move(root):
+   for sp in root.findall('.//p:sp',m.NS):
+    nv=sp.find('p:nvSpPr/p:cNvPr',m.NS)
+    if nv is not None and nv.get('name') in ['title','scene-title']:sp.find('p:spPr/a:xfrm/a:off',m.NS).set('x',str(840*m.EMU))
+  for index in (0,1):
+   with self.subTest(slide=index+1):
+    modified=self.edit(f'body-position-{index}.pptx',index,move,source=fixture)
+    result=m.check(modified,self.rules,content_only=True)
+    self.assertFalse(result['ok'])
+    self.assertTrue(any(f'第{index+1}页正文题名位置' in message for message in result['errors']))
+ def test_default_full_deck_mode_still_rejects_missing_cover_fields(self):
+  fixture=self.content_fixture()
+  result=m.check(fixture,self.rules,'正式汇报','示例工作组','2026年11月8日')
+  self.assertFalse(result['ok'])
+  self.assertTrue(any('封面固定字段缺失' in message for message in result['errors']))
+  run=subprocess.run([sys.executable,str(S/'scripts/check_style_contract.py'),str(fixture)],capture_output=True,text=True)
+  self.assertNotEqual(run.returncode,0)
+  self.assertIn('完整稿必须提供',run.stderr)
  def test_date_cannot_return_to_seam(self):
   def move(root):
    for sp in root.findall('.//p:sp',m.NS):
