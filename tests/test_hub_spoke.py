@@ -76,9 +76,8 @@ await fs.writeFile(process.argv[3]+'/result.json',JSON.stringify({rejected,objec
         p=paths[0]
         points=[(x+int(n.get('x'))/int(p.get('w'))*w,y+int(n.get('y'))/int(p.get('h'))*h) for n in p.findall('.//a:pt',NS)]
         self.assertEqual(len(points),2)
-        self.assertAlmostEqual(((points[0][0]-640)**2+(points[0][1]-390)**2)**.5,91,places=2)
-        self.assertGreater(points[1][0],370)  # line stops outside the left satellite's text
-        self.assertLess(points[1][0],400)
+        self.assertAlmostEqual(((points[0][0]-640)**2+(points[0][1]-390)**2)**.5,85,places=2)
+        self.assertAlmostEqual(points[1][0],370,places=2)  # line reaches the explicit node boundary
 
 if __name__=='__main__':
     unittest.main()

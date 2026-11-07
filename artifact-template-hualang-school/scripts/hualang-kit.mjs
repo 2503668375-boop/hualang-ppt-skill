@@ -326,18 +326,51 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
       diagram:mode === 'proof' ? null : {x:824,y:236,w:408,h:416}}};
   }
 
-  function lessonBand(slide,label,body,{x=48,y=108,w=1184,h=100,size=24,labelWidth=78}={}) {
-    const bg=slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:w,height:h},fill:colors.pale,line:noLine});
-    const tab=slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:labelWidth,height:h},fill:colors.purple,line:noLine});
-    const tag=deckText(slide,label,{x:x+12,y:y+(h-31)/2,w:labelWidth-24,h:31,size:20,bold:true,color:colors.white,align:'center'});
-    const content=deckText(slide,body,{x:x+labelWidth+20,y:y+14,w:w-labelWidth-38,h:h-24,size,color:colors.ink});
+  // Component dimensions use the caller's explicit line breaks, never an
+  // estimated character count. Final font wrapping still needs rendered review.
+  function bandGeometry(label,body,{x,y,w,size,labelSize,padding,gap,labelWidth,labelPadding=0}) {
+    const finite=v=>typeof v==='number'&&Number.isFinite(v);
+    if(!String(label??'').trim()||!String(body??'').trim()||
+       ![x,y,w,size,labelSize,padding.x,padding.y,gap,labelWidth,labelPadding].every(finite)||
+       w<=0||size<=0||labelSize<=0||padding.x<0||padding.y<0||gap<0||labelPadding<0) {
+      throw new Error('Bands need text, finite geometry, positive type sizes and nonnegative spacing.');
+    }
+    return {finite};
+  }
+  function lessonBand(slide,label,body,{x=48,y=108,w=1184,h,size=24,labelWidth=78,
+    labelSize=20,labelPadding=12,padding={x:14,y:14},gap=20,lineHeight=1.2,verticalAlign='middle'}={}) {
+    const {finite}=bandGeometry(label,body,{x,y,w,h,size,labelSize,padding,gap,labelWidth,labelPadding});
+    if(!finite(lineHeight)||lineHeight<1||!['top','middle'].includes(verticalAlign))throw new Error('Band lineHeight must be at least 1 and verticalAlign top or middle.');
+    const tagH=String(label).split('\n').length*labelSize*lineHeight;
+    const bodyH=String(body).split('\n').length*size*lineHeight;
+    const height=h??Math.ceil((Math.max(tagH,bodyH)+2*padding.y)/4)*4;
+    const bodyX=x+labelWidth+gap,bodyW=w-labelWidth-gap-padding.x;
+    if(!finite(height)||height<Math.max(tagH,bodyH)+2*padding.y||labelWidth<=2*labelPadding||bodyW<=0||
+       x<0||y<0||x+w>canvas.width||y+height>canvas.height)throw new Error('lessonBand needs a larger label/body region or explicit multiline height.');
+    const bg=slide.shapes.add({geometry:'rect',name:'lesson-band-background',position:{left:x,top:y,width:w,height},fill:colors.pale,line:noLine});
+    const tab=slide.shapes.add({geometry:'rect',name:'lesson-band-label-background',position:{left:x,top:y,width:labelWidth,height},fill:colors.purple,line:noLine});
+    const tag=deckText(slide,label,{x:x+labelPadding,y:y+padding.y,w:labelWidth-2*labelPadding,h:height-2*padding.y,size:labelSize,bold:true,color:colors.white,align:'center',lineSpacing:lineHeight,name:'lesson-band-label'});
+    const content=deckText(slide,body,{x:bodyX,y:y+padding.y,w:bodyW,h:height-2*padding.y,size,color:colors.ink,lineSpacing:lineHeight,name:'lesson-band-body'});
+    tag.text.style={verticalAlignment:verticalAlign};
+    content.text.style={verticalAlignment:verticalAlign};
     return [bg,tab,tag,content];
   }
-  function methodStrip(slide,label,body,{x=48,y=602,w=1184,h=50,size=21}={}) {
-    const bg=slide.shapes.add({geometry:'rect',position:{left:x,top:y,width:w,height:h},fill:colors.pale,line:noLine});
-    const rule=line(slide,{x,y,w:0,h,color:colors.purple,width:3});
-    const tag=deckText(slide,label,{x:x+14,y:y+10,w:76,h:h-14,size,bold:true,color:colors.purple});
-    const content=deckText(slide,body,{x:x+102,y:y+10,w:w-118,h:h-14,size,color:colors.ink});
+  function methodStrip(slide,label,body,{x=48,y=602,w=720,h,size=21,labelWidth=76,
+    labelSize=size,padding={x:14,y:10},gap=12,lineHeight=1.2,verticalAlign='top'}={}) {
+    const {finite}=bandGeometry(label,body,{x,y,w,h,size,labelSize,padding,gap,labelWidth});
+    if(!finite(lineHeight)||lineHeight<1||!['top','middle'].includes(verticalAlign))throw new Error('Band lineHeight must be at least 1 and verticalAlign top or middle.');
+    const tagH=String(label).split('\n').length*labelSize*lineHeight;
+    const bodyH=String(body).split('\n').length*size*lineHeight;
+    const height=h??Math.ceil((Math.max(tagH,bodyH)+2*padding.y)/4)*4;
+    const bodyX=x+padding.x+labelWidth+gap,bodyW=w-2*padding.x-labelWidth-gap;
+    if(!finite(height)||height<Math.max(tagH,bodyH)+2*padding.y||labelWidth<=0||bodyW<=0||
+       x<0||y<0||x+w>canvas.width||y+height>canvas.height)throw new Error('methodStrip needs a larger label/body region or explicit multiline height.');
+    const bg=slide.shapes.add({geometry:'rect',name:'method-strip-background',position:{left:x,top:y,width:w,height},fill:colors.pale,line:noLine});
+    const rule=line(slide,{x,y,w:0,h:height,color:colors.purple,width:3});
+    const tag=deckText(slide,label,{x:x+padding.x,y:y+padding.y,w:labelWidth,h:height-2*padding.y,size:labelSize,bold:true,color:colors.purple,lineSpacing:lineHeight,name:'method-strip-label'});
+    const content=deckText(slide,body,{x:bodyX,y:y+padding.y,w:bodyW,h:height-2*padding.y,size,color:colors.ink,lineSpacing:lineHeight,name:'method-strip-body'});
+    tag.text.style={verticalAlignment:verticalAlign};
+    content.text.style={verticalAlignment:verticalAlign};
     return [bg,rule,tag,content];
   }
   function stepMarker(slide,label,{x=48,y,w=38,size=22}={}) {
@@ -504,7 +537,7 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
   }
   // A semantic hub with open, unequal satellite regions; no decorative orbit.
   // Validate all geometry before adding native shapes, so a failed call is atomic.
-  function hubSpoke(slide,{center,nodes,size=21,titleSize=23}={}) {
+  function hubSpoke(slide,{center,nodes,size=21,titleSize=23,connection={}}={}) {
     const finite = v => typeof v === 'number' && Number.isFinite(v);
     const nonempty = v => typeof v === 'string' && v.trim().length > 0;
     const rect = b => b && ['x','y','w','h'].every(k=>finite(b[k])) && b.w>0 && b.h>0;
@@ -514,6 +547,9 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
       ![size,titleSize,center.size??30].every(v=>finite(v)&&v>0) || size<=2 || !Array.isArray(nodes) || !nodes.length) {
       throw new Error('hubSpoke requires a finite center, positive type sizes and named satellite nodes.');
     }
+    const connectionStyle={centerGap:0,nodeGap:0,color:colors.gold,width:1.6,...connection};
+    if(![connectionStyle.centerGap,connectionStyle.nodeGap,connectionStyle.width].every(finite)||
+       connectionStyle.centerGap<0||connectionStyle.nodeGap<0||connectionStyle.width<=0)throw new Error('Hub connection gaps must be nonnegative and width positive.');
     const hub={x:center.x-center.r,y:center.y-center.r,w:center.r*2,h:center.r*2};
     if(!inside(hub)) throw new Error('hubSpoke center must fit the canvas.');
     const titleH=titleSize*1.3, relationH=(size-2)*1.3;
@@ -535,6 +571,7 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
       if(n.label && (!rect({...n.label,h:n.label.h??relationH}) || !inside({...n.label,h:n.label.h??relationH}))) {
         throw new Error('hubSpoke relationship labels need finite canvas regions.');
       }
+      if(n.connect!==false&&distance<=center.r+connectionStyle.centerGap+connectionStyle.nodeGap)throw new Error('Hub connection gaps consume the entire line.');
       return {...n,ax,ay,distance};
     });
     for(let i=0;i<prepared.length;i++) {
@@ -550,7 +587,7 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     const out=[];
     for(const n of prepared) if(n.connect!==false) {
       const dx=(n.ax-center.x)/n.distance,dy=(n.ay-center.y)/n.distance;
-      out.push(segment(slide,center.x+dx*(center.r+6),center.y+dy*(center.r+6),n.ax-dx*8,n.ay-dy*8,{color:colors.gold,width:1.6}));
+      out.push(segment(slide,center.x+dx*(center.r+connectionStyle.centerGap),center.y+dy*(center.r+connectionStyle.centerGap),n.ax-dx*connectionStyle.nodeGap,n.ay-dy*connectionStyle.nodeGap,{color:connectionStyle.color,width:connectionStyle.width}));
     }
     out.push(slide.shapes.add({name:'hub-center',geometry:'ellipse',position:{left:hub.x,top:hub.y,width:hub.w,height:hub.h},fill:colors.purple,line:noLine}));
     const cs=center.size??30,ch=String(center.title).split('\n').length*cs*1.25;
@@ -567,18 +604,58 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
     });
     return out;
   }
-  function evidenceNote(slide,body,{x,y,w=280,h=96,anchor,title='',size=21}={}) {
-    if(!String(body??'').trim()) throw new Error('evidenceNote requires an explanation.');
-    const out=[];
+  function evidenceNote(slide,body,{x,y,w=280,h=96,anchor,title='',size=21,
+    attach,route='auto',elbow,gap=10,marker=true,align='auto'}={}) {
+    const finite=v=>typeof v==='number'&&Number.isFinite(v);
+    if(!String(body??'').trim()||![x,y,w,h,size,gap].every(finite)||w<=0||h<=(title?36:0)||size<=0||gap<0||
+       x<0||y<0||x+w>canvas.width||y+h>canvas.height)throw new Error('evidenceNote needs text and a valid canvas text region.');
+    if(!['auto','straight','elbow'].includes(route)||typeof marker!=='boolean'||!['auto','left','right'].includes(align))throw new Error('evidenceNote route must be auto, straight or elbow.');
+    let points=[];
     if(anchor){
-      if(!Number.isFinite(anchor.x)||!Number.isFinite(anchor.y)) throw new Error('evidenceNote anchor must be finite.');
-      if(anchor.x>=x && anchor.x<=x+w && anchor.y>=y && anchor.y<=y+h) throw new Error('evidenceNote anchor must point outside its text area.');
-      const endX=Math.max(x-10,Math.min(x+w+10,anchor.x)),endY=Math.max(y-8,Math.min(y+h+8,anchor.y));
-      out.push(segment(slide,anchor.x,anchor.y,endX,endY,{color:colors.purple}),
-        slide.shapes.add({geometry:'ellipse',position:{left:anchor.x-3,top:anchor.y-3,width:6,height:6},fill:colors.purple,line:noLine}));
-    }
-    if(title)out.push(deckText(slide,title,{x,y,w,h:30,size:22,bold:true,color:colors.purple,name:'evidence-note-title'}));
-    out.push(deckText(slide,body,{x,y:y+(title?36:0),w,h:h-(title?36:0),size,name:'evidence-note-body'}));
+      if(![anchor.x,anchor.y].every(finite)||anchor.x<0||anchor.y<0||anchor.x>canvas.width||anchor.y>canvas.height)throw new Error('evidenceNote anchor must fit the canvas.');
+      if(anchor.x>=x&&anchor.x<=x+w&&anchor.y>=y&&anchor.y<=y+h)throw new Error('evidenceNote anchor must point outside its text area.');
+      if(!attach&&route!=='straight'){
+        const lineCenter=y+(title?15:Math.min(h/2,size*0.6));
+        // Horizontal neighbours attach to the first meaningful text line.
+        // Above/below neighbours attach to the nearest horizontal side.
+        attach=anchor.x<x?{x,y:lineCenter}:anchor.x>x+w?{x:x+w,y:lineCenter}:
+          anchor.y<y?{x:Math.max(x,Math.min(x+w,anchor.x)),y}:{x:Math.max(x,Math.min(x+w,anchor.x)),y:y+h};
+      }
+      if(attach){
+        if(![attach.x,attach.y].every(finite))throw new Error('evidenceNote attach must be a boundary point.');
+        const left=attach.x===x&&attach.y>=y&&attach.y<=y+h,right=attach.x===x+w&&attach.y>=y&&attach.y<=y+h;
+        const top=attach.y===y&&attach.x>=x&&attach.x<=x+w,bottom=attach.y===y+h&&attach.x>=x&&attach.x<=x+w;
+        if(!left&&!right&&!top&&!bottom)throw new Error('evidenceNote attach must be on its text-region boundary.');
+        const end={x:attach.x+(left?-gap:right?gap:0),y:attach.y+(left||right?0:top?-gap:gap)};
+        if(route==='straight')points=[anchor,end];
+        else if(left||right){const bend=elbow??(anchor.x+end.x)/2;if(!finite(bend))throw new Error('evidenceNote elbow must be finite.');points=[anchor,{x:bend,y:anchor.y},{x:bend,y:end.y},end];}
+        else{const bend=elbow??(anchor.y+end.y)/2;if(!finite(bend))throw new Error('evidenceNote elbow must be finite.');points=[anchor,{x:anchor.x,y:bend},{x:end.x,y:bend},end];}
+      }else{
+        if(route!=='straight'||elbow!==undefined)throw new Error('An explicit elbow route requires an attach boundary point.');
+        // Explicit straight mode retains the old nearest-point geometry for
+        // existing designs that intentionally need that connection.
+        points=[anchor,{x:Math.max(x-10,Math.min(x+w+10,anchor.x)),y:Math.max(y-8,Math.min(y+h+8,anchor.y))}];
+      }
+      if(points.some(p=>p.x<0||p.y<0||p.x>canvas.width||p.y>canvas.height))throw new Error('evidenceNote route must fit the canvas.');
+      // Reject any segment crossing the interior of the note, including an
+      // explicitly supplied elbow on the wrong side. No claim is made about
+      // other slide objects; the caller must keep those routes clear in preview.
+      function crosses(a,b){
+        let lo=0,hi=1;
+        for(const [start,delta,min,max] of [[a.x,b.x-a.x,x+0.01,x+w-0.01],[a.y,b.y-a.y,y+0.01,y+h-0.01]]){
+          if(Math.abs(delta)<1e-9){if(start<min||start>max)return false;}
+          else{const one=(min-start)/delta,two=(max-start)/delta;lo=Math.max(lo,Math.min(one,two));hi=Math.min(hi,Math.max(one,two));if(lo>hi)return false;}
+        }
+        return hi>=0&&lo<=1;
+      }
+      for(let i=1;i<points.length;i++)if(crosses(points[i-1],points[i]))throw new Error('evidenceNote route crosses its text region.');
+    }else if(attach||route==='elbow'||elbow!==undefined)throw new Error('An evidenceNote connection needs an anchor.');
+    const out=[];
+    for(let i=1;i<points.length;i++)if(points[i].x!==points[i-1].x||points[i].y!==points[i-1].y)out.push(segment(slide,points[i-1].x,points[i-1].y,points[i].x,points[i].y,{color:colors.purple}));
+    if(anchor&&marker)out.push(slide.shapes.add({geometry:'ellipse',position:{left:anchor.x-3,top:anchor.y-3,width:6,height:6},fill:colors.purple,line:noLine}));
+    const noteAlign=align==='auto'?(anchor&&anchor.x>x+w?'right':'left'):align;
+    if(title)out.push(deckText(slide,title,{x,y,w,h:30,size:22,bold:true,color:colors.purple,align:noteAlign,name:'evidence-note-title'}));
+    out.push(deckText(slide,body,{x,y:y+(title?36:0),w,h:h-(title?36:0),size,align:noteAlign,name:'evidence-note-body'}));
     return out;
   }
   function dotComparison(slide,rows,{x=48,y=196,w=1184,h=360,min=0,max,unit='',

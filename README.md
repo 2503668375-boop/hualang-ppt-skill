@@ -1,6 +1,6 @@
 # 华朗学校汇报与教学 Skill
 
-当前版本 **v8.6**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
+当前版本 **v9.0**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
 
 ## 本版构图应用
 
@@ -9,6 +9,21 @@
 [可编辑样张](artifact-template-hualang-school/assets/layout-atlas.pptx?raw=true) · [关系、密度与主题统一](artifact-template-hualang-school/references/layout-atlas.md) · [排版研究与吸收](artifact-template-hualang-school/references/layout-research.md) · [交给其他 AI 的试用任务](artifact-template-hualang-school/references/other-ai-trial.md)
 
 六种正文分别呈现中心支撑、范围包含、阶段递进、作答对照、校园图文和数据解读。机制、课程安排与学习数据均为原创模拟或拟议，校园照片来自既有品牌素材；不代表学校实绩。样张用于观察构图方法，不要求新稿按顺序套用。
+
+## V9 视觉与组件整改
+
+[![V9四类正文样张](artifact-template-hualang-school/assets/visual-refinement-v9.jpg)](artifact-template-hualang-school/assets/visual-refinement-v9.pptx?raw=true)
+
+[可编辑样张](artifact-template-hualang-school/assets/visual-refinement-v9.pptx?raw=true) · [实际改动与验证边界](tests/v9-validation.md)
+
+本版针对用户否定的V8.6介绍稿重新整改。撤回那份9页稿的视觉通过结论；旧例子仅保留历史参考，不能据此前检查证明美感。
+
+- **视觉决定先于摆组件**：选值得强调的数值、作品或材料，明确主次、比例与阅读距离；正文可使用大尺度实际信息，避免最大色面突出泛词。
+- **修改真实组件实现**：任务带统一标签与正文垂直对齐；方法条默认收至720px并允许标签宽、余量和行高；批注有明确端口与左右对齐；中心连接默认贴边。
+- **以实页对照验证**：组成、费用、数学和请求四类样张分别检验成果焦点、数字主次、图式关系及精确批注。中途发现的单位缺失、浮空箭头、单位距离和底部余量问题已修正。
+- **审查不再只排除硬错**：同材料前后对照、长短标签/不同负载/左右批注变体，分别记录改动及限制；软件测试和AI审查不能替代用户认可。
+
+样张保留原品牌首尾、近白底和原生对象，使用模拟数据及原创题例。它们是本轮整改证据，尚未取得用户对新版视觉的确认，不保证所有输入自动得到同样效果。
 
 ## v8.6 更新
 

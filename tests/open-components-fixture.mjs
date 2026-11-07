@@ -56,7 +56,7 @@ for (const [side, anchor] of Object.entries({
 })) {
   const slide = deck.addPage({title:'批注'+side});
   mark(deck.evidenceNote(slide, '模拟说明正文', {
-    x:300, y:300, w:200, h:100, title:'模拟依据', anchor,
+    x:300, y:300, w:200, h:100, title:'模拟依据', anchor, route:'straight',
   }), 'fixture-note-'+side);
 }
 rejects('note-inside-text', () => deck.evidenceNote(metric, '内部锚点', {

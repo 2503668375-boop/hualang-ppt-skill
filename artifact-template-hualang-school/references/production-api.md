@@ -1,4 +1,4 @@
-# 原生制作工具 V8.6
+# 原生制作工具 V9.0
 
 常规华朗内容页使用`addPage`；`addSchoolScene`同样只保留页眉、校徽、分隔线与正文底。混合场景创建时指定`sceneMode:'mixed'`，通用入口漏传`purpose`会报错；单一场景可用`defaultPurpose`整稿指定。为兼容旧稿，未传这些参数仍保留report默认。用途参数只设置字号起点，不决定主体和构图，也不证明场景设计已经完成。
 
@@ -112,6 +112,26 @@ deck.evidenceNote(slide,'解释这个具体转折及其条件。',{
 
 `deck.nativeTable` 的默认size跟随当前页面profile.table，显式size仍优先；底层独立nativeTable按自身默认值。原生表格必须给按内容分配的columnWidths且合计为w，可给rowHeights。表头默认紫底白字，可选headerStyle=tint为浅紫深紫字；表身黑色，数字列右对齐。cellPadding控制内边距，按真实换行确定rowHeights，不能让自动增高压住后续内容。图表数值轴使用min/max；函数采用scatter与xValues。默认蓝/灰系列，重点需要时才显式用红。
 
+
+### V9 组件尺寸与连接
+
+条带先按内容选择紧凑或通栏宽度。`methodStrip`默认宽720px；完整题干使用`lessonBand`或显式通栏。长标签传`labelWidth`，不要继续塞进默认短标签列。
+
+- `lessonBand`：`labelWidth`是整个色签宽，`labelPadding`为色签内边距；`padding:{x,y}`控制正文余量，`gap`控制标签到正文，`labelSize/size/lineHeight`分别控制标签、正文与显式行高。
+- `methodStrip`：`labelWidth`是标签文字列宽，另计`padding.x`和`gap`；标签与正文共享统一垂直布局。
+- 两者均支持`verticalAlign:'top'|'middle'`，标签与正文共用同一内框；任务带默认居中，方法条默认顶齐。未传`h`时根据显式换行与行高给高度起点。它们没有测量真实字体的自动换行，最终仍需渲染检查；显式高度不足时先报错，不绘制残缺组件。
+- `evidenceNote`：`attach:{x,y}`指定批注区域的连接边界，通常对准标题首行中线；`route:'auto'|'elbow'|'straight'`决定走线，`elbow`指定折点，`gap`控制端口前余量。默认横向邻接批注对齐标题并折线连接；`marker:false`可省源点标记；`align:'auto'|'left'|'right'`控制文字朝向，auto使左侧批注朝右、右侧批注朝左。线不得穿过批注正文，其它对象仍需实看避让。
+- `hubSpoke`：`connection:{centerGap,nodeGap,color,width}`控制连接。新默认两端间隙为0；显式6/8可保留旧视觉。端口仍须对应可见节点或关系词，不能以宽隐形文本框边缘冒充实际文字边界。
+
+```js
+deck.methodStrip(slide,'家庭共读建议','追问“哪句话支持你的判断？”',
+  {x:48,y:520,w:820,labelWidth:168,labelSize:22,size:23,padding:{x:18,y:12},gap:20});
+deck.evidenceNote(slide,'保留原文中的已定安排。',
+  {x:920,y:330,w:280,h:90,title:'事实状态',anchor:{x:780,y:345},attach:{x:920,y:345},route:'elbow',gap:8});
+```
+
+接口解决尺寸与走线约束，不自动决定美感；实际变体和当前样张见[样张索引](sample-index.md)。
+
 ## 点击揭示
 
 ```js
@@ -198,3 +218,22 @@ const preview=await renderSavedDeck({candidatePath:finalPptx,renderDir,scale:1.5
 自动中文题名用具体议题短语，课堂问句放任务区；四、六、八字是编辑偏好。正常英文与学科专名不按12字位硬截，长中文由保存后检查提示实看实际换行。用户给定正式题名可用userSuppliedTitle保留，并在验收时对应原要求。
 
 署名或日期缺失时可先准备完整主体内容与页面底稿；需要构建时传明确的待填草稿值，不虚构真实身份或日期。正式验收仍拒绝未补字段。
+
+## 单页正文的导出
+
+仅交单页时可用品牌正文页起稿。删去临时首尾后，直接导出并只读重渲染；不要再调用会恢复/检查封尾的`writeDraft`。页码当前按固定几何识别，不能用不唯一的`content`名字定位：
+
+```js
+const index = deck.presentation.slides.items.indexOf(slide);
+const pageNumber = slide.shapes.items.find(s => {
+  const p=s.position;
+  return p && Math.abs(p.left-1190)<1 && Math.abs(p.top-677)<1 &&
+    Math.abs(p.width-42)<1 && Math.abs(p.height-24)<1;
+});
+if (pageNumber) pageNumber.text.set('01');
+deck.presentation.slides.keep([index]);
+await (await PresentationFile.exportPptx(deck.presentation)).save(finalPath);
+await renderSavedDeck({candidatePath:finalPath,renderDir});
+```
+
+本例来自单页独立试作，当前页码几何与品牌模板绑定；模板更换时重新核对，不泛用于别的模板。
