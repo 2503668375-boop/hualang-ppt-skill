@@ -41,6 +41,8 @@ const preview=await deck.writeDraft({candidatePath,renderDir});
 
 `deck.text` 对通过入口创建的页面采用对应正文起点，可按真实材料显式调整。正文默认 `colors.ink`，标题和教学组件用 `colors.purple` / `colors.pale`，重点 `colors.red`，分析图形 `colors.blue`。字号起点不等于配额，见[教学设计](teaching-design.md)及[视觉规范](design.md)。
 
+需要同段混排数字、单位或局部证据时可在原生文本中使用runs，保持共同基线并分别设置字级。当前验证的运行库要求run级`fontSize`使用带单位字符串（如`'22px'`），整框字号仍可用数值；按实际环境核对，不将run数字字号报错误判为内容问题。最终仍需看真实字形与间距。
+
 ## 主要入口
 
 ### 开放式组件

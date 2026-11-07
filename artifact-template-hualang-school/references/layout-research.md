@@ -2,6 +2,24 @@
 
 核查日期：2026年11月7日。研究目的是补足华朗的内容关系与构图方法。以下华朗应用属于设计转化，不表示来源规定了本校字号、密度或品牌，也不证明教学效果。未下载或再分发商业模板。
 
+## V9.2：从图式分类深入到设计完成度
+
+本轮针对用户否定介绍稿的粗糙表现，研究原制作者发布的实际页面。选择覆盖现场演示、董事会材料、阅读报告、教育实施与数据图的案例；不声称穷尽全网，也不把入选案例的每个设计都当作正确答案。第三方案例图只作研究查看，不进入公开技能包；华朗样页由本校既有资产、模拟资料及原创内容重新制作。
+
+| 一手来源与实看对象 | 具体观察 | 内化方式与舍弃部分 |
+|---|---|---|
+| [Duarte × Splunk](https://www.duarte.com/approach/case-studies/scaling-communication-with-presentation-systems/)，Long Journey、Photo Grid、Chart and Content三幅页面 | 标题、短解释、定位线与对应曲线节点成组；照片组与图文页的主体比例不同，统一来自字体、色彩和共同轴线 | 让注释与实际点位相邻，图文依负载分配面积。模板曲线无单位与坐标，不能照搬作数据证据；粉色、渐变及第三方照片不迁入华朗 |
+| [Duarte × VMware ESG](https://www.duarte.com/approach/case-studies/reimagining-vmwares-high-stakes-industry-report-as-a-stunning-data-story/)，印刷P15目标进度、P30人员发展 | 实际值与目标标记共用尺度；完整论述之外设置数字证据区，数字紧接对象及含义 | 留阅材料保留充分分析，用列宽、证据区和文字职责组织密度。三栏小字与报告装饰不直接搬到投影页 |
+| [Pitch官方董事会报告](https://www.pitch.com/blog/how-to-write-a-board-report)，Highlights与Product Metrics高清页 | 图文组同宽、同上缘，照片高度可不同，说明跟随下缘；指标名、数值与小变化量分出层级并贴近同组 | 吸收组内外距离、共同轴线和数字近邻差额。抽象照片、黑底、大写窄体和模糊的百分比口径不迁入；不将六格指标作为通用布局 |
+| [BrightCarbon OV案例](https://www.brightcarbon.com/case-study-next-level-presentations-ov/)，三页联排中的制造网络地图 | 地区放大和说明连到具体标点，标注与路径各有职责，路由空间用于追踪关系 | 批注先确认可见端口，再选折线并避让文字；无地理关系不造地图。公开联排分辨率只足以观察大关系，不据此判断精确字号或小字可读性 |
+| [EEF学校实施指南](https://d2tic4wvo1iusb.cloudfront.net/production/eef-guidance-reports/implementation/a_schools_guide_to_implementation.pdf)，PDF P25／印刷P22 Figure3，PDF P38—39／印刷P35—36 Figure5 | 适配与可实施条件上下配对，左右材料同高；实施表现与最终结果分层，时间只用于相应过程指标 | 保留配对关系与过程/结果边界，不将四个并列事项串成必经步骤。A4长文密度和大色底不照搬到投影材料 |
+| [OECD英国教育国别说明](https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/09/education-at-a-glance-2025-country-notes_9749f4ff/united-kingdom_138c780e/c93708b1-en.pdf)，P2、6、8的Figures1、4、5 | 完整比较分布保留共同尺度，目标对象单一强调；图题、单位、图与统计例外连续相邻 | 管理图保留基准与条件，重点对象突出、其余成为可比较背景。几十个倾斜长标签不直接用于远距投影，按本次判断范围重组 |
+| [Datawrapper多线图](https://www.datawrapper.de/academy/how-to-create-your-first-line-chart)与[数值标签实例](https://www.datawrapper.de/blog/automatically-label-values-in-line-charts)，欧洲多线、公交少量点、汽油长序列三幅成图 | 名称放在所属线附近可读空隙；少量值可全部直接标注，长序列保留数值轴并选择首末、峰谷及条件时段 | 标签按逐值核对、首末比较、找异常或跟踪系列选择；直接标签不等于所有点加数字，也不要求一律删坐标轴 |
+
+转化后的决策集中在[设计决策与精修实页](design-craft.md)：证据与解释的视觉分量、真实分叉与配对、作品长短适配、成果局部放大、交付物与责任、标签策略、组内轴线与微观完成度。旧规则已正确表达的品牌和语义要求保留，不通过堆叠禁令或增加整页模板解决执行问题。
+
+实际验证采用同材料前后样页及独立新材料试用，结果见本轮验证记录。样页与程序检查不代表用户认可、现场放映或校内使用成效。
+
 ## 实际浏览的外部来源
 
 | 原始来源 | 实看内容与可吸收的方法 | 华朗应用及边界 |

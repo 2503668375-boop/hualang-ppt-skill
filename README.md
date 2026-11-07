@@ -1,6 +1,18 @@
 # 华朗学校汇报与教学 Skill
 
-当前版本 **v9.1**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
+当前版本 **v9.2**。把学校已有的数据、教材、题目、作品和方案，整理成适合本次使用的汇报、教案、课件与家校沟通材料。保留华朗原校徽、固定首尾，以及左题右徽、金线和近白底的正文框架。
+
+## V9.2 设计表达与出品精修
+
+[![六张局部精修样页](artifact-template-hualang-school/assets/design-craft-v9.2.jpg)](artifact-template-hualang-school/assets/design-craft-v9.2.pptx?raw=true)
+
+[可编辑正文样页](artifact-template-hualang-school/assets/design-craft-v9.2.pptx?raw=true) · [设计决策与精修](artifact-template-hualang-school/references/design-craft.md) · [一手案例与吸收边界](artifact-template-hualang-school/references/layout-research.md) · [本轮验证](tests/v9.2-validation.md)
+
+本轮针对用户否定的介绍稿重新检查设计，撤回该稿原视觉通过结论。研究Duarte、Pitch、BrightCarbon、EEF、OECD和Datawrapper发布的实际页面，吸收证据与解释的视觉分量、真实分叉与配对、图文组轴线、数字近邻差额和标签策略；第三方案例图片及品牌不进入技能资产。
+
+六张局部正文用同材料验证：入口分流、学段并列、作答证据、原生表格局部放大、交付物与岗位反馈，以及费用/到场/单位投入。原始品牌首尾保持不变，本样页因局部验证不另加首尾。重要特色须能指到具体设计选择和可见结果，不能只用能力目录、空白模板或样张存在解释价值。
+
+这是一组精修方法与实际证据，不是每次报告的固定页序，也不保证任意输入自动得到好页面。实际检查与尚未验证范围见本轮记录。
 
 ## 本版构图应用
 
