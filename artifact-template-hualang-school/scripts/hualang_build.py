@@ -29,6 +29,9 @@ from hualang_report_layouts import (  # noqa: E402
     REPORT_LAYOUTS, choose_report_layout, plan_supporting,
     render_report_layout, validate_report_slide,
 )
+from hualang_content_components import (  # noqa: E402
+    CONTENT_LAYOUTS, choose_content_layout, render_content_layout, validate_content_slide,
+)
 
 # 待复核文风用词；术语、引文和教学对象不能仅凭字串误拦。
 STRICT_TERMS = ['赋能', '抓手', '闭环', '链路', '颗粒度', '组合拳', '护城河',
@@ -62,27 +65,27 @@ SCENARIOS = {
         'label': '校务决策与内部汇报', 'tier': 'read',
         'layouts': ['comparison', 'table', 'metrics', 'bars', 'timeline', 'process',
                     'positioning', 'waterfall', 'trend', 'diagnostic', 'targets',
-                    'conversion', 'swimlane', 'decision'],
+                    'conversion', 'swimlane', 'decision', 'annotated', 'revision', 'tradeoff'],
         'closing': '汇报完毕，敬请指导',
     },
     'lesson_plan': {
         'label': '教师教案与说课', 'tier': 'read',
-        'layouts': ['activity', 'lesson', 'table', 'process', 'evidence'],
+        'layouts': ['activity', 'lesson', 'table', 'process', 'evidence', 'annotated', 'revision'],
         'closing': '以学定教，共同研磨',
     },
     'classroom': {
         'label': '学生课堂', 'tier': 'near',
-        'layouts': ['lesson', 'evidence', 'comparison', 'process', 'table'],
+        'layouts': ['lesson', 'evidence', 'comparison', 'process', 'table', 'annotated', 'revision'],
         'closing': '华夏俊采，朗若星辰',
     },
     'practice': {
         'label': '练习复习与检测', 'tier': 'read',
-        'layouts': ['practice', 'comparison', 'table', 'lesson'],
+        'layouts': ['practice', 'comparison', 'table', 'lesson', 'annotated', 'revision'],
         'closing': '独立完成，及时订正',
     },
     'parent_growth': {
         'label': '个体家长成长反馈', 'tier': 'near',
-        'layouts': ['evidence', 'comparison', 'process', 'table'],
+        'layouts': ['evidence', 'comparison', 'process', 'table', 'annotated', 'revision'],
         'closing': '看见成长，协同支持',
     },
     'parent_meeting': {
@@ -92,7 +95,7 @@ SCENARIOS = {
     },
     'admissions': {
         'label': '招生开放日与课程选择', 'tier': 'far',
-        'layouts': ['statement', 'image', 'metrics', 'comparison', 'timeline', 'table'],
+        'layouts': ['statement', 'image', 'metrics', 'comparison', 'timeline', 'table', 'tradeoff'],
         'closing': '期待在华朗相见',
     },
     'public_address': {
@@ -134,7 +137,7 @@ def resolve_tier(slide, scenario):
             raise ValueError('页面 tier 仅支持 read / near / far。')
         return explicit
     layout = choose_layout(slide)
-    if scenario == 'admissions' and layout in ('table', 'timeline', 'comparison'):
+    if scenario == 'admissions' and layout in ('table', 'timeline', 'comparison', 'tradeoff'):
         return 'near'
     if scenario == 'parent_meeting' and layout == 'table':
         return 'near'
@@ -145,6 +148,9 @@ def choose_layout(slide):
     layout = slide.get('layout', 'auto')
     if layout != 'auto':
         return layout
+    content_layout = choose_content_layout(slide)
+    if content_layout:
+        return content_layout
     report_layout = choose_report_layout(slide)
     if report_layout:
         return report_layout
@@ -192,13 +198,15 @@ def validate_spec(spec):
             raise ValueError(f'第 {i} 页规格必须是对象。')
         layout = choose_layout(slide)
         known = {'auto', 'statement', 'section', 'comparison', 'table', 'timeline', 'process',
-                 'evidence', 'lesson', 'activity', 'practice', 'metrics', 'bars', 'image'} | REPORT_LAYOUTS
+                 'evidence', 'lesson', 'activity', 'practice', 'metrics', 'bars', 'image'} | REPORT_LAYOUTS | CONTENT_LAYOUTS
         if layout not in known:
             raise ValueError(f'第 {i} 页使用未知版式：{layout}')
         if 'appendix' in slide and not isinstance(slide['appendix'], bool):
             raise ValueError(f'第 {i} 页 appendix 必须是布尔值。')
         if layout in REPORT_LAYOUTS:
             validate_report_slide(slide, layout, i)
+        if layout in CONTENT_LAYOUTS:
+            validate_content_slide(slide, layout, i)
         if layout != 'image' and not str(slide.get('title', '')).strip():
             raise ValueError(f'第 {i} 页缺少具体题名 title。')
         resolve_tier(slide, scenario)
@@ -999,7 +1007,7 @@ def render_practice(deck, slide, scenario, manifest):
 
 
 LAYOUT_FAMILY = {'section': 'statement', 'image': 'evidence'}
-VISUAL_LAYOUTS = REPORT_LAYOUTS | {
+VISUAL_LAYOUTS = REPORT_LAYOUTS | CONTENT_LAYOUTS | {
     'comparison', 'table', 'metrics', 'bars', 'timeline', 'process',
     'evidence', 'image', 'activity', 'lesson', 'practice',
 }
@@ -1107,11 +1115,13 @@ def build_deck(spec, out_path):
             'activity': render_activity, 'lesson': render_lesson,
             'practice': render_practice,
         }.get(layout)
-        if renderer is None and layout not in REPORT_LAYOUTS:
+        if renderer is None and layout not in REPORT_LAYOUTS | CONTENT_LAYOUTS:
             raise ValueError(f'暂不支持的版式：{layout}')
         before = len(deck._pages)
         if layout in REPORT_LAYOUTS:
             pages = render_report_layout(deck, slide, resolve_tier(slide, scenario), layout=layout)
+        elif layout in CONTENT_LAYOUTS:
+            pages = render_content_layout(deck, slide, resolve_tier(slide, scenario), layout=layout)
         else:
             pages = renderer(deck, slide, scenario, manifest)
         _ensure_visible_fields(slide, pages, scenario)
@@ -1143,11 +1153,11 @@ def build_deck(spec, out_path):
             [_audience_slide(slide, scenario) for slide in spec['slides']], STRICT_TERMS + CONTEXT_TERMS):
         warnings.append(f'第{page_index}页出现“{term}”（{path}），请确认是教学语境还是空话：{text[:24]}')
     if scenario == 'internal_report' and not any(
-            t['layout'] in ({'table', 'metrics', 'bars', 'comparison'} | REPORT_LAYOUTS) for t in page_log):
+            t['layout'] in ({'table', 'metrics', 'bars', 'comparison', 'tradeoff'} | REPORT_LAYOUTS) for t in page_log):
         warnings.append('内部汇报缺少比较、指标或表格页，请确认资料是否足以支持判断。')
     if scenario == 'lesson_plan' and not any(t['layout'] == 'activity' for t in page_log):
         warnings.append('教案缺少任务—预期回应—评价调整序列。')
-    if scenario == 'parent_growth' and not any(t['layout'] == 'evidence' for t in page_log):
+    if scenario == 'parent_growth' and not any(t['layout'] in ('evidence', 'annotated', 'revision') for t in page_log):
         warnings.append('个体家长反馈缺少作品或记录证据页。')
     if scenario in ('admissions', 'public_address') and not any(t['layout'] in ('statement', 'image', 'evidence') for t in page_log):
         warnings.append('对外稿缺少主视觉或证据页。')
@@ -1156,6 +1166,8 @@ def build_deck(spec, out_path):
     quality['passed'] = quality['passed'] and not blocking_warnings
     warnings.extend(quality_findings)
     quality['needs_review'] = bool(warnings)
+    quality['status'] = 'human_review_required'
+    quality['scope'] = 'passed仅表示已执行的结构性检查未阻断构建；内容、表达、视觉须依据最终文件分别审查。'
     strict_quality = spec.get('strict_quality', True)
     if strict_quality and blocking_warnings:
         raise ValueError('质量门禁未通过，未交付 PPTX。请逐项修正：\n- ' +
@@ -1187,6 +1199,8 @@ def build_deck(spec, out_path):
     else:
         deck.save(out_path)
     report['size_bytes'] = out_path.stat().st_size
+    from audit_content_claims import audit_presentation
+    report['content_review'] = audit_presentation(out_path)
     return report
 
 

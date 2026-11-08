@@ -1,0 +1,502 @@
+{
+  "schema_version": "1.0",
+  "title": "图书馆晚间开放试点复盘与下一步安排",
+  "scenario": "internal_report",
+  "audience": "校务会，会前留阅并简要汇报",
+  "presenter": "教研示范",
+  "date": "2026年11月8日",
+  "closing_text": "汇报完毕，敬请指导",
+  "source_notes": "全部为本次任务给定的原创模拟资料，不代表华朗真实经营。独立试用者先规划内容，再读取技能；未参考其他示例页序。问卷份数未说明去重，不换算成受访人数。",
+  "slides": [
+    {
+      "layout": "table",
+      "title": "试点结果",
+      "role": "opening",
+      "reader_question": "前后使用变化有多大，现有结果能支持怎样的下一轮判断？",
+      "new_information": "同期间比较三项结果，区分全日增量与晚间累计人次，交代下一轮待议状态。",
+      "lead": "入馆与借阅均增50.0%，独立学生增加90人",
+      "context": "原创模拟数据 · 非学校实绩；前后各四周、各16天（周一至周四）；独立学生按各期去重统计",
+      "table": {
+        "style": "comparison",
+        "columns": [
+          {
+            "label": "指标与单位",
+            "type": "text",
+            "weight": 1.6
+          },
+          {
+            "label": "前期至17:00",
+            "type": "number"
+          },
+          {
+            "label": "试点至19:00",
+            "type": "number"
+          },
+          {
+            "label": "差额",
+            "type": "number"
+          },
+          {
+            "label": "较前期变化",
+            "type": "number",
+            "weight": 1.2
+          }
+        ],
+        "rows": [
+          [
+            "入馆（人次）",
+            "640",
+            "960",
+            "+320",
+            "+50.0%"
+          ],
+          [
+            "独立学生（人）",
+            "210",
+            "300",
+            "+90",
+            "+42.9%"
+          ],
+          [
+            "借阅（册）",
+            "320",
+            "480",
+            "+160",
+            "+50.0%"
+          ]
+        ],
+        "focus_columns": [
+          2
+        ],
+        "focus_rows": [],
+        "total_row": false
+      },
+      "basis": {
+        "title": "归因边界",
+        "body": "晚间17:00–19:00累计224人次，占试点全部入馆人次的23.3%。这224人次是时段构成，前后总增量320人次是期间差额，二者不能直接等同。\n试点与读书节同时发生，又缺少同周期对照。现有记录能够说明使用量上升，尚不足以区分延时、活动和其他因素各自的贡献。"
+      },
+      "action": "下一轮拟继续试行四周，需确定开放范围与预算；每周四晚、两晚及预约制三个备选方案均未批准。"
+    },
+    {
+      "layout": "bars",
+      "title": "晚间需求",
+      "role": "diagnosis",
+      "reader_question": "需求集中在哪些晚上，座位是否紧张？",
+      "new_information": "周内分布、晚间参与构成、观测峰值与累计人次的差别。",
+      "lead": "周一周二占晚间人次67.9%，观测峰值在座22人",
+      "context": "原创模拟数据 · 试点四周，17:00–19:00累计；横条单位为人次",
+      "max_value": 80,
+      "series": [
+        {
+          "label": "周一",
+          "value": 72,
+          "display": "72人次",
+          "color": "blue"
+        },
+        {
+          "label": "周二",
+          "value": 80,
+          "display": "80人次",
+          "color": "blue"
+        },
+        {
+          "label": "周三",
+          "value": 48,
+          "display": "48人次",
+          "color": "96969E"
+        },
+        {
+          "label": "周四",
+          "value": 24,
+          "display": "24人次",
+          "color": "96969E"
+        }
+      ],
+      "body": "晚间参与学生去重96人，其中24人前期完全未入馆，占25.0%。这一比例反映晚间参与者的构成，未反映全馆学生净新增。",
+      "basis": {
+        "title": "座位观察",
+        "body": "开放60席，最高同时在座22人，观测峰值占座36.7%；它不代表整个晚间的平均利用率。224为累计人次，不能直接除以60席作利用率。"
+      }
+    },
+    {
+      "layout": "annotated",
+      "title": "服务反馈",
+      "role": "diagnosis",
+      "reader_question": "谁希望继续，服务上还要跟踪什么？",
+      "new_information": "把问卷原记录与可得结论就近对应，明确份数、抽样和反馈重叠边界。",
+      "lead": "问卷显示继续意愿，接送与噪音需持续跟踪",
+      "context": "原创模拟资料 · 问卷对象仅限参加过晚间开放者；问卷以份统计",
+      "source_title": "问卷与反馈记录",
+      "source_blocks": [
+        {
+          "id": "survey",
+          "text": "累计发放问卷150份，回收110份，回收率73.3%。回收问卷中，82份希望继续晚间开放。"
+        },
+        {
+          "id": "issues",
+          "text": "另有8条离馆接送困难反馈、5条晚间太吵反馈；尚不清楚两类反馈是否重叠。学生处愿意汇总接送需求。"
+        }
+      ],
+      "annotations": [
+        {
+          "target": "survey",
+          "label": "继续意愿占回收问卷74.5%",
+          "comment": "问卷未说明去重，110份不等于110人。样本限晚间参与者，不能据此推断全校支持率。"
+        },
+        {
+          "target": "issues",
+          "label": "分别记录问题及后续变化",
+          "comment": "8条与5条不能合计成13名学生。接送需求由学生处汇总；投诉记录纳入下一轮结束复核。"
+        }
+      ],
+      "boundary": "回收问卷110份多于晚间去重学生96人，问卷未说明是否去重，不能据此换算受访人数。"
+    },
+    {
+      "layout": "tradeoff",
+      "title": "费用与取舍",
+      "role": "options",
+      "reader_question": "三种安排的费用和代价如何比较？",
+      "new_information": "同尺度展示三项估算上限，完整保留覆盖时段、服务代价与成立条件。",
+      "context": "原创模拟方案 · 下一个四周，17:00–19:00；预算为估算上限，三项均未批准",
+      "metric": {
+        "label": "四周预算上限",
+        "unit": "元",
+        "max": 4800
+      },
+      "options": [
+        {
+          "name": "每周四晚",
+          "value": 4800,
+          "display": "4800元",
+          "color": "96969E",
+          "fit": "周一至周四。\n保留全部原晚间时段。",
+          "cost": "继续承担四晚值班与安保支出。",
+          "condition": "须核定人员、安保排班及预算。"
+        },
+        {
+          "name": "每周两晚（建议）",
+          "value": 3000,
+          "display": "3000元",
+          "color": "blue",
+          "fit": "周一、周二。\n保留现有高到访时段。",
+          "cost": "周三、周四不再延时，相应使用机会收缩。",
+          "condition": "须批准方案及预算，并核定排班。"
+        },
+        {
+          "name": "每周四晚预约制",
+          "value": 4200,
+          "display": "4200元",
+          "color": "96969E",
+          "fit": "周一至周四。\n预约满10人开馆。",
+          "cost": "取消开馆仍有值班成本，节省受执行影响。",
+          "condition": "需明确预约与取消安排，并核定排班。"
+        }
+      ],
+      "body": "本轮新增支出4800元：值班3200元、安保1200元、电费400元。",
+      "recommendation": {
+        "option": "每周两晚",
+        "why": "较四晚预算少1800元（37.5%）；保留历史高到访时段，未来参与人数仍需观察。"
+      }
+    },
+    {
+      "layout": "swimlane",
+      "title": "落实与复核",
+      "role": "execution",
+      "reader_question": "谁负责什么，什么时候反馈与复核？",
+      "new_information": "把已表明的部门分工放到真实阶段，保留待批准及日期未定。",
+      "lead": "先落实方案与排班，再按周反馈、期末复核",
+      "context": "原创模拟安排 · 下一轮拟试四周；审批日期未定",
+      "periods": [
+        "启动前",
+        "运行期间（每周）",
+        "下一轮结束"
+      ],
+      "lanes": [
+        {
+          "label": "接送需求",
+          "owner": "学生处",
+          "tasks": [
+            {
+              "start": 0,
+              "end": 1,
+              "label": "汇总接送需求",
+              "deliverable": "接送需求记录",
+              "status": "已表达协作意愿"
+            }
+          ]
+        },
+        {
+          "label": "使用记录",
+          "owner": "图书馆",
+          "tasks": [
+            {
+              "start": 1,
+              "end": 2,
+              "label": "记录借阅与独立学生",
+              "deliverable": "供每周反馈与期末复核",
+              "status": "拟议"
+            }
+          ]
+        },
+        {
+          "label": "人员安保",
+          "owner": "后勤",
+          "tasks": [
+            {
+              "start": 0,
+              "end": 0,
+              "label": "核定人员及安保排班",
+              "deliverable": "排班安排",
+              "status": "待核定"
+            }
+          ]
+        }
+      ],
+      "body": "每周反馈一次；下一轮结束复核费用、独立学生、晚间人次和投诉记录。",
+      "action": "下一轮以方案及预算获批、人员和安保排班核定为执行条件；根据复核结果再讨论后续开放安排。"
+    }
+  ],
+  "calculations": [
+    {
+      "comparison_id": "visits_delta",
+      "subject": "入馆前后差额",
+      "baseline": "试点前各期累计/去重值",
+      "perspective": "试点减试点前",
+      "period": "前后各四周16天，模拟数据",
+      "unit": "人次",
+      "formula": "after-before",
+      "inputs": {
+        "before": 640,
+        "after": 960
+      },
+      "expected": 320,
+      "tolerance": 1e-06
+    },
+    {
+      "comparison_id": "visits_growth",
+      "subject": "入馆前后变化比例",
+      "baseline": "试点前640人次",
+      "perspective": "增量占试点前基数",
+      "period": "前后各四周16天，模拟数据",
+      "unit": "%",
+      "formula": "(after-before)/before*100",
+      "inputs": {
+        "before": 640,
+        "after": 960
+      },
+      "expected": 50.0,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "students_delta",
+      "subject": "独立学生前后差额",
+      "baseline": "试点前各期累计/去重值",
+      "perspective": "试点减试点前",
+      "period": "前后各四周16天，模拟数据",
+      "unit": "人",
+      "formula": "after-before",
+      "inputs": {
+        "before": 210,
+        "after": 300
+      },
+      "expected": 90,
+      "tolerance": 1e-06
+    },
+    {
+      "comparison_id": "students_growth",
+      "subject": "独立学生前后变化比例",
+      "baseline": "试点前210人",
+      "perspective": "增量占试点前基数",
+      "period": "前后各四周16天，模拟数据",
+      "unit": "%",
+      "formula": "(after-before)/before*100",
+      "inputs": {
+        "before": 210,
+        "after": 300
+      },
+      "expected": 42.9,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "loans_delta",
+      "subject": "借阅前后差额",
+      "baseline": "试点前各期累计/去重值",
+      "perspective": "试点减试点前",
+      "period": "前后各四周16天，模拟数据",
+      "unit": "册",
+      "formula": "after-before",
+      "inputs": {
+        "before": 320,
+        "after": 480
+      },
+      "expected": 160,
+      "tolerance": 1e-06
+    },
+    {
+      "comparison_id": "loans_growth",
+      "subject": "借阅前后变化比例",
+      "baseline": "试点前320册",
+      "perspective": "增量占试点前基数",
+      "period": "前后各四周16天，模拟数据",
+      "unit": "%",
+      "formula": "(after-before)/before*100",
+      "inputs": {
+        "before": 320,
+        "after": 480
+      },
+      "expected": 50.0,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "evening_share",
+      "subject": "晚间人次占全部入馆人次",
+      "baseline": "试点全部入馆960人次",
+      "perspective": "分子占所列分母；不扩大适用范围",
+      "period": "试点四周16天，模拟数据",
+      "unit": "%",
+      "formula": "num/den*100",
+      "inputs": {
+        "num": 224,
+        "den": 960
+      },
+      "expected": 23.3,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "mon_tue_share",
+      "subject": "周一周二晚间人次占比",
+      "baseline": "晚间累计224人次",
+      "perspective": "分子占所列分母；不扩大适用范围",
+      "period": "试点四周晚间，模拟数据",
+      "unit": "%",
+      "formula": "num/den*100",
+      "inputs": {
+        "num": 152,
+        "den": 224
+      },
+      "expected": 67.9,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "previous_nonusers",
+      "subject": "晚间参与者中前期未入馆者占比",
+      "baseline": "晚间参与去重96人",
+      "perspective": "分子占所列分母；不扩大适用范围",
+      "period": "前期四周与试点四周，模拟数据",
+      "unit": "%",
+      "formula": "num/den*100",
+      "inputs": {
+        "num": 24,
+        "den": 96
+      },
+      "expected": 25.0,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "peak_seats",
+      "subject": "观测峰值占座",
+      "baseline": "开放座位60席",
+      "perspective": "分子占所列分母；不扩大适用范围",
+      "period": "试点晚间最高同时在座时点，模拟数据",
+      "unit": "%",
+      "formula": "num/den*100",
+      "inputs": {
+        "num": 22,
+        "den": 60
+      },
+      "expected": 36.7,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "survey_return",
+      "subject": "问卷回收率",
+      "baseline": "发放150份",
+      "perspective": "分子占所列分母；不扩大适用范围",
+      "period": "试点累计问卷，模拟数据",
+      "unit": "%",
+      "formula": "num/den*100",
+      "inputs": {
+        "num": 110,
+        "den": 150
+      },
+      "expected": 73.3,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "continue_share",
+      "subject": "回收问卷中继续意愿份数占比",
+      "baseline": "回收110份；未说明去重",
+      "perspective": "分子占所列分母；不扩大适用范围",
+      "period": "试点累计问卷，模拟数据",
+      "unit": "%",
+      "formula": "num/den*100",
+      "inputs": {
+        "num": 82,
+        "den": 110
+      },
+      "expected": 74.5,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "two_night_saving_pct",
+      "subject": "两晚预算上限较四晚减少比例",
+      "baseline": "四晚估算上限4800元",
+      "perspective": "分子占所列分母；不扩大适用范围",
+      "period": "下一轮四周拟议方案，模拟数据",
+      "unit": "%",
+      "formula": "num/den*100",
+      "inputs": {
+        "num": 1800,
+        "den": 4800
+      },
+      "expected": 37.5,
+      "tolerance": 0.05
+    },
+    {
+      "comparison_id": "mon_tue_total",
+      "subject": "周一周二晚间人次合计",
+      "baseline": "周一72，周二80",
+      "perspective": "两晚累计相加",
+      "period": "试点四周晚间，模拟数据",
+      "unit": "人次",
+      "formula": "mon+tue",
+      "inputs": {
+        "mon": 72,
+        "tue": 80
+      },
+      "expected": 152,
+      "tolerance": 1e-06
+    },
+    {
+      "comparison_id": "spending_total",
+      "subject": "试点新增费用合计",
+      "baseline": "值班3200、安保1200、电费400",
+      "perspective": "费用科目相加",
+      "period": "试点四周，模拟数据",
+      "unit": "元",
+      "formula": "staff+security+electricity",
+      "inputs": {
+        "staff": 3200,
+        "security": 1200,
+        "electricity": 400
+      },
+      "expected": 4800,
+      "tolerance": 1e-06
+    },
+    {
+      "comparison_id": "two_night_saving",
+      "subject": "两晚预算上限较四晚减少额",
+      "baseline": "四晚4800元，两晚3000元",
+      "perspective": "四晚减两晚，估算上限差额",
+      "period": "下一轮四周拟议方案，模拟数据",
+      "unit": "元",
+      "formula": "four-two",
+      "inputs": {
+        "four": 4800,
+        "two": 3000
+      },
+      "expected": 1800,
+      "tolerance": 1e-06
+    }
+  ]
+}

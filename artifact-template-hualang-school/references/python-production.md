@@ -104,6 +104,35 @@ r.page_number(light=True)
 
 `bleed_page` 只接受 `tier='far'`，传其他档位直接报错。出血页不出常规页眉题名，按样式契约核对品牌对象与主张文字；满版图片本身不代表出血页合格。品牌处理、遮罩取值与节奏安排见[场景视觉语法](scene-visual-grammar.md#整页出血对外专用)。
 
+## 材料组件的局部组合
+
+`hualang_content_components.py` 提供可放入指定区域的原生组合。普通整稿优先使用 `annotated / revision / tradeoff`，见[页面规格](deck-spec.md)；复杂页面可以把局部组件与原生图、短解释、任务区组合，不必整页套同一骨架。
+
+```python
+from hualang_content_components import draw_annotated, draw_revision, draw_tradeoff
+
+used = draw_annotated(p,
+    source_blocks=[{'id': 'a', 'text': '完整原文或作答。'}],
+    annotations=[{'target': 'a', 'label': '具体观察', 'comment': '依据与解释。',
+                  'rewrite': '可选修订文字。'}],
+    x=48, y=200, w=1184, h=430, source_title='学生作答')
+
+used = draw_revision(p,
+    changes=[{'label': '修改对象', 'before': '原始文字。',
+              'after': '修改后文字。', 'reason': '据什么修改。'}],
+    x=48, y=200, w=1184, h=430, before_label='初稿', after_label='修订稿')
+
+used = draw_tradeoff(p,
+    options=[{'name': '集中培训', 'value': 12, 'fit': '方法缺口',
+              'cost': '培训时间及后续实践', 'condition': '内容对应真实难题'},
+             {'name': '共同备课', 'value': 0, 'fit': '课堂执行',
+              'cost': '导师与教师的时间', 'condition': '有共同备课时段'}],
+    metric={'label': '新增预算', 'unit': '万元', 'max': 12},
+    x=48, y=200, w=1184, h=430)
+```
+
+上面为互相独立的调用示例，不在同一区域叠加。坐标为逻辑像素，函数返回实际占用高度；区域不得越出正文画布。字号继承 `Page.t`，面积不足时抛出明确错误，调用方须重排或改走整稿分页，不能忽略错误后交付。输入字段、范围与真实性仍由内容审稿负责。
+
 ## 保存前自检
 
 `save()` 会检查 `spPr` 与 `tcPr` 的子元素顺序。PowerPoint 对顺序敏感，填充排在描边之后会触发修复提示；顺序错了直接抛错并指出页与形状名，不写出坏文件。

@@ -578,8 +578,8 @@ def _swimlane(page, slide, y, bottom):
     col_w = grid_w / len(periods)
     header_h = 42
     for i, period in enumerate(periods):
-        text_box(page, period, grid_x + i * col_w + 4, y + 8, col_w - 8, 26,
-                 size=15, color='purple', bold=True, align='c')
+        text_box(page, period, grid_x + i * col_w + 4, y + 6, col_w - 8, 32,
+                 size=17, color='purple', bold=True, align='c')
     lane_h = (bottom - y - header_h) / len(lanes)
     if lane_h < 64:
         raise ValueError('swimlane 泳道高度不足；请减少泳道、辅助文字或拆页。')
@@ -589,28 +589,40 @@ def _swimlane(page, slide, y, bottom):
         yy = y + header_h + li * lane_h
         if li % 2 == 0:
             page.panel(48, yy, 1184, lane_h, fill='F7F5F9')
-        text_box(page, lane['label'], 48, yy + 8, label_w - 12, 26, size=18, bold=True)
-        text_box(page, '责任：' + lane['owner'], 48, yy + 36, label_w - 12, 24,
-                 size=13, color='secondary')
-        task_h = (lane_h - 12) / len(lane['tasks'])
-        if task_h < 30:
-            raise ValueError(f'swimlane 第 {li + 1} 条泳道任务过密；请拆页，不能缩字。')
+        label_h = text_height(lane['label'], label_w - 12, 21, 1.2)
+        owner = '责任：' + lane['owner']
+        owner_h = text_height(owner, label_w - 12, 17, 1.2)
+        if label_h + owner_h + 16 > lane_h:
+            raise ValueError('swimlane 责任说明超出泳道高度；请重排或拆页，不能缩字。')
+        text_box(page, lane['label'], 48, yy + 7, label_w - 12, label_h,
+                 size=21, bold=True, spacing=1.2)
+        text_box(page, owner, 48, yy + 9 + label_h, label_w - 12, owner_h,
+                 size=17, color='secondary', spacing=1.2)
+        # 同一责任方不重叠的时期共享基线；只有时间重叠才增加纵向任务轨。
+        track_ends, assigned = [], {}
+        for ti in sorted(range(len(lane['tasks'])), key=lambda i: lane['tasks'][i]['start']):
+            task = lane['tasks'][ti]
+            track = next((i for i, end in enumerate(track_ends) if task['start'] > end), len(track_ends))
+            if track == len(track_ends): track_ends.append(task['end'])
+            else: track_ends[track] = task['end']
+            assigned[ti] = track
+        task_h = (lane_h - 12) / len(track_ends)
         for ti, task in enumerate(lane['tasks']):
             tx = grid_x + task['start'] * col_w + 5
             tw = (task['end'] - task['start'] + 1) * col_w - 10
-            ty = yy + 6 + ti * task_h
+            ty = yy + 6 + assigned[ti] * task_h
             th = task_h - 4
             status = str(task.get('status') or '未标注')
             content = f'{task["label"]}｜{task["deliverable"]}｜{status}'
-            size = 14
-            needed = text_height(content, tw - 16, size, 1.15)
+            size = 19
+            needed = text_height(content, tw - 20, size, 1.2)
             if needed > th:
                 raise ValueError(f'swimlane 任务“{task["label"]}”文字或交付物超出任务条；请拆页。')
             color = {'已完成': 'blue', '完成': 'blue', '进行中': 'purple',
                      '延期': 'red', '滞后': 'red'}.get(status, 'gold')
             band = page.band(tx, ty, tw, th, content, fill=color,
-                             color='ink' if color == 'gold' else 'white', inset=8,
-                             size=size, spacing=1.15)
+                             color='ink' if color == 'gold' else 'white', inset=10,
+                             size=size, spacing=1.2)
             band.name = f'swimlane-{li + 1}-{ti + 1}'
         page.rule(48, yy + lane_h - 1, 1184, color='line')
 
