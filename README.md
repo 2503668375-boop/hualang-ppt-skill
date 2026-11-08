@@ -1,6 +1,18 @@
 # 华朗学校汇报与教学 Skill
 
-当前版本 **v11.0.1**。在 V11.0 更新包基础上完成发布前审查和修订，按华朗独立品牌制作可编辑的校务汇报、教案、课堂、练习、家长沟通、招生与公众演讲材料。
+当前版本 **v12.0.1**。按华朗独立品牌制作可编辑的校务汇报、教案、课堂、练习、家长沟通、招生与公众演讲材料。V12 针对实际校董汇报的内容不足与版式重复，升级内容策划、原生图表、整稿节奏和派生指标检查。
+
+## V12 的主要变化
+
+- **逐页内容合同**：每页记录页面角色、读者问题与新增信息；开场、诊断、证据、方案、执行、决策和附录分别组织，删除后没有信息损失的页面必须合并或重写。
+- **八类管理汇报主对象**：新增双轴定位、缺口桥、折线趋势、诊断、目标差额、转化过程、时间责任泳道和审议事项，全部保留原生可编辑文字与图形。
+- **整稿节奏复核**：识别管理汇报中的版式集中、表格过多和连续同构，结合实际证据调整；必要续表、连续推理和同尺度比较可以保留。版式数量只用于发现问题，不能代替实页审美，也不要求课堂或演讲凑齐管理结构。
+- **派生指标语义复核**：公式之外保留比较主体、基准、视角、期间和单位，自动复算差额、比例与价格影响，避免数值正确而对象或损益方向错误。
+- **实际出品验证**：发布前用可公开模拟材料检查新管理版式，并以同一原创片段试作教师、学生、家长与公众材料。实际结果、修复及未测范围见下方验证记录。
+
+[![V12八种管理主对象](artifact-template-hualang-school/assets/v12-report-layouts.jpg)](artifact-template-hualang-school/assets/v12-report-layouts.pptx?raw=true)
+
+[V12可编辑样张](artifact-template-hualang-school/assets/v12-report-layouts.pptx?raw=true) · [四场景独立试用](artifact-template-hualang-school/assets/v12-scene-trial.png) · [样张范围与文件](artifact-template-hualang-school/references/sample-index.md)
 
 ## V11 的主要变化
 
@@ -12,15 +24,15 @@
 
 [![三档视觉样张](artifact-template-hualang-school/assets/tier-strip.png)](artifact-template-hualang-school/assets/python-3tiers.pptx?raw=true)
 
-[三档可编辑样张](artifact-template-hualang-school/assets/python-3tiers.pptx?raw=true) · [场景系统](artifact-template-hualang-school/references/scenario-system-v11.md) · [视觉语法](artifact-template-hualang-school/references/scene-visual-grammar.md) · [本次验证](tests/v11-validation.md)
+[三档可编辑样张](artifact-template-hualang-school/assets/python-3tiers.pptx?raw=true) · [页面规格](artifact-template-hualang-school/references/deck-spec.md) · [场景系统](artifact-template-hualang-school/references/scenario-system-v11.md) · [视觉语法](artifact-template-hualang-school/references/scene-visual-grammar.md) · [V12 验证](tests/v12-validation.md)
 
 常规正文保留近白底、左题右徽与金线。远距实景主视觉允许按专项规范整页出血，使用金色校徽和清楚主张；固定原始封面、封尾及培养目标“华夏俊采，朗若星辰”继续保留。历史样张按[样张索引](artifact-template-hualang-school/references/sample-index.md)的版本和适用范围使用。
 
 ## 本次审查修订
 
-修复了超量条目静默丢失、负数横条误画为正向、部分批注越界及出血页标题检查过宽等问题；统一网格、表格行高、场景转换及结构镜像的说明。构建容量不足时给出具体错误或支持的续页处理，不靠截断内容或缩字完成。
+V12.0.1 保留八种管理版式与派生指标复算，修正场景规则误用、审议事项容量、图形标注与来源上页等实际问题。学校内部原始出处和计算过程保留在底稿，观众页面呈现必要期间、单位、分母与判断依据。
 
-三档样张与九组场景输入均用于功能及页面检查，示例的模拟、原创、拟议属性须保留。文件生成成功、程序检查和 AI 审查均不代表真实教学成效或用户审美认可。详细范围见[验证记录](tests/v11-validation.md)。
+[本轮验证记录](tests/v12-validation.md)记录实际出品和检查范围。示例的模拟、原创、拟议属性须保留；程序检查与 AI 审查不等于真实教学成效或用户审美认可。V11 的检查作为[历史记录](tests/v11-validation.md)保留。
 
 ## 开始使用
 

@@ -1,8 +1,8 @@
 ---
 name: artifact-template-hualang-school
-description: 输入主题、文字、数据或附件，按华朗固定品牌生成完整可编辑的专业PPT。细分校务决策、教师教案与说课、学生课堂、练习复习、个体家长反馈、班级家长会、招生开放日和公众成果发布；自动组织内容、场景版式、智能表格、续表、课堂反馈与点击出现。用于明确指定华朗模板或本技能的任务。
+description: 输入主题、文字、数据或附件，按华朗固定品牌生成完整可编辑的专业PPT。细分校务决策、教师教案与说课、学生课堂、练习复习、个体家长反馈、班级家长会、招生开放日和公众成果发布；自动组织内容、原生数据图、责任泳道、智能表格、续表、课堂反馈与点击出现，并检查整稿内容增量、版式节奏和派生指标口径。用于明确指定华朗模板或本技能的任务。
 metadata:
-  version: "11.0.1"
+  version: "12.0.1"
 ---
 
 # 华朗学校材料设计
@@ -16,6 +16,10 @@ metadata:
 沿用已给用途、材料、署名、日期、形式和页数，不重复询问。缺失项只有影响事实、题解或采用时才追问。先判断材料能支持什么，再写核心回答。
 
 常规整稿依次完成：读取主题/内容/附件 → 判定主场景与观看条件 → 写出页序和逐页核心回答 → 按[页面规格](references/deck-spec.md)生成 `deck-spec.json` → 调用 `scripts/hualang_build.py` → 检查构建报告和最终文件。只有主题且允许补资料时，先研究并记录来源；缺少学校实绩、个体表现、课程范围或当期政策时保留明确待补项，不编造完整事实。
+
+逐页底稿写清读者问题、本页新增内容及其与前后页的关系，可用 `role / reader_question / new_information` 记录。管理分析可采用开场、背景、诊断、证据、方案、执行、决策、收束等角色；课堂、教案、练习、家长沟通和演讲按下表的实际学习或沟通单元推进，不套管理页序。删除一页会损失什么判断、推理、任务或必要转场，应能说清；重复结论合并，必要续表和同题推理保持连续。只有本次确需审议时才提出待决事项，已定安排保持原状态。页面保留主体、期间、单位、对象范围与事实状态；内部原始出处和计算核验过程留在独立底稿，见[页面结构](references/page-structure.md)。
+
+内部汇报检查连续页面的主对象、信息增量与阅读动作。构建器会按版式种类、表格占比和连续重复发出复核提示，数值只帮助定位单调风险，不构成凑版式配额。必要续表、同口径多对象核对和同题推理可以保持稳定构图；应结合实际页面说明其作用。换标题、换色、左右镜像或把表格改成等宽卡片不计为内容关系变化。`appendix: true` 只标记真正的资料附页，不能借此隐藏正文重复。
 
 | 成品对象 | 整份材料如何推进 | 页面必须让人看到什么 | 默认视觉档 | 专项 |
 |---|---|---|---|---|
@@ -38,7 +42,9 @@ metadata:
 
 在排版前确定：本页核心判断/学习任务是什么，什么具体对象能支持它，读者需要比较、推理、观察还是作答。随后按[场景视觉语法](references/scene-visual-grammar.md)定视觉档位与落位，按[设计规范](references/design.md)定字阶、网格、留白与组件，按[排版研究与实页转化](references/layout-research-v10.md)选适合本次材料的结构。
 
-**重心的建立顺序**：先给主对象足够面积，再用四周 1.5–2 倍空白把它托出来，最后才考虑色面。白底上靠加框加底强调，会把页面推向卡片堆。每页确定清楚的主阅读焦点，辅助内容形成层级；同尺度比较的双方可以并列，避免无关对象争抢注意力。
+**按本页任务组织完整回答。** 管理页需要统领判断时用 `lead`，补充解释或业务条件用 `basis`，有真实动作、代价或后果时用 `action`；三者按内容选用，不固定做成三条色带。诊断区分事实与解释假设，方案保留共同维度及推荐代价，执行保留实际责任与条件。课堂以材料、推理和任务为主体，家长页以作品与支持为主体，演讲证据可在相邻页展开。内部 `source` 仅供底稿追溯，`context` 承载观众需要的期间、单位、范围和模拟属性，`basis` 不放原件路径、出处或计算校验过程。容量、落位与文案检查见[页面结构](references/page-structure.md)；机器提示需对照实页处理，合法术语、必要留白与稳定续页不机械改写。
+
+**重心的建立顺序**：先给主对象足够面积，再拉开组内与组间距离，最后按信息作用选择色面。白底上靠加框加底强调，会把页面推向卡片堆。每页确定清楚的主阅读焦点，辅助内容形成层级；同尺度比较的双方可以并列，避免无关对象争抢注意力。
 
 概论是统领性判断，口径说明是辅助资料。有实质判断的概论使用黑色或深紫、正常阅读对比与主体以上层级，可在正文中占重要位置；不能统一压成灰色小字。模拟属性、统计期、图注等才使用辅助层级。任务或主对象已承担统领时不另加概论。具体字号、关系和示例见[设计规范](references/design.md)及[文案](references/writing.md)。
 
@@ -52,11 +58,11 @@ metadata:
 
 初中读[初中分学科](references/junior-subjects.md)，高中读[高中分学科](references/senior-subjects.md)，国际高中读[国际课程](references/international-subjects.md)；三者的学科与版式对照见[学科版式索引](references/subject-layouts.md)，英文与双语材料另读[英文与双语](references/bilingual.md)。根据教材、课程体系、层级、考试年和学生基础选取相关参考；英文翻译不能代替课程设计。数学另外核对[数学专项](references/math-teaching.md)，长稿按[连续单元](references/longform-layout.md)安排。只加载本次学段、学科和形式。
 
-资料已定、拟议、实绩、预测和模拟保持原状态。能重算的关系主动重算；用户材料中的知识、题解、数据和引文也按[内容正确性](references/content-accuracy.md)核对。影响正确性的疑点未解决，说明具体位置与影响，不称可直接正式采用。
+资料已定、拟议、实绩、预测和模拟保持原状态。能重算的关系主动重算；用户材料中的知识、题解、数据和引文也按[内容正确性](references/content-accuracy.md)核对。派生比例、差额、价格影响和覆盖率写入顶层 `calculations`：每项保留比较主体、基准、期间、单位、公式与输入，同时记录比较视角。数值相同但主体、基线或损益方向不同的指标不得合并。构建器复算公式并核对预期值，语义字段不全或结果不一致时停止交付。影响正确性的疑点未解决，说明具体位置与影响，不称可直接正式采用。
 
 ## 4. 制作可修改的成品
 
-常规整稿使用 `scripts/hualang_build.py` 统一编排，按[页面规格](references/deck-spec.md)调用。构建器提供 statement / comparison / table / metrics / bars / timeline / process / activity / lesson / practice / evidence 等版式，自动保留首尾、处理分页、表格续页、答案反馈页和点击出现；`assets/examples/` 有八类场景的可运行输入。表格按[表格系统](references/table-system-v11.md)选择 editorial / comparison / matrix / schedule / rubric / checklist，列宽和行高随内容计算，禁止靠无限缩字挤压。
+常规整稿使用 `scripts/hualang_build.py` 统一编排，按[页面规格](references/deck-spec.md)调用。构建器提供 statement / comparison / table / metrics / bars / timeline / process / activity / lesson / practice / evidence 等基础版式，并为管理汇报提供 positioning（价格与分数等双轴定位）、waterfall（目标与缺口）、trend（连续变化）、diagnostic（事实—解释—验证）、targets（目标与差额）、conversion（转化过程）、swimlane（时间与责任）、decision（审议事项）。所有图表、图形和文字保持原生可编辑，自动保留首尾、处理分页、表格续页、答案反馈页和点击出现；`assets/examples/` 有八类场景的可运行输入。表格按[表格系统](references/table-system-v11.md)选择 editorial / comparison / matrix / schedule / rubric / checklist，列宽和行高随内容计算，禁止靠无限缩字挤压。
 
 特殊学科图形、复杂图表或定制交互按[生产流程](references/production.md)选择底层精修通道，复用[制作API](references/production-api.md)与原始品牌资源。宿主没有 `@oai/artifact-tool` 时走[python-pptx 通道](references/python-production.md)。概论使用`lead`或其兼容入口`summary`，资料属性使用`contextLine`；不要自建把所有首句变灰的包装。文字、公式、表格、图表与关系图保持可编辑。
 

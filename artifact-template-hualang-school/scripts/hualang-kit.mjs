@@ -242,8 +242,13 @@ export async function createDeck({skillDir, title, subtitle = '', subtitlePurpos
   if (!presentation.slides.items[closingIndex]) throw new Error('原模板封尾缺失。');
   presentation.slides.keep([0,closingIndex]);
   const closing = presentation.slides.items[1];
-  deckText(closing,closingMotto,{x:100,y:220,w:1080,h:74,size:48,bold:true,color:colors.white,align:'center',name:'closing-motto'});
-  deckText(closing,closingText,{x:100,y:340,w:1080,h:52,size:28,color:colors.white,align:'center',name:'closing-message'});
+  const closingLayout = contract.closing.layout;
+  const [mx,my,mw,mh] = closingLayout.motto;
+  const [rx,ry,rw,rh] = closingLayout.rule;
+  const [cx,cy,cw,ch] = closingLayout.message;
+  deckText(closing,closingMotto,{x:mx,y:my,w:mw,h:mh,size:46,bold:true,color:colors.white,align:'center',name:'closing-motto'});
+  closing.shapes.add({name:'closing-rule',geometry:'rect',position:{left:rx,top:ry,width:rw,height:rh},fill:colors.gold,line:noLine});
+  deckText(closing,closingText,{x:cx,y:cy,w:cw,h:ch,size:21,color:colors.white,align:'center',name:'closing-message'});
   const ensureClosing = () => {
     if (!presentation.slides.items.includes(closing)) throw new Error('固定封尾被移除，请恢复原模板封尾。');
     presentation.slides.reorder([...presentation.slides.items.filter(s=>s!==closing).map(s=>s.id),closing.id]);

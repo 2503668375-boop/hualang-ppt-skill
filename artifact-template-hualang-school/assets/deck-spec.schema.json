@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hualang.local/deck-spec.schema.json",
-  "title": "华朗学校整稿页面规格 V11",
+  "title": "华朗学校整稿页面规格 V12",
   "type": "object",
   "required": [
     "title",
@@ -44,11 +44,23 @@
       "type": "boolean",
       "default": false
     },
+    "strict_quality": {
+      "type": "boolean",
+      "default": true,
+      "description": "兼容字段，默认 true；当前内容与节奏只作人工复核提示。无效数据、字段丢失和计算错误始终阻断。"
+    },
     "closing_text": {
       "type": "string"
     },
+    "calculations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/calculation"
+      }
+    },
     "source_notes": {
-      "type": "string"
+      "type": "string",
+      "description": "仅构建报告中的原始资料与审查说明，不写入幻灯片或备注。"
     },
     "slides": {
       "type": "array",
@@ -59,6 +71,90 @@
     }
   },
   "$defs": {
+    "calculation": {
+      "type": "object",
+      "required": [
+        "comparison_id",
+        "subject",
+        "baseline",
+        "perspective",
+        "period",
+        "unit",
+        "formula",
+        "inputs",
+        "expected",
+        "tolerance"
+      ],
+      "properties": {
+        "comparison_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseline": {
+          "type": "string",
+          "minLength": 1
+        },
+        "perspective": {
+          "type": "string",
+          "minLength": 1
+        },
+        "period": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "formula": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inputs": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "expected": {
+          "type": "number"
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "axis": {
+      "type": "object",
+      "required": [
+        "label",
+        "min",
+        "max"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
     "item": {
       "type": "object",
       "properties": {
@@ -72,6 +168,54 @@
           "type": "string"
         },
         "color": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "implication": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "current": {
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "target": {
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "delta": {
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "decision": {
+          "type": "string"
+        },
+        "recommendation": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "date": {
           "type": "string"
         }
       },
@@ -102,6 +246,31 @@
           "type": "string"
         },
         "feedback": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "display": {
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "start",
+            "delta",
+            "total"
+          ]
+        },
+        "color": {
+          "type": "string"
+        },
+        "note": {
           "type": "string"
         }
       },
@@ -167,7 +336,8 @@
           "type": "string"
         },
         "source": {
-          "type": "string"
+          "type": "string",
+          "description": "内部汇报只写入构建报告；教学、学术及对外材料可渲染必要出处。"
         },
         "columns": {
           "type": "array",
@@ -226,7 +396,15 @@
             "practice",
             "metrics",
             "bars",
-            "image"
+            "image",
+            "positioning",
+            "waterfall",
+            "trend",
+            "diagnostic",
+            "targets",
+            "conversion",
+            "swimlane",
+            "decision"
           ]
         },
         "title": {
@@ -239,13 +417,196 @@
           "type": "string"
         },
         "context": {
-          "type": "string"
+          "type": "string",
+          "description": "观众需要的期间、单位、范围和模拟/拟议状态，保持可见。"
         },
         "source": {
-          "type": "string"
+          "type": "string",
+          "description": "内部汇报只写入构建报告；教学、学术及对外材料可渲染必要出处。"
         },
         "body": {
           "type": "string"
+        },
+        "basis": {
+          "type": [
+            "string",
+            "object"
+          ],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "body": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true,
+          "description": "观众需要的实质依据、解释与取舍；不放内部文件路径、页签索引或计算过程。"
+        },
+        "appendix": {
+          "type": "boolean",
+          "default": false,
+          "description": "资料附页单列统计，仍须检查内容完整、可读与正确性。"
+        },
+        "x_axis": {
+          "$ref": "#/$defs/axis"
+        },
+        "y_axis": {
+          "$ref": "#/$defs/axis"
+        },
+        "x_reference": {
+          "type": "number"
+        },
+        "y_reference": {
+          "type": "number"
+        },
+        "points": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "x",
+              "y"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "color": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              },
+              "display_x": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "display_y": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "categories": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "stages": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "definition",
+              "owner"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "definition": {
+                "type": "string"
+              },
+              "target": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "owner": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "periods": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "lanes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "owner",
+              "tasks"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "tasks": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 6,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "start",
+                    "end",
+                    "label",
+                    "deliverable"
+                  ],
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "deliverable": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            },
+            "additionalProperties": true
+          }
         },
         "tier": {
           "enum": [
@@ -266,7 +627,7 @@
           "items": {
             "$ref": "#/$defs/item"
           },
-          "maxItems": 4
+          "maxItems": 5
         },
         "steps": {
           "type": "array",
@@ -331,8 +692,7 @@
           "items": {
             "type": "object",
             "required": [
-              "label",
-              "value"
+              "label"
             ],
             "properties": {
               "label": {
@@ -341,6 +701,23 @@
               "value": {
                 "type": "number",
                 "minimum": 0
+              },
+              "values": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "displays": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": [
+                    "string",
+                    "number"
+                  ]
+                }
               },
               "display": {
                 "type": "string"
@@ -459,6 +836,22 @@
           "items": {
             "$ref": "#/$defs/item"
           }
+        },
+        "role": {
+          "type": "string",
+          "description": "按场景记录本页职责，供内容审阅，不渲染。"
+        },
+        "reader_question": {
+          "type": "string",
+          "description": "本页回答的读者问题，供内容审阅，不渲染。"
+        },
+        "new_information": {
+          "type": "string",
+          "description": "本页新增的事实、推理或动作，供内容审阅，不渲染。"
+        },
+        "task_label": {
+          "type": "string",
+          "description": "lesson底部任务标签；教师教案默认实施提示，其余默认独立作答。"
         }
       },
       "additionalProperties": true,

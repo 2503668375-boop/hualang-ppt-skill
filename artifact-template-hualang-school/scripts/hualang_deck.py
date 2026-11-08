@@ -612,14 +612,19 @@ class Deck:
             _write(b.text_frame, prefix + clean, size, 'white', line_spacing=1.0)
 
     def _fill_closing(self):
+        """封尾固定版式：培养目标与结束语在设计区域内居中，不用左上坐标。
+
+        底图的弧线与金线集中在画面下半部，文字落在视觉中心偏上，
+        因此以 1280 画布中心 640 对齐，标题块 262–334，金线 346，结束语 372–420。
+        """
         closing = self.prs.slides[-1]
-        from pptx.util import Emu as _E
-        m = _textbox(closing, 96, 196, 1088, 96, name='closing-motto')
-        m.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-        _write(m.text_frame, '华夏俊采，朗若星辰', 40, 'white', bold=True, line_spacing=1.15)
-        msg = _textbox(closing, 96, 306, 1088, 60, name='closing-message')
-        _write(msg.text_frame, self.closing_message or '感谢聆听　欢迎讨论', 20, 'white',
-               line_spacing=1.4)
+        m = _textbox(closing, 140, 262, 1000, 72, name='closing-motto', anchor='middle')
+        _write(m.text_frame, '华夏俊采，朗若星辰', 46, 'white', bold=True,
+               line_spacing=1.1, align='c')
+        _rect(closing, 604, 346, 72, 2, 'gold', name='closing-rule')
+        msg = _textbox(closing, 140, 368, 1000, 52, name='closing-message', anchor='middle')
+        _write(msg.text_frame, self.closing_message or '感谢聆听　欢迎讨论', 21, 'white',
+               line_spacing=1.3, align='c')
 
     closing_message = '感谢聆听　欢迎讨论'
 
@@ -632,7 +637,7 @@ class Deck:
                     p._p.getparent().remove(p._p)
                 for r in list(tf.paragraphs[0].runs):
                     r._r.getparent().remove(r._r)
-                _write(tf, text, 20, 'white', line_spacing=1.4)
+                _write(tf, text, 21, 'white', line_spacing=1.3, align='c')
         return self
 
     # ---- 页面 ----

@@ -41,9 +41,15 @@ def closing_check(z,part,expected_sha,contract=None):
    if typ=='image':hashes.append(hashlib.sha256(z.read(dest)).hexdigest())
    elif typ in ['slideLayout','slideMaster']:walk(dest)
  walk(part)
- obs=shapes(z.read(part));valid=not added;detail=[]
+ obs=shapes(z.read(part));valid=not added;detail=[];layout_profile='original'
  if contract and contract.get('allowAddedContent'):
-  names=[o['name'] for o in obs];valid=sorted(names)==sorted(contract['allowedObjectNames']) and len(added)==2
+  names=[o['name'] for o in obs]
+  required=set(contract.get('requiredObjectNames',contract['allowedObjectNames']))
+  optional=set(contract.get('optionalObjectNames',[]))
+  valid=(required.issubset(names) and set(names).issubset(required|optional)
+         and len(names)==len(set(names)) and len(added)==len(names))
+  legacy=valid and bool(optional) and not optional.issubset(names)
+  layout_profile='legacy' if legacy else 'current' if valid else 'invalid'
   for ob in obs:
    x,y,w,h=ob['position'] or [-1,-1,-1,-1]
    sx,sy,sw,sh=contract['safeArea']
@@ -51,7 +57,7 @@ def closing_check(z,part,expected_sha,contract=None):
    if ob['name']=='closing-motto':valid=valid and ob['text']==contract['motto']
    if ob['name']=='closing-message':valid=valid and bool(ob['text'].strip())
    detail.append({'name':ob['name'],'text':ob['text']})
- return {'original_asset_present':expected_sha in hashes,'added_objects':added,'text':detail,'passed':expected_sha in hashes and valid}
+ return {'original_asset_present':expected_sha in hashes,'added_objects':added,'text':detail,'layout_profile':layout_profile,'passed':expected_sha in hashes and valid}
 
 
 def full_bleed(raw, canvas=(1280,720), tol=2):
@@ -118,10 +124,15 @@ def check(pptx,c,title='',presenter='',date='',template=False,allow_titles=(),al
     if not template and re.search(r'待补|待填|姓名或团队|按需填写|\[.+\]|［.+］',ob['text']):errors.append('正式封面仍有待补字段：'+key)
    if not allow_subtitle and any(o['name']=='cover-subtitle' and o['text'].strip() for o in cover):errors.append('封面存在未声明必要性的副题')
   body_parts=enumerate(parts,1) if content_only else enumerate(parts[1:-1],2)
+  banned=[w for w in (c.get('bannedTerms') or [])]
   for number,part in body_parts:
    raw=z.read(part)
    bleed=full_bleed(raw)
    titles=[o for o in shapes(raw) if o['name'] in ['title','scene-title']]
+   for ob in shapes(raw):
+    for word in banned:
+     if word and word in (ob['text'] or ''):
+      warnings.append(f'第{number}页用词“{word}”需结合学科术语、引文及语境复核：{ob["text"][:30]}')
    if not titles and not bleed:errors.append(f'第{number}页缺少正文页标题或有效出血主张')
    if len(titles)>1:errors.append(f'第{number}页存在多个页标题')
    for ob in titles:
@@ -139,6 +150,7 @@ def check(pptx,c,title='',presenter='',date='',template=False,allow_titles=(),al
   if not content_only and parts:
    closing=closing_check(z,parts[-1],c['closing']['assetSha256'],c['closing'])
    if not closing['passed']:errors.append('封尾原图、培养目标、结束语或安全区不符合规范')
+   elif closing.get('layout_profile')=='legacy':warnings.append('封尾为历史合法两项文字样式；新稿采用现行居中样式，保留原底图。')
  scope='全部现有正文页的题名及其页眉位置；含画布齐边背景、原生主张大字和brand-mark的出血候选可无页眉；不要求封面、封尾、署名或日期，不认证校徽内容、金线或实际视觉' if content_only else '首尾、字段、位置及正文标题/出血候选；短中文题名为偏好，学科和英文题名按语义与实际换行复核；仍需人工检查内容、重复语义、密度和视觉'
  return {'ok':not errors,'content_only':content_only,'cover_expected':expected,'headings':headers,'closing':closing,'errors':errors,'warnings':warnings,'scope':scope}
 

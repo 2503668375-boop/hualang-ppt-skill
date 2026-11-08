@@ -25,7 +25,8 @@ class BuilderExportTests(unittest.TestCase):
     def build(self, slide, scenario='internal_report', name='output'):
         path = self.directory / (name + '.pptx')
         report = build_deck({'title': '生成验证', 'scenario': scenario,
-                             'content_only': True, 'slides': [slide]}, path)
+                             'content_only': True, 'strict_quality': False,
+                             'slides': [slide]}, path)
         return Presentation(path), report, path
 
     @staticmethod
@@ -127,6 +128,7 @@ class BuilderExportTests(unittest.TestCase):
 
     def test_multiline_stage_claim_keeps_body_and_context_below_complete_lead(self):
         spec = json.loads((SKILL / 'assets/examples/public-address.json').read_text())
+        spec['strict_quality'] = False
         path = self.directory / 'public.pptx'
         build_deck(spec, path)
         prs = Presentation(path)

@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import math
 import sys
@@ -23,11 +24,45 @@ from hualang_deck import (  # noqa: E402
     COLORS, Deck, EMU, _rect, _textbox, _write, text_height,
 )
 from hualang_tables import draw_table, plan_table, table_report  # noqa: E402
+from check_calculations import check_calculations  # noqa: E402
+from hualang_report_layouts import (  # noqa: E402
+    REPORT_LAYOUTS, choose_report_layout, plan_supporting,
+    render_report_layout, validate_report_slide,
+)
+
+# 待复核文风用词；术语、引文和教学对象不能仅凭字串误拦。
+STRICT_TERMS = ['赋能', '抓手', '闭环', '链路', '颗粒度', '组合拳', '护城河',
+                '底层逻辑', '顶层设计', '打法', '商业闭环']
+# 教学语境合法、汇报语境可疑的词：只提示，不拦截。
+CONTEXT_TERMS = ['证据链', '证据意识', '矩阵式', '沉淀', '对齐']
+
+
+def _walk_strings(node, path=''):
+    if isinstance(node, str):
+        yield path, node
+    elif isinstance(node, dict):
+        for key, value in node.items():
+            yield from _walk_strings(value, f'{path}.{key}' if path else str(key))
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            yield from _walk_strings(value, f'{path}[{index}]')
+
+
+def scan_terms(slides, terms):
+    hits = []
+    for index, slide in enumerate(slides, 1):
+        for path, text in _walk_strings(slide):
+            for term in terms:
+                if term in text:
+                    hits.append((index, term, path, text))
+    return hits
 
 SCENARIOS = {
     'internal_report': {
         'label': '校务决策与内部汇报', 'tier': 'read',
-        'layouts': ['comparison', 'table', 'metrics', 'bars', 'timeline', 'process'],
+        'layouts': ['comparison', 'table', 'metrics', 'bars', 'timeline', 'process',
+                    'positioning', 'waterfall', 'trend', 'diagnostic', 'targets',
+                    'conversion', 'swimlane', 'decision'],
         'closing': '汇报完毕，敬请指导',
     },
     'lesson_plan': {
@@ -110,6 +145,9 @@ def choose_layout(slide):
     layout = slide.get('layout', 'auto')
     if layout != 'auto':
         return layout
+    report_layout = choose_report_layout(slide)
+    if report_layout:
+        return report_layout
     if slide.get('table'):
         return 'table'
     if slide.get('questions'):
@@ -141,6 +179,8 @@ def validate_spec(spec):
         raise ValueError('缺少正式题名 title。')
     scenario = resolve_scenario(spec.get('scenario'))
     content_only = bool(spec.get('content_only', False))
+    if 'strict_quality' in spec and not isinstance(spec['strict_quality'], bool):
+        raise ValueError('strict_quality 必须是布尔值；仅旧样例兼容时可设为 false。')
     if not content_only:
         if not str(spec.get('presenter', '')).strip() or not str(spec.get('date', '')).strip():
             raise ValueError('完整稿必须提供 presenter 和 date；不得虚构署名或日期。')
@@ -152,9 +192,13 @@ def validate_spec(spec):
             raise ValueError(f'第 {i} 页规格必须是对象。')
         layout = choose_layout(slide)
         known = {'auto', 'statement', 'section', 'comparison', 'table', 'timeline', 'process',
-                 'evidence', 'lesson', 'activity', 'practice', 'metrics', 'bars', 'image'}
+                 'evidence', 'lesson', 'activity', 'practice', 'metrics', 'bars', 'image'} | REPORT_LAYOUTS
         if layout not in known:
             raise ValueError(f'第 {i} 页使用未知版式：{layout}')
+        if 'appendix' in slide and not isinstance(slide['appendix'], bool):
+            raise ValueError(f'第 {i} 页 appendix 必须是布尔值。')
+        if layout in REPORT_LAYOUTS:
+            validate_report_slide(slide, layout, i)
         if layout != 'image' and not str(slide.get('title', '')).strip():
             raise ValueError(f'第 {i} 页缺少具体题名 title。')
         resolve_tier(slide, scenario)
@@ -255,14 +299,17 @@ def base_page(deck, slide, scenario, title=None):
     return page
 
 
-def add_lead_context(page, slide, start_y=112):
+def add_lead_context(page, slide, start_y=112, include_source=True):
     y = start_y
     lead = str(slide.get('lead') or slide.get('summary') or '').strip()
     if lead:
         h = text_height(lead, 1184, page.t['lead'], 1.2)
         page.lead(lead, y=y)
         y += max(48, h + 16)
-    context = str(slide.get('context') or slide.get('source') or '').strip()
+    context_parts = [str(slide.get('context') or '').strip()]
+    if include_source:
+        context_parts.append(str(slide.get('source') or '').strip())
+    context = '\n'.join(dict.fromkeys(part for part in context_parts if part))
     if context:
         page.context(context, y=y)
         y += max(32, text_height(context, 1184, page.t['note'], 1.4) + 8)
@@ -309,7 +356,24 @@ def render_statement(deck, slide, scenario, manifest):
         if slide.get('body'):
             text_box(page, slide['body'], body_x, body_y, 560, body_h, size=34,
                      color='F0ECF5', spacing=1.4, name='statement-body', fixed_spacing=True)
-        rule_y = max(526, body_y + body_h + 24)
+        extra_y = body_y + body_h + 16
+        if slide.get('basis'):
+            basis_label, basis_body = ('依据', str(slide['basis']))
+            if isinstance(slide['basis'], dict):
+                basis_label = str(slide['basis'].get('title') or '依据')
+                basis_body = str(slide['basis'].get('body') or '')
+            basis_text = f'{basis_label}｜{basis_body}'
+            basis_h = text_height(basis_text, 560, 20, 1.35)
+            text_box(page, basis_text, body_x, extra_y, 560, basis_h, size=20,
+                     color='F0ECF5', spacing=1.35, name='statement-basis', fixed_spacing=True)
+            extra_y += basis_h + 12
+        if slide.get('action'):
+            action_text = '行动｜' + str(slide['action'])
+            action_h = text_height(action_text, 560, 22, 1.3)
+            text_box(page, action_text, body_x, extra_y, 560, action_h, size=22,
+                     color='white', bold=True, spacing=1.3, name='statement-action', fixed_spacing=True)
+            extra_y += action_h + 12
+        rule_y = max(526, extra_y + 12)
         context = slide.get('context') or slide.get('source') or ''
         context_y = rule_y + 22
         context_h = text_height(context, 560, 20, 1.35) if context else 0
@@ -331,30 +395,56 @@ def render_statement(deck, slide, scenario, manifest):
         return render_evidence(deck, slide, scenario, manifest)
     page = base_page(deck, slide, scenario)
     page.gold_rule(48, 128, 64)
+    support_slide = dict(slide)
+    contexts = [str(slide.get(key) or '').strip() for key in ('context', 'source')]
+    support_slide['source'] = '\n'.join(value for value in contexts if value)
+    content_bottom, draw_support = plan_supporting(support_slide, page, include_body=False)
     lead = slide.get('lead') or slide.get('body') or slide.get('title')
     size = page.t['lead'] if tier != 'far' else 58
-    text_box(page, lead, 48, 168, 1080, 180, size=size, color='purple', bold=True, spacing=1.2)
+    lead_h = text_height(lead, 1080, size, 1.2)
+    if 156 + lead_h > content_bottom - 80:
+        raise ValueError(f'陈述页“{slide.get("title")}”主张过长；请拆成续页。')
+    text_box(page, lead, 48, 156, 1080, lead_h, size=size, color='purple', bold=True, spacing=1.2)
     items = slide.get('items') or []
+    has_body = bool(slide.get('body') and slide.get('lead'))
+    content_y = max(300 if items and has_body else 372, 156 + lead_h + 32)
+    if has_body:
+        body_h = text_height(slide['body'], 1080, page.t['body'], 1.5)
+        if content_y + body_h > content_bottom:
+            raise ValueError(f'陈述页“{slide.get("title")}”正文超出可用高度；请拆成续页。')
+        text_box(page, slide['body'], 48, content_y, 1080, body_h,
+                 size=page.t['body'], spacing=1.5)
+        content_y += body_h + 28
     if items:
         width = 1080 / min(3, len(items))
         for i, item in enumerate(items):
             x = 48 + i * width
-            text_box(page, item.get('title', ''), x, 424, width - 32, 40,
+            title_h = text_height(item.get('title', ''), width - 32, page.t['subhead'], 1.3)
+            body_h = text_height(item.get('body', ''), width - 32, page.t['body'], 1.4)
+            if content_y + title_h + 16 + body_h > content_bottom:
+                raise ValueError(f'陈述页“{slide.get("title")}”第 {i + 1} 项内容超出可用高度；请拆成续页。')
+            text_box(page, item.get('title', ''), x, content_y, width - 32, title_h,
                      size=page.t['subhead'], color='purple', bold=True)
-            text_box(page, item.get('body', ''), x, 480, width - 32, 112,
-                     size=page.t['body'], color='ink')
-    elif slide.get('body') and slide.get('lead'):
-        text_box(page, slide['body'], 48, 382, 980, 150, size=page.t['body'])
-    if slide.get('context'):
-        page.context(slide['context'], y=604)
+            text_box(page, item.get('body', ''), x, content_y + title_h + 16, width - 32, body_h,
+                     size=page.t['body'], color='ink', spacing=1.4)
+    draw_support()
     page.page_number()
     return [page]
 
 
 def render_comparison(deck, slide, scenario, manifest):
     page = base_page(deck, slide, scenario)
-    y = add_lead_context(page, slide)
+    y = add_lead_context(page, slide, include_source=False)
+    content_bottom, draw_support = plan_supporting(slide, page, include_body=False)
     y = max(y, 196 if slide.get('lead') else 128)
+    if slide.get('body'):
+        body_h = text_height(slide['body'], 1184, page.t['body'], 1.4)
+        if y + body_h + 16 > content_bottom - 100:
+            raise ValueError(f'比较页“{slide.get("title")}”补充正文过长；请拆成续页。')
+        text_box(page, slide['body'], 48, y, 1184, body_h, size=page.t['body'], spacing=1.4)
+        y += body_h + 20
+    if y > content_bottom - 120:
+        raise ValueError(f'比较页“{slide.get("title")}”概论与辅助信息占用过多；请拆成续页。')
     left = slide.get('left') or {'title': slide.get('left_title', '现状'), 'body': slide.get('left_body', '')}
     right = slide.get('right') or {'title': slide.get('right_title', '方案'), 'body': slide.get('right_body', '')}
     split = slide.get('split', 0.5)
@@ -363,7 +453,7 @@ def render_comparison(deck, slide, scenario, manifest):
     right_w = 1232 - right_x
     for idx, (item, x, w) in enumerate(((left, 48, left_w), (right, right_x, right_w))):
         if item.get('fill', idx == 1):
-            page.panel(x, y, w, 620 - y, fill=item.get('fill', 'pale'))
+            page.panel(x, y, w, content_bottom - y, fill=item.get('fill', 'pale'))
             ix = x + 24
             iw = w - 48
         else:
@@ -373,7 +463,7 @@ def render_comparison(deck, slide, scenario, manifest):
         page.rule(ix, y + 82, min(64, iw), color='gold', width=2)
         body = item.get('body', '')
         body_h = text_height(body, iw, page.t['body'], 1.5)
-        if y + 108 + body_h > 620:
+        if y + 108 + body_h > content_bottom:
             raise ValueError(f'比较页“{slide.get("title")}”主体文字超出可用高度；请拆成续页。')
         text_box(page, body, ix, y + 108, iw, body_h,
                  size=page.t['body'], color='ink', spacing=1.5)
@@ -382,24 +472,77 @@ def render_comparison(deck, slide, scenario, manifest):
         for bullet in bullets:
             text = '— ' + (bullet if isinstance(bullet, str) else bullet.get('body', ''))
             bullet_h = text_height(text, iw, page.t['label'], 1.35)
-            if by + bullet_h > 620:
+            if by + bullet_h > content_bottom:
                 raise ValueError(f'比较页“{slide.get("title")}”补充要点超出可用高度；请拆成续页。')
             text_box(page, text, ix, by, iw, bullet_h,
                      size=page.t['label'], color='secondary')
             by += bullet_h + 16
+    draw_support()
     page.page_number()
     return [page]
 
 
+def draw_basis(page, basis, y, height=None):
+    """依据块：承接读者需要的事实、解释与取舍，不放内部出处或计算过程。
+
+    basis 可以是字符串，也可以是 {title, body}。高度按正文行数计算，最多 150。
+    """
+    if not basis:
+        return 0
+    if isinstance(basis, dict):
+        label = str(basis.get('title') or '依据')
+        text = str(basis.get('body') or '')
+    else:
+        label, text = '依据', str(basis)
+    text = text.strip()
+    if not text:
+        return 0
+    label_w = 78
+    text_w = 1184 - label_w - 60
+    text_h = text_height(text, text_w, page.t['label'], 1.45)
+    h = height or min(150, max(64, text_h + 30))
+    page.panel(48, y, 1184, h, fill='pale', name='basis-panel')
+    text_box(page, label, 70, y + 12, label_w, 24,
+             size=page.t['note'], color='purple', bold=True)
+    text_box(page, text, 70 + label_w, y + 10, text_w, h - 18,
+             size=page.t['label'], color='ink', spacing=1.45)
+    return h
+
+
+def draw_action(page, text):
+    """推论块：本页事实推出什么动作或后果，固定在页脚上方一条金线上。"""
+    text = str(text or '').strip()
+    if not text:
+        return 0
+    page.rule(48, 574, 1184, color='gold', width=2)
+    text_box(page, text, 48, 586, 1184, 40, size=page.t['body'],
+             color='purple', bold=True, spacing=1.3)
+    return 1
+
+
+def basis_height(slide, size=17):
+    """按正文行数估算依据块高度，短依据不占整块 150。"""
+    basis = slide.get('basis')
+    if not basis:
+        return 0
+    text = basis.get('body') if isinstance(basis, dict) else basis
+    text = str(text or '').strip()
+    if not text:
+        return 0
+    return min(150, max(62, text_height(text, 1184 - 138 - 60, size, 1.45) + 26))
+
+
 def table_measure(slide):
-    """统一扣除概论、口径、表题和来源，防止页底重叠。"""
+    """统一扣除概论、口径、表题、来源、依据与推论，防止页底重叠。"""
     spec = slide.get('table') or {}
     reserved = 188 if slide.get('lead') else 128
     if slide.get('context'):
         reserved += 32
     caption_space = 40 if spec.get('caption') else 0
     source_space = 40 if spec.get('source') or slide.get('source') else 0
-    return reserved, 616 - reserved - caption_space - source_space
+    basis_space = basis_height(slide)
+    action_space = 78 if slide.get('action') else 0
+    return reserved, 616 - reserved - caption_space - source_space - basis_space - action_space
 
 
 def render_table(deck, slide, scenario, manifest):
@@ -424,10 +567,18 @@ def render_table(deck, slide, scenario, manifest):
             y += 40
         shape = draw_table(page, chunk, 48, y, tier)
         shape.name = f'table-{final_slide_index(deck)}-{i + 1}'
+        cur_y = y + chunk['height']
         source = spec.get('source') or slide.get('source')
         if source:
-            text_box(page, source, 48, y + chunk['height'] + 12, 1184, 28,
+            text_box(page, source, 48, cur_y + 8, 1184, 26,
                      size=page.t['note'], color='secondary')
+            cur_y += 32
+        last = i == len(chunks) - 1
+        if last and slide.get('basis'):
+            h = basis_height(slide, page.t['label'])
+            draw_basis(page, slide['basis'], min(cur_y + 8, 566 - h), height=h)
+        if last and slide.get('action'):
+            draw_action(page, slide['action'])
         page.page_number()
         pages.append(page)
     return pages
@@ -435,42 +586,46 @@ def render_table(deck, slide, scenario, manifest):
 
 def render_metrics(deck, slide, scenario, manifest):
     page = base_page(deck, slide, scenario)
-    y = add_lead_context(page, slide)
+    y = max(add_lead_context(page, slide, include_source=False) + 16, 184)
+    content_bottom, draw_support = plan_supporting(slide, page, include_body=True)
     metrics = slide.get('metrics') or []
     if not metrics:
         raise ValueError('metrics 版式至少需要一个指标。')
-    count = len(metrics)
     gap = 32
-    w = (1184 - gap * (count - 1)) / count
-    y = max(y, 168)
+    w = (1184 - gap * (len(metrics) - 1)) / len(metrics)
     for i, metric in enumerate(metrics):
         x = 48 + i * (w + gap)
         page.rule(x, y, w, color='gold' if i == slide.get('focus', 0) else 'line', width=2)
-        text_box(page, str(metric.get('value', '')), x, y + 32, w, 88,
+        text_box(page, str(metric.get('value', '')), x, y + 24, w, 88,
                  size=64 if page.tier == 'far' else 54,
                  color='purple' if i != slide.get('focus', 0) else 'red', bold=True)
-        text_box(page, metric.get('label', ''), x, y + 132, w, 48,
+        text_box(page, metric.get('label', ''), x, y + 124, w, 48,
                  size=page.t['subhead'], color='ink', bold=True)
+        bottom = y + 172
         if metric.get('note'):
-            text_box(page, metric['note'], x, y + 196, w, 90,
+            note_h = text_height(metric['note'], w - 6, page.t['note'], 1.4)
+            bottom = y + 184 + note_h
+            text_box(page, metric['note'], x, y + 184, w, note_h,
                      size=page.t['note'], color='secondary')
-    if slide.get('body'):
-        text_box(page, slide['body'], 48, 494, 1184, 104, size=page.t['body'])
-    if slide.get('context'):
-        page.context(slide['context'], y=620)
+        if bottom > content_bottom:
+            raise ValueError(f'指标页“{slide.get("title")}”指标与补充说明空间冲突；请拆成续页。')
+    draw_support()
     page.page_number()
     return [page]
 
 
 def render_bars(deck, slide, scenario, manifest):
     page = base_page(deck, slide, scenario)
-    y = add_lead_context(page, slide)
+    y = add_lead_context(page, slide, include_source=False)
+    content_bottom, draw_support = plan_supporting(slide, page, include_body=True)
     series = slide.get('series') or []
     if not series:
         raise ValueError('bars 版式需要 series。')
     max_value = slide.get('max_value') or max(float(s['value']) for s in series) or 1
     y = max(y, 184)
-    row_h = min(86, int(400 / max(1, len(series))))
+    row_h = min(86, (content_bottom - y) / len(series))
+    if row_h < 42:
+        raise ValueError(f'横条页“{slide.get("title")}”主体与依据空间不足；请拆成续页。')
     for i, item in enumerate(series):
         yy = y + i * row_h
         text_box(page, item.get('label', ''), 48, yy, 208, 38,
@@ -481,9 +636,7 @@ def render_bars(deck, slide, scenario, manifest):
         page.rule(280, yy + 8, width, color=item.get('color', 'purple'), width=24)
         text_box(page, item.get('display', str(item.get('value', ''))), 1004, yy, 228, 38,
                  size=page.t['label'], color=item.get('color', 'purple'), bold=True, align='r')
-    if slide.get('body'):
-        text_box(page, slide['body'], 48, min(596, y + len(series) * row_h + 24), 1184, 70,
-                 size=page.t['body'])
+    draw_support()
     page.page_number()
     return [page]
 
@@ -498,27 +651,41 @@ def render_timeline(deck, slide, scenario, manifest):
     pages = []
     for gi, group in enumerate(groups):
         current = dict(slide)
+        last = gi == len(groups) - 1
         if gi:
             current['title'] = str(slide.get('title')) + '（续）'
             current['lead'] = ''
+        if not last:
+            current['basis'] = current['action'] = current['body'] = ''
         page = base_page(deck, current, scenario)
-        y = add_lead_context(page, current)
-        y = max(y, 240)
-        page.rule(96, y + 100, 1088, color='gold', width=2)
+        y = add_lead_context(page, current, include_source=False)
+        content_bottom, draw_support = plan_supporting(current, page, include_body=True)
+        y = max(y, 176 if current.get('lead') else 144)
+        body_y = y + 170
+        if content_bottom - body_y < 30:
+            raise ValueError(f'时间线页“{slide.get("title")}”辅助信息占用过多；请拆成续页。')
+        page.rule(96, y + 80, 1088, color='gold', width=2)
         gap = 1088 / max(1, len(group) - 1) if len(group) > 1 else 0
         for i, item in enumerate(group):
             x = 96 + i * gap if len(group) > 1 else 640
-            page.dot(x, y + 100, 8, 'purple')
+            page.dot(x, y + 80, 8, 'purple')
             w = min(240, 1088 / len(group) - 16)
             tx = max(48, min(1232 - w, x - w / 2))
-            text_box(page, item.get('date', ''), tx, y + 20, w, 36,
+            text_box(page, item.get('date', ''), tx, y + 6, w, 36,
                      size=page.t['label'], color='purple', bold=True, align='c')
-            text_box(page, item.get('title', item.get('label', '')), tx, y + 140, w, 48,
+            title = item.get('title', item.get('label', ''))
+            title_h = text_height(title, w, page.t['subhead'], 1.25)
+            if title_h > 48:
+                raise ValueError(f'时间线页“{slide.get("title")}”节点题名过长；请精简。')
+            text_box(page, title, tx, y + 112, w, title_h,
                      size=page.t['subhead'], color='ink', bold=True, align='c')
-            text_box(page, item.get('body', item.get('detail', '')), tx, y + 204, w, 112,
-                     size=page.t['note'], color='secondary', align='c')
-        if slide.get('body') and gi == len(groups) - 1:
-            text_box(page, slide['body'], 48, 590, 1184, 52, size=page.t['body'])
+            detail = item.get('body', item.get('detail', ''))
+            detail_h = text_height(detail, w, page.t['note'], 1.35)
+            if body_y + detail_h > content_bottom:
+                raise ValueError(f'时间线页“{slide.get("title")}”第 {gi * per_page + i + 1} 个节点说明超出；请拆页。')
+            text_box(page, detail, tx, body_y, w, detail_h,
+                     size=page.t['note'], color='secondary', align='c', spacing=1.35)
+        draw_support()
         page.page_number()
         pages.append(page)
     return pages
@@ -537,8 +704,11 @@ def render_process(deck, slide, scenario, manifest):
         if gi:
             current['title'] = str(slide.get('title')) + '（续）'
             current['lead'] = ''
+        if gi < len(groups) - 1:
+            current['basis'] = current['action'] = current['body'] = ''
         page = base_page(deck, current, scenario)
-        y = add_lead_context(page, current)
+        y = add_lead_context(page, current, include_source=False)
+        content_bottom, draw_support = plan_supporting(current, page, include_body=True)
         y = max(y, 160)
         horizontal = tier != 'read' and len(group) <= 4
         reveal_steps = []
@@ -557,14 +727,14 @@ def render_process(deck, slide, scenario, manifest):
                 objects.append(text_box(page, item.get('title', ''), x, y + 72, w, 56,
                                         size=page.t['subhead'], color='purple', bold=True,
                                         name=f'process-{gi}-{i}-title'))
-                objects.append(text_box(page, item.get('body', item.get('detail', '')), x, y + 148, w, 190,
+                objects.append(text_box(page, item.get('body', item.get('detail', '')), x, y + 148, w, content_bottom - y - 148,
                                         size=page.t['body'], spacing=1.45,
                                         name=f'process-{gi}-{i}-body'))
                 if current.get('reveal'):
                     reveal_steps.append({'label': item.get('title', f'步骤{i + 1}'),
                                          'objects': [o.name for o in objects]})
         else:
-            available = 610 - y
+            available = content_bottom - y
             row_h = min(104, available / len(group))
             for i, item in enumerate(group):
                 yy = y + i * row_h
@@ -586,6 +756,7 @@ def render_process(deck, slide, scenario, manifest):
                     page.rule(128, yy + row_h - 12, 1104, color='line', width=1)
         if current.get('reveal'):
             add_reveal(manifest, deck, reveal_steps)
+        draw_support()
         page.page_number()
         pages.append(page)
     return pages
@@ -655,26 +826,44 @@ def render_activity(deck, slide, scenario, manifest):
     steps = slide.get('steps') or []
     if not steps:
         raise ValueError('activity 版式需要 steps，且应包含 task / expected / feedback。')
-    groups = [steps[i:i + 3] for i in range(0, len(steps), 3)]
+    remaining = list(steps)
     pages = []
-    for gi, group in enumerate(groups):
+    while remaining:
         current = dict(slide)
-        if gi:
+        if pages:
             current['title'] = str(slide.get('title')) + '（续）'
             current['lead'] = ''
         page = base_page(deck, current, scenario)
-        y = add_lead_context(page, current)
-        y = max(y, 144)
+        y = max(add_lead_context(page, current), 144)
         headers = [('时间', 48, 88), ('学习任务', 144, 400), ('预期回应', 560, 320), ('评价与调整', 896, 336)]
         for label, x, w in headers:
             text_box(page, label, x, y, w, 32, size=page.t['label'], color='purple', bold=True)
         page.rule(48, y + 42, 1184, color='gold', width=2)
-        row_h = min(150, (610 - y - 48) / len(group))
-        for i, item in enumerate(group):
-            yy = y + 58 + i * row_h
+        available = 610 - y - 58
+        group, heights, used = [], [], 0
+        for item in remaining:
+            cells = [(item.get('time', '—'), 88, page.t['label']),
+                     (item.get('task', item.get('title', '')), 400, page.t['body']),
+                     (item.get('expected', '待课堂观察'), 320, page.t['label']),
+                     (item.get('feedback', item.get('body', '依据学生回应调整')), 336, page.t['label'])]
+            height = max(72, max(text_height(value, width, size, 1.4)
+                                 for value, width, size in cells) + 24)
+            if used + height > available:
+                break
+            group.append(item)
+            heights.append(height)
+            used += height
+        if not group:
+            raise ValueError(f'教案页“{slide.get("title")}”单项活动超过可用空间；'
+                             '请拆分该活动的步骤，保留任务、预期回应与调整。')
+        # 短活动按真实高度合并；余量适度分给行间，长活动仍整体续页。
+        extra = min(36, (available - used) / len(group))
+        yy = y + 58
+        for i, (item, needed) in enumerate(zip(group, heights)):
+            row_h = needed + extra
             if i % 2 == 0:
                 page.panel(48, yy - 8, 1184, row_h - 4, fill='F7F5F9')
-            text_box(page, item.get('time', '—'), 48, yy + 8, 88, 40,
+            text_box(page, item.get('time', '—'), 48, yy + 8, 88, row_h - 20,
                      size=page.t['label'], color='purple', bold=True)
             text_box(page, item.get('task', item.get('title', '')), 144, yy + 8, 400, row_h - 20,
                      size=page.t['body'], bold=True)
@@ -682,8 +871,10 @@ def render_activity(deck, slide, scenario, manifest):
                      size=page.t['label'], color='ink')
             text_box(page, item.get('feedback', item.get('body', '依据学生回应调整')), 896, yy + 8, 336, row_h - 20,
                      size=page.t['label'], color='ink')
+            yy += row_h
         page.page_number()
         pages.append(page)
+        remaining = remaining[len(group):]
     return pages
 
 
@@ -692,9 +883,11 @@ def render_lesson(deck, slide, scenario, manifest):
     task = slide.get('task') or slide.get('lead')
     if not task:
         raise ValueError('课堂页需要完整学习任务 task。')
+    context_slide = {key: slide[key] for key in ('context', 'source') if slide.get(key)}
+    task_y = add_lead_context(page, context_slide)
     task_h = max(86, text_height(task, 1080, page.t['body'], 1.3) + 30)
-    page.band(48, 112, 1184, task_h, task, fill='purple', size=page.t['body'])
-    y = 112 + task_h + 24
+    page.band(48, task_y, 1184, task_h, task, fill='purple', size=page.t['body'])
+    y = task_y + task_h + 24
     prompts = slide.get('prompts') or []
     has_work = bool(slide.get('work') or slide.get('body') or slide.get('image'))
     work_w = 744 if prompts else 1184
@@ -739,7 +932,8 @@ def render_lesson(deck, slide, scenario, manifest):
             py += body_h + 24
     if slide.get('independent_task'):
         page.panel(48, 596, 1184, 54, fill='pale')
-        text_box(page, '独立作答　' + slide['independent_task'], 72, 606, 1136, 36,
+        task_label = slide.get('task_label') or ('实施提示' if scenario == 'lesson_plan' else '独立作答')
+        text_box(page, task_label + '　' + slide['independent_task'], 72, 606, 1136, 36,
                  size=page.t['label'], color='purple', bold=True)
     if reveal_steps:
         add_reveal(manifest, deck, reveal_steps)
@@ -754,7 +948,7 @@ def render_lesson(deck, slide, scenario, manifest):
             'items': slide.get('feedback_items', []),
             'tier': page.tier,
             'layout': 'statement',
-            'bleed': False,
+            'bleed': False, 'context': slide.get('context', ''), 'source': slide.get('source', ''),
         }
         pages.extend(render_statement(deck, answer_slide, scenario, manifest))
     return pages
@@ -804,8 +998,89 @@ def render_practice(deck, slide, scenario, manifest):
     return pages
 
 
+LAYOUT_FAMILY = {'section': 'statement', 'image': 'evidence'}
+VISUAL_LAYOUTS = REPORT_LAYOUTS | {
+    'comparison', 'table', 'metrics', 'bars', 'timeline', 'process',
+    'evidence', 'image', 'activity', 'lesson', 'practice',
+}
+
+
+def assess_quality(spec, scenario, page_log):
+    """启发式复核提示，不以布局名称或数量认证视觉，也不要求凑版式。"""
+    body = []
+    for log, slide in zip(page_log, spec['slides']):
+        for continuation in range(log['generated_pages']):
+            body.append({'layout': log['layout'], 'source_slide': log['source_slide'],
+                         'continuation': continuation, 'appendix': bool(slide.get('appendix', False)),
+                         'slide': slide})
+    checked = [page for page in body if not page['appendix']]
+    sequence_findings, content_findings = [], []
+    families = sorted({LAYOUT_FAMILY.get(page['layout'], page['layout']) for page in checked})
+    table_ratio = (sum(page['layout'] == 'table' for page in checked) / len(checked)) if checked else 0.0
+    if scenario == 'internal_report' and len(checked) >= 8:
+        if len(families) < 6:
+            sequence_findings.append(f'正文 {len(checked)} 页使用 {len(families)} 种版式族，少于复核参考值 6；'
+                                     '请看实际信息关系与整稿节奏，不为凑数替换必要续表或连续论证。')
+        if table_ratio > 0.45:
+            sequence_findings.append(f'正文表格页占比 {table_ratio:.1%}，超过复核参考值 45%；'
+                                     '请检查是否均用于必要查数，并在底稿说明连续表的用途。')
+        for start in range(len(checked) - 3):
+            window = checked[start:start + 4]
+            # 同一输入产生的续页视作一个阅读单元，不因自动分页制造重复告警。
+            if len({p['source_slide'] for p in window}) < 4:
+                continue
+            diversity = len({LAYOUT_FAMILY.get(page['layout'], page['layout']) for page in window})
+            if diversity < 3:
+                sequence_findings.append(f'正文第 {start + 1}–{start + 4} 页只有 {diversity} 种版式族；'
+                                         '请人工复核主体、比较尺度及阅读动作，不以换色或镜像计变化。')
+    if scenario == 'internal_report':
+        # 逐个内容单元检查，续页不重复提醒。规划字段只作人工审阅辅助。
+        for index, slide in enumerate(spec['slides'], 1):
+            if slide.get('appendix'):
+                continue
+            missing = [key for key in ('role', 'reader_question', 'new_information') if not slide.get(key)]
+            if missing:
+                content_findings.append(f'第 {index} 页未填写规划字段 {" / ".join(missing)}；'
+                                         '请在内容策划中核对页面职责、读者问题和新增信息。')
+    return {
+        'layout_families': families, 'table_ratio': round(table_ratio, 4),
+        'sequence_findings': sequence_findings, 'content_findings': content_findings,
+        'passed': True, 'needs_review': bool(sequence_findings or content_findings),
+        'blocking_findings': [], 'checked_body_pages': len(checked),
+        'appendix_pages': len(body) - len(checked),
+    }
+
+
+def _audience_slide(slide, scenario):
+    """内部原始出处只保留在构建报告；不写正文、备注或附页。"""
+    rendered = copy.deepcopy(slide)
+    if scenario == 'internal_report':
+        rendered.pop('source', None)
+        if isinstance(rendered.get('table'), dict):
+            rendered['table'].pop('source', None)
+    return rendered
+
+
+def _ensure_visible_fields(slide, pages, scenario):
+    def normalized(value):
+        return ''.join(str(value).split())
+    visible = normalized(' '.join(shape.text for page in pages for shape in page.slide.shapes
+                                  if shape.has_text_frame))
+    for field in ('context', 'body', 'basis', 'action'):
+        value = slide.get(field)
+        if isinstance(value, dict):
+            value = value.get('body', '')
+        if value and normalized(value) not in visible:
+            raise ValueError(f'页面“{slide.get("title")}”的 {field} 字段未在当前版式呈现；'
+                             '请并入该版式的具体内容字段或改用续页，不能静默丢失。')
+    if scenario != 'internal_report' and slide.get('source'):
+        if normalized(slide['source']) not in visible:
+            raise ValueError(f'页面“{slide.get("title")}”的必要出处 source 未呈现；请调整引用落位。')
+
+
 def build_deck(spec, out_path):
     scenario = validate_spec(spec)
+    calculations = check_calculations(spec)
     content_only = bool(spec.get('content_only', False))
     deck = Deck(SKILL / 'assets' / 'source-original.pptx',
                 title=spec['title'], presenter=spec.get('presenter'), date=spec.get('date'),
@@ -815,7 +1090,8 @@ def build_deck(spec, out_path):
     manifest = {'schemaVersion': 1, 'effect': 'appear', 'slides': []}
     all_tables = []
     page_log = []
-    for source_index, slide in enumerate(spec['slides'], 1):
+    for source_index, original_slide in enumerate(spec['slides'], 1):
+        slide = _audience_slide(original_slide, scenario)
         layout = choose_layout(slide)
         if layout == 'table':
             table_spec = slide.get('table') or {}
@@ -831,21 +1107,43 @@ def build_deck(spec, out_path):
             'activity': render_activity, 'lesson': render_lesson,
             'practice': render_practice,
         }.get(layout)
-        if renderer is None:
+        if renderer is None and layout not in REPORT_LAYOUTS:
             raise ValueError(f'暂不支持的版式：{layout}')
         before = len(deck._pages)
-        pages = renderer(deck, slide, scenario, manifest)
+        if layout in REPORT_LAYOUTS:
+            pages = render_report_layout(deck, slide, resolve_tier(slide, scenario), layout=layout)
+        else:
+            pages = renderer(deck, slide, scenario, manifest)
+        _ensure_visible_fields(slide, pages, scenario)
         page_log.append({
             'source_slide': source_index, 'layout': layout,
             'generated_pages': len(deck._pages) - before,
             'tier': resolve_tier(slide, scenario),
+            'appendix': bool(slide.get('appendix', False)),
         })
         if len(pages) != len(deck._pages) - before:
             raise RuntimeError('页数记录不一致，请检查构建器。')
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     warnings = []
-    if scenario == 'internal_report' and not any(t['layout'] in ('table', 'metrics', 'bars', 'comparison') for t in page_log):
+    blocking_warnings = []
+    evidence_layouts = {'metrics', 'table', 'bars', 'timeline', 'positioning',
+                        'waterfall', 'trend', 'targets', 'conversion', 'swimlane'}
+    for log, slide in zip(page_log, spec['slides']):
+        layout = log['layout']
+        has_source = scenario != 'internal_report' and bool(
+            (slide.get('table') or {}).get('source') or slide.get('source'))
+        if scenario == 'internal_report' and not slide.get('appendix', False) and layout in evidence_layouts and not (
+                slide.get('basis') or slide.get('body') or slide.get('action') or has_source):
+            finding = (f'第{log["source_slide"]}页（{layout}）只有判断与主体，缺依据或推论；'
+                       '请补 basis / action，或并入下一页。')
+            warnings.append(finding)
+            # 信息充分性仍须结合实际图表与相邻论证判断；不强制每页重复依据栏。
+    for page_index, term, path, text in scan_terms(
+            [_audience_slide(slide, scenario) for slide in spec['slides']], STRICT_TERMS + CONTEXT_TERMS):
+        warnings.append(f'第{page_index}页出现“{term}”（{path}），请确认是教学语境还是空话：{text[:24]}')
+    if scenario == 'internal_report' and not any(
+            t['layout'] in ({'table', 'metrics', 'bars', 'comparison'} | REPORT_LAYOUTS) for t in page_log):
         warnings.append('内部汇报缺少比较、指标或表格页，请确认资料是否足以支持判断。')
     if scenario == 'lesson_plan' and not any(t['layout'] == 'activity' for t in page_log):
         warnings.append('教案缺少任务—预期回应—评价调整序列。')
@@ -853,10 +1151,26 @@ def build_deck(spec, out_path):
         warnings.append('个体家长反馈缺少作品或记录证据页。')
     if scenario in ('admissions', 'public_address') and not any(t['layout'] in ('statement', 'image', 'evidence') for t in page_log):
         warnings.append('对外稿缺少主视觉或证据页。')
+    quality = assess_quality(spec, scenario, page_log)
+    quality_findings = quality['sequence_findings'] + quality['content_findings']
+    quality['passed'] = quality['passed'] and not blocking_warnings
+    warnings.extend(quality_findings)
+    quality['needs_review'] = bool(warnings)
+    strict_quality = spec.get('strict_quality', True)
+    if strict_quality and blocking_warnings:
+        raise ValueError('质量门禁未通过，未交付 PPTX。请逐项修正：\n- ' +
+                         '\n- '.join(blocking_warnings) +
+                         '\n如仅为旧样例回归，可显式设置 strict_quality: false。')
     report = {
         'scenario': scenario, 'scenario_label': SCENARIOS[scenario]['label'],
         'body_pages': len(deck._pages), 'page_plan': page_log,
-        'tables': table_report(all_tables), 'warnings': warnings,
+        'tables': table_report(all_tables), 'warnings': warnings, 'quality': quality,
+        'calculations': calculations, 'strict_quality': strict_quality,
+        'source_notes': spec.get('source_notes', ''),
+        'source_records': [{'source_slide': i, 'source': slide.get('source', ''),
+                            'table_source': (slide.get('table') or {}).get('source', '')}
+                           for i, slide in enumerate(spec['slides'], 1)
+                           if slide.get('source') or (slide.get('table') or {}).get('source')],
         'animated_slides': len(manifest['slides']), 'output': str(out_path),
     }
     if manifest['slides']:

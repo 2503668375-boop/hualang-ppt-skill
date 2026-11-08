@@ -1,6 +1,6 @@
 # 交给其他 AI 的独立试用
 
-把完整 `artifact-template-hualang-school` 目录交给具有文件读取和可编辑PPT制作能力的助手，先让其读取 `SKILL.md`，再按用途读取参考。不同工具的技能安装方式各异；不能只传入口文档或假定都能直接运行辅助库。`hualang-kit.mjs`是可选生产入口，需要环境已有的`@oai/artifact-tool`；该依赖不要求从公共npm安装。缺少时，使用当前环境可用的原生PPT工具，按[样式契约](../assets/style-contract.json)及[跨工具最小实现](production.md#跨工具的最小实现)保留固定首尾、品牌、单位字号和可编辑对象。不要为了缺库退回只写提纲或整页截图。
+把完整 `artifact-template-hualang-school` 目录交给具有文件读取和可编辑PPT制作能力的助手，先让其读取 `SKILL.md`，再按用途读取参考。不同工具的技能安装方式各异；不能只传入口文档或假定都能直接运行辅助库。`hualang-kit.mjs`是可选生产入口，需要环境已有的`@oai/artifact-tool`；该依赖不要求从公共npm安装。常规整稿优先使用 `scripts/hualang_build.py` 与其 Python 依赖；复杂对象再选底层精修通道。两者均不可用时，使用当前环境可用的原生PPT工具，按[样式契约](../assets/style-contract.json)及[跨工具最小实现](production.md#跨工具的最小实现)保留固定首尾、品牌、单位字号和可编辑对象。不要为了缺库退回只写提纲或整页截图。
 
 ## 可复制的测试请求
 

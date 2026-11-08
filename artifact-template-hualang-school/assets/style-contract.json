@@ -65,14 +65,45 @@
     "motto": "华夏俊采，朗若星辰",
     "allowedObjectNames": [
       "closing-motto",
-      "closing-message"
+      "closing-message",
+      "closing-rule"
     ],
     "safeArea": [
       80,
       170,
       1120,
       280
-    ]
+    ],
+    "layout": {
+      "align": "center",
+      "motto": [
+        140,
+        262,
+        1000,
+        72
+      ],
+      "rule": [
+        604,
+        346,
+        72,
+        2
+      ],
+      "message": [
+        140,
+        368,
+        1000,
+        52
+      ],
+      "note": "培养目标与结束语水平居中；金线居中于标题与结束语之间；不随场合与署名变化"
+    },
+    "requiredObjectNames": [
+      "closing-motto",
+      "closing-message"
+    ],
+    "optionalObjectNames": [
+      "closing-rule"
+    ],
+    "compatibility": "原始底图、培养目标与结束语必须正确；历史合法双文字封尾标记legacy，金线可选；现行生产通道采用居中三项样式。"
   },
   "body": {
     "defaultColor": "222222",
@@ -248,7 +279,7 @@
         ]
       }
     },
-    "tierPolicy": "档位由使用条件判定，不由场景名推导：招生手册给家长带走属 read，同一内容在讲台上属 far。purpose 是入口名，tier 决定字号；字数、图文比、覆盖率按 tierLimits 核对。依据见 references/scene-visual-grammar.md。全幅图页的图片占比按100%计，属 far 允许范围。",
+    "tierPolicy": "档位由使用条件判定：招生手册留阅属 read，讲台宣讲属 far。purpose 是入口名，tier 决定字号；tierLimits 的字数、图文比与覆盖率为起排参考，按完整对象、可读性和实际阅读动作验收。全幅图页按100%计，属 far 允许范围。",
     "purposeTierMap": {
       "report": "read",
       "lessonPlan": "read",
@@ -263,7 +294,7 @@
       "data charts with editable series and numeric scales",
       "editable relation nodes and lines"
     ],
-    "scope": "Cross-tool implementation reference; the style checker verifies only the fields named in its own scope. 字号取自 densityTiersPx 对应 tier；字数、图文比、覆盖率按 tierLimits 人工核对。",
+    "scope": "Cross-tool implementation reference; the style checker verifies only the fields named in its own scope. 字号按 densityTiersPx 起排，tierLimits 帮助识别密度风险，不按逐页配额验收。",
     "textRoles": {
       "lead": {
         "color": "222222",
@@ -307,7 +338,7 @@
         48,
         64
       ],
-      "note": "组内16、组间32、区块48；出现13、27这类随手值即为不合规"
+      "note": "组内16、组间32、区块48可作起排参考；保持同类组件的间距一致，实际裁切、字形与关系需要时可调整，不按单个像素值判定合格。"
     },
     "lineHeight": {
       "lead": [
@@ -433,11 +464,23 @@
         "angleDeg": 0
       },
       "limits": {
-        "maxShareOfBody": 0.34,
-        "maxConsecutive": 3,
-        "photoAreaMin": 0.99
+        "photoAreaMin": 0.99,
+        "note": "出血仅用于 far 主视觉；数量及连续安排由讲述证据与阅读动作决定，不设整稿数量配额。"
       },
       "policy": "整页出血只用于 far 档，图或色面铺满画布，不留白边。页眉题名不设、金线不贯穿、校徽用金色版压图、页码移到文字列左下。允许出血页没有 title 形状；样式检查据此放行。"
     }
-  }
+  },
+  "bannedTerms": [
+    "赋能",
+    "抓手",
+    "闭环",
+    "链路",
+    "颗粒度",
+    "组合拳",
+    "护城河",
+    "底层逻辑",
+    "顶层设计",
+    "打法",
+    "商业闭环"
+  ]
 }

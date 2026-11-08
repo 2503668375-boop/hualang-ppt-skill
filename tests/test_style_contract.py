@@ -86,6 +86,11 @@ class ContractTests(unittest.TestCase):
   self.assertTrue(any('人工复核' in text for text in r['warnings']))
  def test_question_heading_remains_rejected(self):
   self.assertFalse(self.check(self.heading('怎么制作课件'))['ok'])
+ def test_legitimate_term_is_reviewed_not_blindly_banned(self):
+  self.rules['bannedTerms']=['闭环']
+  result=self.check(self.heading('闭环电路'))
+  self.assertTrue(result['ok'],result['errors'])
+  self.assertTrue(any('闭环' in message for message in result['warnings']))
  def test_heading_rules_come_from_contract(self):
   self.rules['heading']['forbiddenPatterns']=['^具体标题$']
   self.assertFalse(self.check(self.heading('具体标题'))['ok'])

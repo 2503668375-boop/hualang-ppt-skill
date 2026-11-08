@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "title": "招生复盘与执行审议｜V12模拟示例",
+  "scenario": "internal_report",
+  "audience": "校务会",
+  "content_only": true,
+  "strict_quality": true,
+  "calculations": [
+    {
+      "comparison_id": "demo_first_round",
+      "subject": "模拟高中首轮完成率",
+      "baseline": "模拟招生计划500人与补录计划100人",
+      "perspective": "学校招生结果",
+      "period": "2026模拟招生季",
+      "unit": "%",
+      "formula": "(plan - supplement) / plan * 100",
+      "inputs": {"plan": 500, "supplement": 100},
+      "expected": 80,
+      "tolerance": 0.001
+    }
+  ],
+  "slides": [
+    {
+      "layout": "targets",
+      "role": "opening",
+      "reader_question": "本年度要核定哪些结果？",
+      "new_information": "把比例目标换算为人数差额。",
+      "title": "模拟招生的三项目标",
+      "lead": "首轮完成率拟由80%提升至100%，对应100人缺口。",
+      "items": [
+        {"label": "高中首轮完成率", "current": "80%", "target": "100%", "delta": "+100人", "note": "模拟目标：400/500提升至500/500"},
+        {"label": "国际部招生", "current": "60人", "target": "80人", "delta": "+20人", "note": "模拟目标：年度计划口径"},
+        {"label": "学位使用率", "current": "75%", "target": "85%", "delta": "+200人", "note": "模拟：1,500/2,000提升至1,700/2,000"}
+      ],
+      "basis": {"title": "模拟口径", "body": "全部数字为模拟数据，用于演示目标、当前值与差额的页面结构。"},
+      "action": "模拟审议：核定目标后补学生流动桥，不把计划数当作实际报到。"
+    },
+    {
+      "layout": "positioning",
+      "role": "diagnosis",
+      "reader_question": "价格与录取分数怎样共同定位？",
+      "new_information": "使用双轴定位替代单一价格排名。",
+      "title": "模拟学校价格与分数定位",
+      "lead": "模拟华朗处于较高价格与较低分数组合。",
+      "x_axis": {"label": "录取线", "min": 300, "max": 450, "unit": "分"},
+      "y_axis": {"label": "学费", "min": 0, "max": 10, "unit": "万元/学期"},
+      "x_reference": 335,
+      "y_reference": 3.0,
+      "points": [
+        {"label": "模拟华朗", "x": 335, "y": 6.8, "display_x": "335分", "display_y": "6.8万", "color": "red"},
+        {"label": "模拟A校", "x": 420, "y": 4.0, "display_x": "420分", "display_y": "4.0万"},
+        {"label": "模拟B校", "x": 370, "y": 3.0, "display_x": "370分", "display_y": "3.0万"},
+        {"label": "模拟C校", "x": 335, "y": 5.0, "display_x": "335分", "display_y": "5.0万"}
+      ],
+      "body": "双轴只呈现模拟分布，不证明家庭选择原因。",
+      "basis": {"title": "模拟数据", "body": "学校名称与数值均为演示构造，不能用于真实学校比较。"},
+      "action": "模拟建议：用成果与服务材料解释价格，并记录家庭实际顾虑。"
+    },
+    {
+      "layout": "waterfall",
+      "role": "diagnosis",
+      "reader_question": "首轮缺口怎样复算？",
+      "new_information": "区分计划、推算和实际状态。",
+      "title": "模拟高中500人计划缺口",
+      "lead": "首轮推算400人，补录计划100人。",
+      "steps": [
+        {"label": "招生计划", "value": 500, "display": "500人", "kind": "start"},
+        {"label": "首轮缺口", "value": -100, "display": "−100人", "kind": "delta", "color": "red"},
+        {"label": "首轮推算", "value": 400, "display": "400人", "kind": "total", "color": "blue"},
+        {"label": "补录计划", "value": 100, "display": "+100人", "kind": "delta", "color": "gold"},
+        {"label": "计划补回", "value": 500, "display": "500人", "kind": "total"}
+      ],
+      "body": "400=500−100；补录计划不等于实际报到。",
+      "basis": {"title": "模拟计算", "body": "输入与结果均为模拟数据，演示正负缺口与累计柱。"},
+      "action": "模拟目标：下一年度以首轮500/500管理，并单独记录实际报到。"
+    },
+    {
+      "layout": "trend",
+      "role": "evidence",
+      "reader_question": "连续结果支持什么证据？",
+      "new_information": "用共同尺度展示四年变化。",
+      "title": "模拟复读部四年趋势",
+      "lead": "模拟本科率与特控率均呈连续变化。",
+      "categories": ["2023届", "2024届", "2025届", "2026届"],
+      "series": [
+        {"label": "本科率", "values": [90, 92, 94, 95], "displays": ["90%", "92%", "94%", "95%"], "color": "purple"},
+        {"label": "特控率", "values": [40, 45, 48, 52], "displays": ["40%", "45%", "48%", "52%"], "color": "gold"}
+      ],
+      "y_axis": {"label": "比例", "min": 30, "max": 100, "unit": "%"},
+      "body": "趋势用于展示模拟群体结果，不构成个体提分承诺。",
+      "basis": {"title": "模拟数据", "body": "四届数值均为演示构造，系列与期间一一对应。"},
+      "action": "模拟发布：保留届别、样本与统计截止日。"
+    },
+    {
+      "layout": "diagnostic",
+      "role": "diagnosis",
+      "reader_question": "原因怎样避免写成确定因果？",
+      "new_information": "分开事实、解释与验证。",
+      "title": "模拟首轮缺口诊断",
+      "lead": "三项解释均需通过模拟家庭记录验证。",
+      "items": [
+        {"title": "价格顾虑", "evidence": "模拟学费高于对照组。", "implication": "家庭可能要求更多成果证据。", "action": "咨询记录增加价格顾虑。", "status": "待验证"},
+        {"title": "材料时间", "evidence": "模拟成绩发布晚于志愿填报。", "implication": "填报时缺少出口材料。", "action": "提前完成分届白皮书。", "status": "时间事实"},
+        {"title": "区域通勤", "evidence": "模拟家庭来自三个行政区。", "implication": "通勤可能影响实际到访。", "action": "记录区域、交通与到访。", "status": "待验证"}
+      ],
+      "basis": {"title": "模拟边界", "body": "本页展示诊断写法，不代表任何真实学校的原因结论。"},
+      "action": "模拟执行：先建记录，再按证据调整资源。"
+    },
+    {
+      "layout": "conversion",
+      "role": "execution",
+      "reader_question": "过程数据怎样衔接？",
+      "new_information": "使用同一去重家庭跟踪五个阶段。",
+      "title": "模拟招生过程记录",
+      "lead": "阶段定义与责任先于转化率目标。",
+      "stages": [
+        {"label": "咨询", "definition": "去重家庭与目标学部", "target": "建基线", "owner": "模拟招办"},
+        {"label": "预约", "definition": "选择场次并记录来源", "target": "建基线", "owner": "模拟招办"},
+        {"label": "到访", "definition": "实际签到家庭", "target": "逐场记录", "owner": "模拟学部"},
+        {"label": "录取", "definition": "首轮与补录分开", "target": "500/500模拟目标", "owner": "模拟招办"},
+        {"label": "报到", "definition": "缴费与报到分别标记", "target": "9月核对", "owner": "模拟财务"}
+      ],
+      "basis": {"title": "模拟规则", "body": "阶段跟踪同一去重家庭，场次与组次不能替代独立家庭数。"},
+      "action": "模拟复核：每月同时查看分子、分母、期间与去重规则。"
+    },
+    {
+      "layout": "swimlane",
+      "role": "execution",
+      "reader_question": "谁在什么时候交付什么？",
+      "new_information": "用跨期任务条呈现责任与依赖。",
+      "title": "模拟招生执行泳道",
+      "lead": "材料、渠道、体验和费用按真实先后安排。",
+      "periods": ["11–12月", "1–2月", "3–4月", "5月"],
+      "lanes": [
+        {"label": "成果材料", "owner": "模拟校办", "tasks": [{"start": 0, "end": 0, "label": "白皮书", "deliverable": "分届结果", "status": "拟议"}]},
+        {"label": "招生渠道", "owner": "模拟招办", "tasks": [{"start": 1, "end": 2, "label": "咨询与开放日", "deliverable": "家庭台账", "status": "拟议"}, {"start": 3, "end": 3, "label": "志愿承接", "deliverable": "录取记录", "status": "拟议"}]},
+        {"label": "费用交通", "owner": "模拟财务后勤", "tasks": [{"start": 0, "end": 1, "label": "费用与线路", "deliverable": "测算表和校车图", "status": "待核定"}]}
+      ],
+      "body": "材料定稿后启用统一咨询口径，过程记录用于调整开放日。",
+      "basis": {"title": "模拟计划", "body": "所有任务为演示用拟议安排，不代表真实部门承诺。"},
+      "action": "模拟复核：按交付物验收，不以活动照片替代结果记录。"
+    },
+    {
+      "layout": "decision",
+      "role": "closing",
+      "reader_question": "会议需要形成什么决议？",
+      "new_information": "将目标、价格和执行转为审议事项。",
+      "title": "模拟校务会审议事项",
+      "lead": "每项决议保留建议、依据、责任和日期。",
+      "items": [
+        {"title": "目标", "decision": "是否采用首轮100%的模拟目标？", "recommendation": "原则同意并补流动桥。", "reason": "当前模拟缺口100人。", "owner": "模拟招办", "date": "11月"},
+        {"title": "价格", "decision": "是否维持模拟价格并另审奖学金？", "recommendation": "先核预算再发布减免。", "reason": "费用承诺需要可复算预算。", "owner": "模拟财务", "date": "12月"},
+        {"title": "执行", "decision": "是否采用模拟泳道安排？", "recommendation": "按交付物逐月复核。", "reason": "材料和渠道存在依赖。", "owner": "模拟校办", "date": "11月起"}
+      ],
+      "basis": {"title": "模拟决议", "body": "本页只演示决策页结构，所有事项均为模拟内容。"},
+      "action": "模拟会议纪要：记录核定值、待补条件与责任方。"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-# 整稿页面规格与生产入口 V11
+# 整稿页面规格与生产入口
 
 用户只提供主题、内容或资料。执行助手负责读取、研究、策划和写入页面规格；`scripts/hualang_build.py` 负责稳定生成完整 PPTX。
 
@@ -10,6 +10,8 @@
 4. 按[教育场景系统](scenario-system-v11.md)选择一个主场景。混合材料按读者拆成多份成品；确需同稿混合时逐页指定 tier 与版式。
 5. 先写页序与每页核心回答，再转换为 `deck-spec.json`。每页只保留一个主对象，必要时使用续页。
 6. 运行构建器，检查构建报告、样式契约、序列和最终文件。表格规则见[表格系统](table-system-v11.md)。
+
+V12 管理汇报完整输入见 `assets/examples/internal-report-v12.json`，覆盖八类新增主对象、逐页内容合同、整稿质量门禁与派生指标复算；示例全部使用模拟数据。
 
 ```bash
 python3 scripts/hualang_build.py \
@@ -45,22 +47,51 @@ python3 scripts/hualang_build.py \
 | `presenter` / `date` | 完整稿必填 | 缺失时可先准备规格，正式构建前补齐 |
 | `content_only` | 否 | true 时不生成封面封尾，也无需署名日期 |
 | `closing_text` | 否 | 按场合覆盖默认结束语 |
+| `strict_quality` | 否 | 兼容字段，默认 true；当前内容与节奏均给人工复核提示，字段丢失、无效数据和计算错误始终阻断，不依赖此开关 |
+| `calculations` | 有派生指标时填写 | 在独立底稿记录比较主体、基准、视角、期间、单位、公式、输入、预期与容差；页面只保留必要业务口径 |
+| `source_notes` | 否 | 独立底稿的原始出处及资料说明，不进入观众页面 |
+
+`calculations` 示例：
+
+```json
+{
+  "comparison_id": "simulated_course_cost_3yr",
+  "subject": "模拟课程方案每生费用变化",
+  "baseline": "方案甲1.2万元、方案乙1.0万元，均为每学年",
+  "perspective": "家庭三学年总费用减少",
+  "period": "三学年，模拟比较",
+  "unit": "万元/生/三学年",
+  "formula": "(price_a - price_b) * years",
+  "inputs": {"price_a": 1.2, "price_b": 1.0, "years": 3},
+  "expected": 0.6,
+  "tolerance": 0.000001
+}
+```
 
 ## 3. 页面通用字段
 
 | 字段 | 用途 |
 |---|---|
 | `layout` | 版式；省略或 auto 时按字段自动选择 |
+| `role` | 可选的管理页角色：opening / context / diagnosis / evidence / options / execution / decision / closing / appendix；其他场景按实际使用单元组织 |
+| `reader_question` | 本页直接回答的读者问题 |
+| `new_information` | 本页新增的事实、复算、解释、方案或安排 |
+| `appendix` | true 时标记资料附页，不参与正文版式比例计算 |
 | `title` | 页面具体议题或判断 |
 | `lead` | 统领本页的概论、核心判断或学习主旨 |
 | `context` | 统计期、样本、模拟属性、资料范围等辅助口径 |
 | `body` | 主体说明，容量随场景和档位控制 |
+| `basis` | 补充事实、解释、比较条件；字符串或 `{title, body}`，当前通用版式放在主体下方；内部不填原始出处、算法或核验过程 |
+| `action` | 有需要时写本页事实推出的动作、代价或后果；常规版式放在主体下方，不要求每页都填 |
 | `items` | 2–4 个相关要点，每项 title/body |
 | `tier` | read / near / far，覆盖场景默认值 |
 | `image` | 相对技能目录或绝对图片路径 |
 | `caption` | 图片内容、时间、范围或署名 |
-| `source` | 数据或材料来源 |
+| `source` / `table.source` | 数据或材料出处；`internal_report` 中仅留独立构建报告，其他场景按引用需要显示 |
 | `reveal` | process / lesson 支持，true 时登记点击出现 |
+| `task_label` | lesson 底部任务标签；教案默认“实施提示”，学生材料按实际学习动作命名 |
+
+管理原始出处填写 `source` 或顶层 `source_notes`，观众需要的期间、单位、分母和模拟属性填写 `context` 或对应数据标签。内部原始出处及计算记录不放 `basis`、备注或附录。
 
 图片缺失时可以省略 `image`，并填写 `image_title`、`image_brief` 生成明确留位。核心证据未补前，不把相关结论写成已证实事实。
 
@@ -97,7 +128,19 @@ python3 scripts/hualang_build.py \
 
 ### table
 
-见[表格系统](table-system-v11.md)。长表自动续页并重复表头。
+见[表格系统](table-system-v11.md)。长表自动续页并重复表头。`basis` 与 `action` 只在最后一页落位，表格高度预先为其留位。内部 `table.source` 留在独立底稿，可见口径使用 `context` 或列标题。
+
+```json
+{
+  "layout": "table",
+  "title": "阅读支持安排",
+  "lead": "模拟方案优先支持需要持续反馈的学生",
+  "context": "模拟材料 · 一学期 · 人数按去重学生统计",
+  "basis": {"title": "实施条件", "body": "基础活动面向全体；专项支持按同一评价任务识别，参与量不能直接证明学习改善。"},
+  "action": "拟在课时允许时先试行一轮，再根据独立作答调整支持范围。",
+  "table": {"style": "comparison", "columns": [], "rows": []}
+}
+```
 
 ### metrics
 
@@ -122,6 +165,38 @@ python3 scripts/hualang_build.py \
 ### timeline
 
 steps 含 date、title、body。read 每页至多 5 个节点，near/far 至多 4 个，自动续页。日期未定时使用阶段文字，不虚构具体日期。
+
+### positioning
+
+用于价格×分数、规模×成果等双轴定位。`x_axis` / `y_axis` 含 `label / min / max / unit`；`points` 含 `label / x / y / color / display_x / display_y / note`；可选 `x_reference / y_reference`。所有点使用原生对象和直接标签，轴域必须覆盖数值。
+
+### waterfall
+
+用于目标、缺口、贡献与补平。`steps` 含 `label / value / display / kind / color / note`，`kind` 为 `start / delta / total`，支持正负值；推算、计划和实际状态在文字中分开。
+
+### trend
+
+用于连续届别、月份或季度。`categories` 为期间标签；`series` 含 `label / color / values / displays`；`y_axis` 含 `min / max / unit / label`。各系列点数与期间数一致，零基线、比例和百分点按指标含义使用。
+
+### diagnostic
+
+用于原因、风险与区域诊断。`items` 含 `title / evidence / implication / action / status`。事实与解释假设分别表达，没有家庭或过程记录时不写成确定因果。
+
+### targets
+
+用于当前值、目标与差额。`items` 含 `label / current / target / delta / note / color`。目标为建议值时写明拟议，比例同时保留人数或分母。
+
+### conversion
+
+用于咨询、预约、到访、测评、录取、缴费报到。`stages` 含 `label / definition / target / owner`，阶段跟踪同一去重对象；未知基线写“待补”或建基线日期，不伪造转化率。
+
+### swimlane
+
+用于跨部门时间与责任。`periods` 为连续阶段；`lanes` 含 `label / owner / tasks`；任务含 `start / end / label / deliverable / status`，`start / end` 为 `periods` 的 0 基索引，可跨列。只登记真实或拟议任务，状态不省略。
+
+### decision
+
+用于校董会、校务会审议。`items` 含 `title / decision / recommendation / reason / owner / date`，分别写审议事项、建议、依据、责任和节点；没有真实待决事项时不使用该版式。按实际文字高度以完整事项续页，不能把超量内容截断或缩为不可读字号。
 
 ### process
 
@@ -148,7 +223,7 @@ steps 含 title、body。用于家校动作、办理流程、协作步骤。`rev
 
 ### lesson
 
-用于学生课堂。task 为完整任务；work 或 image 为主对象；prompts 为分段提示；independent_task 保留独立作答。
+用于学生课堂。task 为完整任务；work 或 image 为主对象；prompts 为分段提示；independent_task 保留独立作答。教案可用同一对象详解任务，底部默认标“实施提示”；`task_label` 可按用途覆盖，不把教师实施要求写成学生独立作答。
 
 ```json
 {
@@ -187,7 +262,9 @@ questions 为完整题组，每项可含 body、hint、bold。read 每页 3 题�
 - `admissions`：真实体验、课程适配、当期条件与一个主要行动入口。
 - `public_address`：核心主张、具体证据、数据口径与参与方式。
 
-构建报告记录场景、页数、每页版式、表格分页与警告。警告需要人工回到内容或版式处理，不能忽略后宣称完成场景适配。
+构建报告记录场景、页数、每页版式、分页、错误与复核提示。`quality` 的版式关系数、表格占比和连续节奏只是人工审稿线索；管理内容提示不强加给课堂和演讲。`calculations` 记录公式复算与比较语义，错误不因 `strict_quality: false` 而放行。技术构建成功仍须按[成品验收](review.md)检查内容、场景和实际页面。
+
+内部汇报正文达到 8 页时，少于 6 类内容关系、表格超过45%、连续4个独立输入页少于3类会触发复核提示。必要续表、同口径核对和连续推理可按内容保留，并检查实际阅读作用；不为数值配额虚构关系或拆薄内容。`appendix: true` 只用于真实资料附页，不能隐藏正文重复。
 
 ## 容量与完整性
 
@@ -195,4 +272,6 @@ questions 为完整题组，每项可含 body、hint、bold。read 每页 3 题�
 
 长表按完整数据行续页；证据观察可按完整条目续页，重复同一作品及口径，行动提示留在最后一页。单项本身过长时明确报错，返回内容重排。远距出血主张页不接收观察列表；把要点另排正文。留阅、近距的图片主张页使用图文证据布局保留图片。
 
-通用横条仅支持有限的非负数，`max_value`须为正且不小于全部数据。涉及负值、变化方向或零基线时，使用保留符号的表格或定制图表。
+通用横条仅支持有限的非负数，`max_value`须为正且不小于全部数据。涉及负值、变化方向或零基线时，使用支持符号的 waterfall / trend、表格或定制图表。
+
+新增诊断、目标和审议版式允许从一个完整事项起排；转化过程至少两个真实阶段。条目数是工具容量边界，不是内容配额。输入的 `context / body / basis / action` 若当前版式没有实际呈现，构建器会报错；按该版式字段重组或使用底层精修，不能仅删去必要内容使构建通过。管理原始 `source / table.source` 是留底稿的明确例外。
