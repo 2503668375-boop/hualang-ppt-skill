@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "title": "让阅读成为思考证据",
+  "scenario": "public_address",
+  "audience": "公众与合作伙伴",
+  "presenter": "华朗学校",
+  "date": "2026年11月8日",
+  "slides": [
+    {
+      "layout": "statement",
+      "title": "阅读与独立思考",
+      "lead": "阅读的价值，\n在每一次有依据的\n表达中被看见。",
+      "body": "从课堂文本到学生作品，再到独立迁移。",
+      "image": "assets/hualang-light-court.jpg",
+      "context": "演示版 · 公众演讲主视觉；公开使用前核验图片授权",
+      "tier": "far"
+    },
+    {
+      "layout": "metrics",
+      "title": "学生作品的三个观察点",
+      "context": "演示版 · 以下为评价维度，不是学校实绩数据",
+      "metrics": [
+        {
+          "value": "1处",
+          "label": "具体证据",
+          "note": "能回到原文指出词句"
+        },
+        {
+          "value": "1句",
+          "label": "联系解释",
+          "note": "说明证据如何支持判断"
+        },
+        {
+          "value": "1次",
+          "label": "独立迁移",
+          "note": "在新文本中使用方法"
+        }
+      ],
+      "tier": "far"
+    },
+    {
+      "layout": "statement",
+      "title": "共同支持学生成长",
+      "lead": "让每一份作品，\n都成为\n理解学生的入口。",
+      "body": "课程共研 · 作品交流 · 教学合作",
+      "image": "assets/hualang-campus-path.jpg",
+      "context": "演示版 · 合作方式按学校实际发布",
+      "tier": "far",
+      "text_side": "right"
+    }
+  ]
+}

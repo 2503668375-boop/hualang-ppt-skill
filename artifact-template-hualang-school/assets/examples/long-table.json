@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "title": "阅读支持长表续页",
+  "scenario": "internal_report",
+  "audience": "校务会",
+  "presenter": "课程中心",
+  "date": "2026年11月8日",
+  "slides": [
+    {
+      "layout": "table",
+      "title": "阅读支持任务明细",
+      "lead": "长表按完整任务续页，字段、列宽与评价口径保持稳定。",
+      "context": "演示版 · 模拟任务与拟议安排；用于验证长表自动续页",
+      "table": {
+        "style": "rubric",
+        "caption": "同一学习任务在不同班级的实施与复核记录",
+        "columns": [
+          {"key": "task", "label": "学习任务", "type": "longtext", "weight": 1.8},
+          {"key": "evidence", "label": "学生产出与证据", "type": "longtext", "weight": 2.0},
+          {"key": "feedback", "label": "评价与调整", "type": "longtext", "weight": 2.0},
+          {"key": "owner", "label": "责任", "type": "text"},
+          {"key": "status", "label": "状态", "type": "status"}
+        ],
+        "rows": [
+          {"task": "完整阅读并写出初步判断", "evidence": "保留首次判断与对应段落", "feedback": "没有依据时回到原文定位", "owner": "语文教师", "status": "拟议"},
+          {"task": "圈画两处动作或语言描写", "evidence": "在原文中标出具体词句", "feedback": "只找形容词时追问动作依据", "owner": "语文教师", "status": "拟议"},
+          {"task": "解释证据与判断的联系", "evidence": "写出一段完整证据链", "feedback": "复述原文时补充联系说明", "owner": "语文教师", "status": "拟议"},
+          {"task": "同伴核对证据的有效性", "evidence": "标出一处有效证据和一处弱证据", "feedback": "用判断反向核对词句是否相关", "owner": "学习小组", "status": "拟议"},
+          {"task": "修订自己的阅读作品", "evidence": "保留初稿、批注和修订稿", "feedback": "说明每次修改解决了什么问题", "owner": "学生", "status": "拟议"},
+          {"task": "在新文本中独立迁移", "evidence": "无提示完成新的证据链", "feedback": "分别记录证据选择与解释困难", "owner": "学生", "status": "拟议"},
+          {"task": "分析班级共性困难", "evidence": "汇总匿名作品中的同类问题", "feedback": "按任务环节确定再教重点", "owner": "教研组", "status": "待确认"},
+          {"task": "设计短时再教活动", "evidence": "形成针对一个困难点的微任务", "feedback": "控制新信息量并保留练习", "owner": "教研组", "status": "待确认"},
+          {"task": "向家长展示作品变化", "evidence": "使用同一任务的前后版本", "feedback": "避免把一次修订写成稳定掌握", "owner": "班级教师", "status": "待确认"},
+          {"task": "给出家庭追问动作", "evidence": "家庭记录一次原文追问", "feedback": "只追问证据，不代替孩子总结", "owner": "家长", "status": "建议"},
+          {"task": "两周后安排同类复核", "evidence": "比较两次独立任务的表现", "feedback": "确认方法能否脱离提示使用", "owner": "语文教师", "status": "待确认"},
+          {"task": "审议后续课时与资源", "evidence": "提供作品、观察和课时记录", "feedback": "依据证据决定扩展范围", "owner": "校务会", "status": "待确认"}
+        ],
+        "focus_rows": [2, 5, 10],
+        "source": "来源：演示版模拟任务；正式使用按真实教学记录更新"
+      }
+    }
+  ]
+}

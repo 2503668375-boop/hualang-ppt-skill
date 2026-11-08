@@ -49,6 +49,6 @@ await (await PresentationFile.exportPptx(pureDeck.presentation)).save(path.join(
 await fs.writeFile(path.join(outputDir,'fixture.json'), JSON.stringify({
   title:'工具行为验证', presenter:'示例教师', date:'2026年11月6日',
   acceptedTitles:['先秦文化', english, longChinese],
-  parentTablePx:24, classroomTablePx:23, explicitTablePx:[29,26],
+  parentTablePx:23, classroomTablePx:23, explicitTablePx:[29,26],
 }));
 console.log(JSON.stringify({ok:true,pptx,slides:deck.presentation.slides.items.length}));

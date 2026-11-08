@@ -1,8 +1,10 @@
-# 原生制作工具 V10.0
+# 原生制作工具 V11.0
+
+常规整稿先读[页面规格](deck-spec.md)；本文保留底层 JS 精修接口。
 
 常规华朗内容页使用`addPage`；`addSchoolScene`同样只保留页眉、校徽、分隔线与正文底。混合场景创建时指定`sceneMode:'mixed'`，通用入口漏传`purpose`会报错；单一场景可用`defaultPurpose`整稿指定。为兼容旧稿，未传这些参数仍保留report默认。用途参数只设置字号起点，不决定主体和构图，也不证明场景设计已经完成。
 
-`scripts/hualang-kit.mjs` 使用当前可用的 `@oai/artifact-tool`，封面与封尾均从原始模板保留。调用者决定内容、学科与具体构图，工具提供用途对应的默认值。
+`scripts/hualang-kit.mjs` 使用当前可用的 `@oai/artifact-tool`，封面与封尾均从原始模板保留。缺少该运行库时改用 [python-pptx 通道](python-production.md)，入口名、档位与坐标口径一致。调用者决定内容、学科与具体构图，工具提供用途对应的默认值。
 
 ## 运行环境
 
@@ -11,7 +13,7 @@
 桌面环境读取`load_workspace_dependencies`返回的运行库，确认其中已有`@oai/artifact-tool`再调用辅助库；不将从公共npm安装此包作为前置要求。可将辅助库复制到本次临时制作目录，并让该目录解析已有依赖；不要把依赖目录打入技能包。缺少运行库时采用当前原生工具，按[跨工具最小实现](production.md#跨工具的最小实现)及[样式契约](../assets/style-contract.json)执行。字体先核实，中文默认PingFang SC，英数Arial，简单分式默认Times New Roman；缺失时用 `zhFont / latinFont / mathFont` 传入实际可用字体。
 
 ```js
-import {createDeck,renderSavedDeck,colors,profiles} from './hualang-kit.mjs';
+import {createDeck,renderSavedDeck,colors,tiers} from './hualang-kit.mjs';
 const deck=await createDeck({skillDir,title:'本次题名',presenter,date,sceneMode:'mixed'});
 const report=deck.addPage({title:'招生差额',purpose:'report'});
 // 在主比较旁安排结论与条件，不先加同款分栏。
@@ -28,16 +30,20 @@ const preview=await deck.writeDraft({candidatePath,renderDir});
 
 ## 用途与默认字号
 
-坐标/字号单位为逻辑CSS像素；模板映射1px=9525EMU=0.75pt，24px=18pt。画布1280×720。完整单位、字体、profile和边界以[样式契约](../assets/style-contract.json)的`implementation`为准。标题区约y=30—73，分隔线y=86，主体区y=112—650。不要复制V5的第二个大标题或y=210才开始正文的布局。
+坐标/字号单位为逻辑CSS像素；模板映射1px=9525EMU=0.75pt，24px=18pt。画布1280×720。完整单位、字体、档位和边界以[样式契约](../assets/style-contract.json)的`implementation`为准。标题区约y=30—73，分隔线y=86，主体区y=112—650。不要复制V5的第二个大标题或y=210才开始正文的布局。
 
-| purpose | 题名px | 正文px | 概论px | 典型用途 |
-|---|---|---|---|---|
-| report | 28 | 21 | 28 | 正式内部阅读汇报 |
-| lessonPlan | 28 | 20 | 26 | 教师教案/备课 |
-| classroom | 30 | 25 | 28 | 学生课堂 |
-| worksheet | 28 | 24 | 26 | 练习题组 |
-| parent | 28 | 28 | 30 | 家长现场/招生 |
-| stage | 28 | 30 | 32 | 舞台表达 |
+`purpose` 是入口名，字号由所属档位决定。档位按使用条件判定，参数见[场景视觉语法](scene-visual-grammar.md)。
+
+| purpose | 档位 | 题名px | 正文px | 概论px | 表格px | 典型用途 |
+|---|---|---|---|---|---|---|
+| report | 留阅 | 28 | 21 | 33 | 19 | 正式内部阅读汇报 |
+| lessonPlan | 留阅 | 28 | 21 | 33 | 19 | 教师教案/备课 |
+| worksheet | 留阅 | 28 | 21 | 33 | 19 | 练习题组 |
+| classroom | 近距 | 30 | 26 | 42 | 23 | 学生课堂 |
+| parent | 近距 | 30 | 26 | 42 | 23 | 家长会现场；办理页改 report |
+| stage | 远距 | 30 | 34 | 64 | 26 | 舞台演讲、开放日、招生宣讲 |
+
+同一份材料做成礼堂版和手册版时，分别用 `stage` 与 `report` 建稿，不折中出一版中间字号。招生手册给家长带走属留阅，讲台上投放属远距。
 
 `deck.text` 对通过入口创建的页面采用对应正文起点，可按真实材料显式调整。正文默认 `colors.ink`，标题和教学组件用 `colors.purple` / `colors.pale`，重点 `colors.red`，分析图形 `colors.blue`。字号起点不等于配额，见[教学设计](teaching-design.md)及[视觉规范](design.md)。
 
@@ -111,6 +117,8 @@ deck.evidenceNote(slide,'解释这个具体转折及其条件。',{
 | `await addStage({title,subtitle,imagePath,imageAlt,section})` | 旧的局部特殊画布；常规演讲用addPage保留既定品牌框架，再组合主句与主图 |
 | `text / image / nativeTable / chart / line / arrow` | 原生文字、图片、表格、数据图与关系图，具体坐标由内容决定 |
 | `fraction(slide,num,den,{x,y,w,size,color})` | 简单可编辑分式：分子/横线/分母；复杂数学对象按数学专项 |
+
+常规整稿表格优先使用 `scripts/hualang_build.py` 与 `scripts/hualang_tables.py`，自动完成内容测量、六类样式、列宽、行高和续表；规则见[表格系统](table-system-v11.md)。本节 `deck.nativeTable` 保留给 JS 特殊页面精修。
 
 `deck.nativeTable` 的默认size跟随当前页面profile.table，显式size仍优先；底层独立nativeTable按自身默认值。原生表格必须给按内容分配的columnWidths且合计为w，可给rowHeights。表头默认紫底白字，可选headerStyle=tint为浅紫深紫字；表身黑色，数字列右对齐。cellPadding控制内边距，按真实换行确定rowHeights，不能让自动增高压住后续内容。图表数值轴使用min/max；函数采用scatter与xValues。默认蓝/灰系列，重点需要时才显式用红。
 

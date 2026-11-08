@@ -68,8 +68,8 @@ class PreviewContractTests(unittest.TestCase):
         self.assertEqual(checks['explicitPurposes'],['classroom','parent'])
         self.assertEqual(checks['singleDefault'],'parent')
         self.assertEqual(checks['singleOverride'],'lessonPlan')
-        self.assertEqual(self.result['observedFonts'],{'classroom':25,'parent':28,
-                         'singlePage':28,'singleScene':28,'singleOverride':20})
+        self.assertEqual(self.result['observedFonts'],{'classroom':26,'parent':26,
+                         'singlePage':26,'singleScene':26,'singleOverride':21})
 
     def test_preview_uses_existing_saved_file_and_does_not_export_a_new_deck(self):
         source=SKILL/'assets'/'source-original.pptx'

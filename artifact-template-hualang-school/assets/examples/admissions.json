@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "title": "阅读课程开放体验",
+  "scenario": "admissions",
+  "audience": "招生家庭",
+  "presenter": "华朗学校课程中心",
+  "date": "2026年11月8日",
+  "slides": [
+    {
+      "layout": "statement",
+      "title": "让表达回到文本证据",
+      "lead": "让孩子说出判断，\n也说出依据。",
+      "body": "阅读微课堂 · 观察、讨论与独立表达",
+      "image": "assets/reading-scene.png",
+      "context": "演示版 · 使用技能内示例场景；正式公开须核验图片授权与活动信息",
+      "tier": "far"
+    },
+    {
+      "layout": "comparison",
+      "title": "课堂体验与家庭收获",
+      "left": {"title": "孩子经历什么", "body": "完整阅读、圈画证据、同伴讨论、独立写出解释。"},
+      "right": {"title": "家长看见什么", "body": "孩子如何引用原文、修正判断，以及教师如何给出具体反馈。"}
+    },
+    {
+      "layout": "table",
+      "title": "开放体验办理信息",
+      "tier": "near",
+      "table": {
+        "style": "schedule",
+        "columns": [
+          {"label": "环节", "type": "text"},
+          {"label": "时间", "type": "date"},
+          {"label": "内容", "type": "longtext", "weight": 2.2},
+          {"label": "参与方式", "type": "text", "weight": 1.4}
+        ],
+        "rows": [
+          ["课堂体验", "待定", "学生完成阅读证据链任务", "学生独立参与"],
+          ["课程说明", "待定", "教师说明课程目标与评价", "家庭共同参加"],
+          ["校园参观", "待定", "了解学习空间与日常安排", "按现场路线"],
+          ["个别咨询", "待定", "核对课程适配与当期条件", "预约登记"]
+        ],
+        "source": "演示版 · 所有日期与活动均为待确认，不构成当期招生承诺"
+      }
+    },
+    {
+      "layout": "statement",
+      "title": "预约一次真实课堂体验",
+      "lead": "先看孩子如何学习，\n再讨论课程选择。",
+      "body": "预约渠道与当期招生条件待学校正式确认。",
+      "image": "assets/hualang-learning-street.jpg",
+      "context": "演示版 · 正式稿只保留一个真实有效的预约入口",
+      "tier": "far",
+      "text_side": "right"
+    }
+  ]
+}

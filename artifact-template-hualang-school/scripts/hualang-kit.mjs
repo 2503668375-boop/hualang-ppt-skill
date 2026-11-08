@@ -10,13 +10,20 @@ export const colors = Object.freeze({
 });
 export const fonts = Object.freeze({zh: 'PingFang SC', latin: 'Arial'});
 export const canvas = Object.freeze({width: 1280, height: 720});
+// 三档视觉密度：留阅 read / 近距 near / 远距 far。purpose 是入口名，tier 决定字号。
+// 相邻级差 ≥1.2，概论对正文 1.57–1.88。参数依据见 references/scene-visual-grammar.md。
+export const tiers = Object.freeze({
+  read:{title:28,lead:33,subhead:26,body:21,label:17,note:14,table:19},
+  near:{title:30,lead:42,subhead:32,body:26,label:21,note:17,table:23},
+  far: {title:30,lead:64,subhead:44,body:34,label:26,note:20,table:26},
+});
 export const profiles = Object.freeze({
-  report:{title:28,body:21,summary:28,table:19},
-  lessonPlan:{title:28,body:20,summary:26,table:19},
-  classroom:{title:30,body:25,summary:28,table:23},
-  worksheet:{title:28,body:24,summary:26,table:22},
-  parent:{title:28,body:28,summary:30,table:24},
-  stage:{title:28,body:30,summary:32,table:26},
+  report:     {...tiers.read, tier:'read', summary:33},
+  lessonPlan: {...tiers.read, tier:'read', summary:33},
+  worksheet:  {...tiers.read, tier:'read', summary:33},
+  classroom:  {...tiers.near, tier:'near', summary:42},
+  parent:     {...tiers.near, tier:'near', summary:42},
+  stage:      {...tiers.far,  tier:'far',  summary:64},
 });
 const noLine = {fill: 'none', width: 0};
 

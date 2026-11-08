@@ -136,63 +136,308 @@
         "h": 538
       }
     },
-    "profilesPx": {
-      "report": {
+    "densityTiersPx": {
+      "read": {
+        "label": "留阅",
         "title": 28,
+        "lead": 33,
+        "subhead": 26,
         "body": 21,
-        "summary": 28,
+        "labelSize": 17,
+        "note": 14,
         "table": 19
       },
-      "lessonPlan": {
-        "title": 28,
-        "body": 20,
-        "summary": 26,
-        "table": 19
-      },
-      "classroom": {
+      "near": {
+        "label": "近距",
         "title": 30,
-        "body": 25,
-        "summary": 28,
+        "lead": 42,
+        "subhead": 32,
+        "body": 26,
+        "labelSize": 21,
+        "note": 17,
         "table": 23
       },
-      "worksheet": {
-        "title": 28,
-        "body": 24,
-        "summary": 26,
-        "table": 22
-      },
-      "parent": {
-        "title": 28,
-        "body": 28,
-        "summary": 30,
-        "table": 24
-      },
-      "stage": {
-        "title": 28,
-        "body": 30,
-        "summary": 32,
+      "far": {
+        "label": "远距",
+        "title": 30,
+        "lead": 64,
+        "subhead": 44,
+        "body": 34,
+        "labelSize": 26,
+        "note": 20,
         "table": 26
       }
     },
-    "profilePolicy": "Helper starting values, not fixed pass thresholds. Use design.md scene ranges and actual viewing distance; enlarged stage statements are separate content objects.",
+    "tierLimits": {
+      "read": {
+        "bodyChars": [
+          180,
+          320
+        ],
+        "pointsPerPage": [
+          3,
+          5
+        ],
+        "imageRatio": [
+          0.25,
+          0.45
+        ],
+        "colorFaceRatio": [
+          0.08,
+          0.22
+        ],
+        "contentCoverage": [
+          0.55,
+          0.7
+        ],
+        "objectsPerPage": [
+          4,
+          8
+        ]
+      },
+      "near": {
+        "bodyChars": [
+          80,
+          160
+        ],
+        "pointsPerPage": [
+          2,
+          3
+        ],
+        "imageRatio": [
+          0.3,
+          0.5
+        ],
+        "colorFaceRatio": [
+          0.15,
+          0.35
+        ],
+        "contentCoverage": [
+          0.5,
+          0.62
+        ],
+        "objectsPerPage": [
+          3,
+          5
+        ]
+      },
+      "far": {
+        "bodyChars": [
+          30,
+          80
+        ],
+        "pointsPerPage": [
+          1,
+          1
+        ],
+        "imageRatio": [
+          0.55,
+          1.0
+        ],
+        "colorFaceRatio": [
+          0.25,
+          0.55
+        ],
+        "contentCoverage": [
+          0.35,
+          0.5
+        ],
+        "objectsPerPage": [
+          2,
+          4
+        ]
+      }
+    },
+    "tierPolicy": "档位由使用条件判定，不由场景名推导：招生手册给家长带走属 read，同一内容在讲台上属 far。purpose 是入口名，tier 决定字号；字数、图文比、覆盖率按 tierLimits 核对。依据见 references/scene-visual-grammar.md。全幅图页的图片占比按100%计，属 far 允许范围。",
+    "purposeTierMap": {
+      "report": "read",
+      "lessonPlan": "read",
+      "worksheet": "read",
+      "classroom": "near",
+      "parent": "near",
+      "stage": "far"
+    },
     "nativeObjects": [
       "editable text",
       "native tables",
       "data charts with editable series and numeric scales",
       "editable relation nodes and lines"
     ],
-    "scope": "Cross-tool implementation reference; the current style checker verifies only the fields named in its scope and does not validate every value in this block.",
+    "scope": "Cross-tool implementation reference; the style checker verifies only the fields named in its own scope. 字号取自 densityTiersPx 对应 tier；字数、图文比、覆盖率按 tierLimits 人工核对。",
     "textRoles": {
       "lead": {
         "color": "222222",
         "bold": true,
+        "size": {
+          "read": 33,
+          "near": 42,
+          "far": 64
+        },
         "role": "核心概论或判断，非口径说明"
       },
       "contextLine": {
         "color": "666666",
-        "size": 19,
-        "role": "模拟属性、统计期或辅助口径"
+        "size": {
+          "read": 14,
+          "near": 17,
+          "far": 20
+        },
+        "role": "模拟属性、统计期或辅助口径，仅此层可用灰"
       }
+    },
+    "grid": {
+      "columns": 12,
+      "step": 100,
+      "columnWidth": 84,
+      "gutter": 16,
+      "leftRule": "x = 48 + 100n",
+      "contentArea": {
+        "x": 48,
+        "y": 112,
+        "w": 1184,
+        "h": 538
+      }
+    },
+    "spacing": {
+      "allowed": [
+        8,
+        16,
+        24,
+        32,
+        48,
+        64
+      ],
+      "note": "组内16、组间32、区块48；出现13、27这类随手值即为不合规"
+    },
+    "lineHeight": {
+      "lead": [
+        1.15,
+        1.25
+      ],
+      "subhead": [
+        1.2,
+        1.3
+      ],
+      "body": [
+        1.6,
+        1.8
+      ],
+      "table": [
+        1.3,
+        1.4
+      ],
+      "note": 1.4,
+      "measureMaxCJK": 42
+    },
+    "components": {
+      "radius": 0,
+      "stroke": "1px #D8D8D8",
+      "shadow": "none",
+      "tableRowHeight": {
+        "dense": 34,
+        "airy": 40,
+        "policy": "V11起为最小起点；按列宽、换行和档位逐行测量，不为压缩内容自动缩字"
+      },
+      "tableStylesV11": [
+        "editorial",
+        "comparison",
+        "matrix",
+        "schedule",
+        "rubric",
+        "checklist"
+      ],
+      "tableLayoutPolicy": "文本左对齐、数字右对齐、日期与状态居中；长表按完整数据行续页并重复表头；不合并或嵌套单元格；详见 references/table-system-v11.md",
+      "labelHeight": 26,
+      "iconStroke": 2
+    },
+    "colorBudget": {
+      "ground": "#FDFDFE",
+      "redMaxPageRatio": 0.05,
+      "redMaxPerPage": 2,
+      "goldMaxPageRatio": 0.03,
+      "colorFaceMinPx": 120
+    },
+    "bleed": {
+      "allowedTiers": [
+        "far"
+      ],
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "w": 1280,
+        "h": 720
+      },
+      "title": {
+        "required": false,
+        "optional": {
+          "x": 148,
+          "y": 108,
+          "w": 560,
+          "h": 28,
+          "sizePx": 20,
+          "color": "FFFFFF",
+          "alpha": 0.7
+        }
+      },
+      "brandMark": {
+        "asset": "assets/logo-gold.png",
+        "x": 148,
+        "y": 44,
+        "w": 132,
+        "h": 78.3,
+        "fallbackAsset": "assets/logo-horizontal.png"
+      },
+      "divider": {
+        "rule": "none",
+        "shortGoldRule": {
+          "x": 148,
+          "w": 64,
+          "h": 2
+        }
+      },
+      "pageNumber": {
+        "x": 148,
+        "y": 677,
+        "w": 120,
+        "h": 24,
+        "sizePx": 14,
+        "color": "FFFFFF",
+        "align": "left"
+      },
+      "textColumn": {
+        "x": 148,
+        "maxWidth": 560,
+        "noteMinSizePx": 20,
+        "allowRightMirror": "V11可随图片主体将文字列、金色校徽、短金线和页码整体镜像到右侧"
+      },
+      "scrim": {
+        "color": "20182A",
+        "stops": [
+          [
+            0.0,
+            0.9
+          ],
+          [
+            0.3,
+            0.84
+          ],
+          [
+            0.48,
+            0.4
+          ],
+          [
+            0.64,
+            0.0
+          ]
+        ],
+        "angleDeg": 0
+      },
+      "limits": {
+        "maxShareOfBody": 0.34,
+        "maxConsecutive": 3,
+        "photoAreaMin": 0.99
+      },
+      "policy": "整页出血只用于 far 档，图或色面铺满画布，不留白边。页眉题名不设、金线不贯穿、校徽用金色版压图、页码移到文字列左下。允许出血页没有 title 形状；样式检查据此放行。"
     }
   }
 }

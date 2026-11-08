@@ -1,7 +1,7 @@
 interface:
   display_name: "华朗学校 Hualang School"
-  short_description: "按对象组织华朗汇报、教案课件和沟通材料，突出概论、学科对象与完整学习单元"
+  short_description: "输入主题或资料，生成八类教育场景的完整可编辑PPT，含智能表格与课堂反馈"
   icon_large: "./assets/preview.png"
-  default_prompt: "使用 $artifact-template-hualang-school，分别组织管理判断、教师实施、学生学习、家长支持或招生选择；概论保持清楚的主体层级，围绕实际图表、原文、作品和任务设计页面，保留必要推理与反馈，并检查最终实页。"
+  default_prompt: "使用 $artifact-template-hualang-school，读取本次主题和资料，识别校务、教案、课堂、练习、家长、招生或公众场景，生成完整可编辑PPT；按场景组织证据和版式，使用智能表格处理比较与续页，保留独立作答、反馈和必要动画，并检查最终文件。"
 policy:
   allow_implicit_invocation: true

@@ -100,4 +100,64 @@ class ContractTests(unittest.TestCase):
   for dimension in ('width','height'):
    self.assertEqual(impl['slideSizeEmu'][dimension]/self.rules['canvas'][dimension],units['emuPerLogicalPx'])
   self.assertEqual(units['emuPerLogicalPx']/units['emuPerPt'],units['ptPerLogicalPx'])
+
+ def bleed_xml(self, fill='403653', picture=False, position=(0,0,1280,720),
+               brand=True, headline=True, background=False):
+  p,a,r=(m.NS[k] for k in ('p','a','r'))
+  root=E.Element('{'+p+'}sld');slide=E.SubElement(root,'{'+p+'}cSld')
+  def solid(parent,color):
+   sf=E.SubElement(parent,'{'+a+'}solidFill')
+   return E.SubElement(sf,'{'+a+'}srgbClr',val=color)
+  if background:
+   solid(E.SubElement(E.SubElement(slide,'{'+p+'}bg'),'{'+p+'}bgPr'),fill)
+  tree=E.SubElement(slide,'{'+p+'}spTree')
+  def shape(tag,name,bounds):
+   node=E.SubElement(tree,'{'+p+'}'+tag)
+   nv=E.SubElement(node,'{'+p+'}'+('nvPicPr' if tag=='pic' else 'nvSpPr'))
+   E.SubElement(nv,'{'+p+'}cNvPr',id=str(len(tree)),name=name)
+   sp=E.SubElement(node,'{'+p+'}spPr');tr=E.SubElement(sp,'{'+a+'}xfrm')
+   x,y,w,h=bounds
+   E.SubElement(tr,'{'+a+'}off',x=str(int(x*m.EMU)),y=str(int(y*m.EMU)))
+   E.SubElement(tr,'{'+a+'}ext',cx=str(int(w*m.EMU)),cy=str(int(h*m.EMU)))
+   if tag=='pic':
+    blip=E.SubElement(E.SubElement(node,'{'+p+'}blipFill'),'{'+a+'}blip')
+    blip.set('{'+r+'}embed','rId1')
+   return node,sp
+  if not background:
+   node,sp=shape('pic' if picture else 'sp','backdrop',position)
+   if not picture:
+    rgb=solid(sp,fill)
+    if fill=='FFFFFF':E.SubElement(rgb,'{'+a+'}alpha',val='0')
+  if brand:shape('pic','brand-mark',(148,44,132,78))
+  if headline:
+   node,_=shape('sp','lead',(148,176,600,190))
+   paragraph=E.SubElement(E.SubElement(node,'{'+p+'}txBody'),'{'+a+'}p')
+   run=E.SubElement(paragraph,'{'+a+'}r')
+   E.SubElement(run,'{'+a+'}rPr',sz='4800')
+   E.SubElement(run,'{'+a+'}t').text='让思考清晰可见'
+  return E.tostring(root)
+
+ def test_bleed_accepts_branded_picture_and_dark_background_with_headline(self):
+  self.assertTrue(m.full_bleed(self.bleed_xml(picture=True)))
+  self.assertTrue(m.full_bleed(self.bleed_xml()))
+  self.assertTrue(m.full_bleed(self.bleed_xml(background=True)))
+
+ def test_blank_or_transparent_full_page_shape_cannot_bypass_title(self):
+  self.assertFalse(m.full_bleed(self.bleed_xml(fill='FDFDFE')))
+  self.assertFalse(m.full_bleed(self.bleed_xml(fill='FFFFFF')))
+  self.assertFalse(m.full_bleed(self.bleed_xml(brand=False)))
+  self.assertFalse(m.full_bleed(self.bleed_xml(headline=False)))
+  raw=self.bleed_xml(fill='FDFDFE')
+  def replace(root):
+   root.clear();new=E.fromstring(raw)
+   root.extend(list(new))
+  fixture=self.edit('blank-background.pptx',0,replace,source=self.content_fixture())
+  result=m.check(fixture,self.rules,content_only=True)
+  self.assertFalse(result['ok'])
+  self.assertTrue(any('第1页缺少正文页标题' in error for error in result['errors']))
+
+ def test_small_shifted_or_oversized_picture_is_not_a_bleed_exception(self):
+  for bounds in [(0,0,100,100),(-1000,-1000,1280,720),(0,0,2560,1440),(10,0,1280,720)]:
+   with self.subTest(bounds=bounds):
+    self.assertFalse(m.full_bleed(self.bleed_xml(picture=True,position=bounds)))
 if __name__=='__main__':unittest.main()

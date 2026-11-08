@@ -45,4 +45,4 @@
 
 教学能力验证采用连贯的真实学习单元；半页教学介绍只证明说明能力。若不同对象仍使用同款“题名—灰色说明—两栏／三段文字”，场景项和视觉项都需重做。沿用共同题干、坐标或查阅字段的必要稳定布局可以保留，说明其实际用途。
 
-专项入口：[内部汇报](internal-report.md)、[教学设计](teaching-design.md)、[教学深度](teaching-depth.md)、[初中](junior-subjects.md)、[高中](senior-subjects.md)、[国际课程](international-subjects.md)、[家长与招生](parent-admissions.md)、[对外视觉](external-visual.md)。样张以[当前索引](sample-index.md)及本次实页检查为准，旧样张不自动取得当前通过结论。
+课堂、家长与对外演讲的通用做法见[课堂、家长沟通与外部演讲](special-scenes.md)。专项入口：[内部汇报](internal-report.md)、[教学设计](teaching-design.md)、[教学深度](teaching-depth.md)、[初中](junior-subjects.md)、[高中](senior-subjects.md)、[国际课程](international-subjects.md)、[家长与招生](parent-admissions.md)、[对外视觉](external-visual.md)。样张以[当前索引](sample-index.md)及本次实页检查为准，旧样张不自动取得当前通过结论。

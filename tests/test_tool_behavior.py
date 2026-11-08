@@ -64,8 +64,8 @@ class ToolBehaviorTests(unittest.TestCase):
         self.assertTrue(result['warnings'], 'Long Chinese terminology should request visual review.')
 
     def test_table_and_body_font_profiles_survive_export(self):
-        expected_tables = [1800, 1725, 2175, 1950]  # OOXML hundredths of a point.
-        expected_bodies = [2100, 1875, 2325, 1875]
+        expected_tables = [1725, 1725, 2175, 1950]  # OOXML hundredths of a point.
+        expected_bodies = [1950, 1950, 2325, 1950]
         with zipfile.ZipFile(self.pptx) as archive:
             parts = check_style_contract.slide_parts(archive)
             for index, part in enumerate(parts[1:-1]):

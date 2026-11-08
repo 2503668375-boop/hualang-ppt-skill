@@ -53,6 +53,52 @@ def closing_check(z,part,expected_sha,contract=None):
    detail.append({'name':ob['name'],'text':ob['text']})
  return {'original_asset_present':expected_sha in hashes,'added_objects':added,'text':detail,'passed':expected_sha in hashes and valid}
 
+
+def full_bleed(raw, canvas=(1280,720), tol=2):
+ """识别有主张和品牌标记的出血候选；不认证实际图像或视觉。"""
+ root=E.fromstring(raw)
+ W,H=canvas
+ tree=root.find('p:cSld/p:spTree',NS)
+ if tree is None:return False
+ def box(node):
+  tr=node.find('p:spPr/a:xfrm',NS)
+  if tr is None:return None
+  o=tr.find('a:off',NS);e=tr.find('a:ext',NS)
+  if o is None or e is None:return None
+  return tuple(int(v)/EMU for v in (o.get('x'),o.get('y'),e.get('cx'),e.get('cy')))
+ def inside(b):
+  return b is not None and b[2]>0 and b[3]>0 and b[0]>=-tol and b[1]>=-tol and b[0]+b[2]<=W+tol and b[1]+b[3]<=H+tol
+ def covers(b):
+  return b is not None and all(abs(a-bb)<=tol for a,bb in zip(b,(0,0,W,H)))
+ def dark_fill(parent):
+  if parent is None:return False
+  fill=parent.find('a:solidFill/a:srgbClr',NS)
+  if fill is None:return False
+  value=fill.get('val','')
+  if not re.fullmatch(r'[0-9A-Fa-f]{6}',value):return False
+  alpha=fill.find('a:alpha',NS)
+  if alpha is not None and int(alpha.get('val','100000'))<100000:return False
+  rgb=[int(value[n:n+2],16) for n in (0,2,4)]
+  return sum(a*b for a,b in zip(rgb,(.2126,.7152,.0722)))<140
+ # A plain white/transparent backdrop is also common on framed pages. It is
+ # not evidence that the page deliberately uses the far-distance exception.
+ backdrop=dark_fill(root.find('p:cSld/p:bg/p:bgPr',NS))
+ brand=False;headline=False
+ for node in tree:
+  b=box(node)
+  if node.tag=='{'+NS['p']+'}pic':
+   blip=node.find('p:blipFill/a:blip',NS)
+   has_image=blip is not None and bool(blip.get('{'+NS['r']+'}embed'))
+   nv=node.find('p:nvPicPr/p:cNvPr',NS)
+   brand=brand or (has_image and inside(b) and nv is not None and nv.get('name')=='brand-mark')
+   backdrop=backdrop or (has_image and covers(b))
+  elif node.tag=='{'+NS['p']+'}sp':
+   backdrop=backdrop or (covers(b) and dark_fill(node.find('p:spPr',NS)))
+   text=''.join(t.text or '' for t in node.findall('.//a:t',NS)).strip()
+   sizes=[int(n.get('sz')) for n in node.findall('.//a:rPr',NS) if n.get('sz')]
+   headline=headline or (inside(b) and bool(re.search(r'[^\d\s/]',text)) and bool(sizes) and max(sizes)>=44*75)
+ return bool(backdrop and brand and headline)
+
 def check(pptx,c,title='',presenter='',date='',template=False,allow_titles=(),allow_subtitle=False,content_only=False):
  errors=[];warnings=[];headers=[]
  expected=None if content_only else {'title':title,'presenter':'汇报人：'+re.sub(r'^汇报人[：:]\s*','',presenter),'date':'汇报时间：'+re.sub(r'^汇报时间[：:]\s*','',date)}
@@ -73,12 +119,14 @@ def check(pptx,c,title='',presenter='',date='',template=False,allow_titles=(),al
    if not allow_subtitle and any(o['name']=='cover-subtitle' and o['text'].strip() for o in cover):errors.append('封面存在未声明必要性的副题')
   body_parts=enumerate(parts,1) if content_only else enumerate(parts[1:-1],2)
   for number,part in body_parts:
-   titles=[o for o in shapes(z.read(part)) if o['name'] in ['title','scene-title']]
-   if content_only and not titles:errors.append(f'第{number}页缺少正文页标题')
+   raw=z.read(part)
+   bleed=full_bleed(raw)
+   titles=[o for o in shapes(raw) if o['name'] in ['title','scene-title']]
+   if not titles and not bleed:errors.append(f'第{number}页缺少正文页标题或有效出血主张')
    if len(titles)>1:errors.append(f'第{number}页存在多个页标题')
    for ob in titles:
     t=ob['text'];headers.append({'slide':number,'title':t})
-    if content_only:
+    if content_only and not bleed:
      frame=c.get('implementation',{}).get('bodyFrame',{}).get('title')
      if frame and (ob['position'] is None or any(abs(x-y)>1 for x,y in zip(ob['position'],[frame[k] for k in ['x','y','w','h']]))):errors.append(f'第{number}页正文题名位置不符合页眉框架')
     if t in allow_titles:continue
@@ -91,7 +139,7 @@ def check(pptx,c,title='',presenter='',date='',template=False,allow_titles=(),al
   if not content_only and parts:
    closing=closing_check(z,parts[-1],c['closing']['assetSha256'],c['closing'])
    if not closing['passed']:errors.append('封尾原图、培养目标、结束语或安全区不符合规范')
- scope='全部现有正文页的已命名题名及其页眉位置；不要求封面、封尾、署名或日期，不认证校徽、金线、背景或实际视觉' if content_only else '首尾、字段、位置及已命名标题；短中文题名为偏好，学科和英文题名按语义与实际换行复核；仍需人工检查内容、重复语义、密度和视觉'
+ scope='全部现有正文页的题名及其页眉位置；含画布齐边背景、原生主张大字和brand-mark的出血候选可无页眉；不要求封面、封尾、署名或日期，不认证校徽内容、金线或实际视觉' if content_only else '首尾、字段、位置及正文标题/出血候选；短中文题名为偏好，学科和英文题名按语义与实际换行复核；仍需人工检查内容、重复语义、密度和视觉'
  return {'ok':not errors,'content_only':content_only,'cover_expected':expected,'headings':headers,'closing':closing,'errors':errors,'warnings':warnings,'scope':scope}
 
 def main():
