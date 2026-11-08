@@ -175,7 +175,8 @@ class ReportLayoutTests(unittest.TestCase):
         self.assertEqual(len(prs.slides), 8)
         self.assertEqual(report['body_pages'], 8)
         self.assertEqual(len(report['quality']['layout_families']), 8)
-        self.assertTrue(report['quality']['passed'])
+        self.assertIsNone(report['quality']['passed'])
+        self.assertTrue(report['quality']['needs_review'])
         self.assertFalse(validate_order(prs))
         self.assertGreater(path.stat().st_size, 20000)
         for slide in prs.slides:
@@ -223,7 +224,8 @@ class ReportLayoutTests(unittest.TestCase):
                    'table': {'columns': ['项目', '数值'], 'rows': [['咨询', '80'], ['到访', '60']]}}]
         _, report, _ = self.build(slides, name='necessary-table', strict=True)
         self.assertEqual(report['quality']['table_ratio'], 0.5)
-        self.assertTrue(report['quality']['passed'])
+        self.assertIsNone(report['quality']['passed'])
+        self.assertTrue(report['quality']['needs_review'])
         self.assertFalse(report['quality']['sequence_findings'])
 
     def test_repeated_long_report_prompts_review_without_layout_quota(self):
@@ -235,7 +237,8 @@ class ReportLayoutTests(unittest.TestCase):
         _, report, _ = self.build(slides, name='sequence-review', strict=True)
         self.assertTrue(report['quality']['needs_review'])
         self.assertTrue(report['quality']['sequence_findings'])
-        self.assertTrue(report['quality']['passed'])
+        self.assertIsNone(report['quality']['passed'])
+        self.assertTrue(report['quality']['needs_review'])
 
     def test_appendix_is_reported_separately(self):
         appendix = copy.deepcopy(self.slides()[0])
@@ -245,7 +248,8 @@ class ReportLayoutTests(unittest.TestCase):
         self.assertEqual(report['body_pages'], 1)
         self.assertEqual(report['quality']['checked_body_pages'], 0)
         self.assertEqual(report['quality']['appendix_pages'], 1)
-        self.assertTrue(report['quality']['passed'])
+        self.assertIsNone(report['quality']['passed'])
+        self.assertTrue(report['quality']['needs_review'])
 
     def test_existing_statement_comparison_bars_timeline_keep_supporting_fields(self):
         cases = [
@@ -272,7 +276,8 @@ class ReportLayoutTests(unittest.TestCase):
         logs = [{'source_slide': i + 1, 'layout': slide['layout'], 'generated_pages': 1}
                 for i, slide in enumerate(slides)]
         quality = assess_quality({'slides': slides}, 'internal_report', logs)
-        self.assertTrue(quality['passed'])
+        self.assertIsNone(quality['passed'])
+        self.assertTrue(quality['needs_review'])
         self.assertEqual(quality['table_ratio'], 0)
 
 

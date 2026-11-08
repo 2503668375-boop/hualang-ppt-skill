@@ -213,8 +213,8 @@ def text_box(page, text, x, y, w, h=None, size=None, color='ink', bold=False,
 
 def _basis_text(basis):
     if isinstance(basis, dict):
-        return str(basis.get('title') or '依据'), str(basis.get('body') or '').strip()
-    return '依据', str(basis or '').strip()
+        return str(basis.get('title') or ''), str(basis.get('body') or '').strip()
+    return '', str(basis or '').strip()
 
 
 def plan_supporting(slide, page, include_body=True):
@@ -238,7 +238,7 @@ def plan_supporting(slide, page, include_body=True):
     if slide.get('basis'):
         label, text = _basis_text(slide['basis'])
         if text:
-            text_h = text_height(text, 1058, 16, 1.3)
+            text_h = text_height(text, 1058 if label else 1144, 16, 1.3)
             h = text_h + 22
             if h > 112:
                 raise ValueError(f'页面“{slide.get("title")}”依据内容过长；请拆成续页。')
@@ -264,8 +264,10 @@ def plan_supporting(slide, page, include_body=True):
             elif kind == 'basis':
                 label, text = value
                 page.panel(48, y - 6, 1184, h, fill='pale', name='report-basis')
-                text_box(page, label, 68, y + 5, 74, 24, size=15, color='purple', bold=True)
-                text_box(page, text, 158, y + 5, 1054, h - 12, size=16, spacing=1.3)
+                if label:
+                    text_box(page, label, 68, y + 5, 74, 24, size=15, color='purple', bold=True)
+                text_box(page, text, 158 if label else 68, y + 5,
+                         1054 if label else 1144, h - 12, size=16, spacing=1.3)
             elif kind == 'body':
                 text_box(page, value, 48, y, 1184, h, size=19, spacing=1.35,
                          name='report-body')

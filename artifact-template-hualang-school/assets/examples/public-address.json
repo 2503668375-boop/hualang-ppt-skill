@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "title": "让阅读成为思考证据",
+  "title": "从学生回答看阅读理解",
   "scenario": "public_address",
   "audience": "公众与合作伙伴",
   "presenter": "华朗学校",
@@ -8,43 +8,37 @@
   "slides": [
     {
       "layout": "statement",
-      "title": "阅读与独立思考",
-      "lead": "阅读的价值，\n在每一次有依据的\n表达中被看见。",
-      "body": "从课堂文本到学生作品，再到独立迁移。",
+      "title": "阅读中的解释",
+      "lead": "一句“他很负责”，\n还需要说清理由。",
+      "body": "以原创人物片段和作答为例",
       "image": "assets/hualang-light-court.jpg",
-      "context": "演示版 · 公众演讲主视觉；公开使用前核验图片授权",
+      "context": "演讲结构示例 · 校园图片不代表本例课堂现场",
       "tier": "far"
     },
     {
-      "layout": "metrics",
-      "title": "学生作品的三个观察点",
-      "context": "演示版 · 以下为评价维度，不是学校实绩数据",
-      "metrics": [
+      "layout": "revision",
+      "title": "回答中的变化",
+      "tier": "near",
+      "context": "原创模拟作答 · 仅说明本次修改，不代表真实教学成效",
+      "before_label": "初次回答",
+      "after_label": "补充解释",
+      "changes": [
         {
-          "value": "1处",
-          "label": "具体证据",
-          "note": "能回到原文指出词句"
-        },
-        {
-          "value": "1句",
-          "label": "联系解释",
-          "note": "说明证据如何支持判断"
-        },
-        {
-          "value": "1次",
-          "label": "独立迁移",
-          "note": "在新文本中使用方法"
+          "label": "人物与情境",
+          "before": "林远很负责。",
+          "after": "同伴催他离开，他仍压紧松动底座，说明他看重把事情做完。",
+          "reason": "词句与对选择的解释一起支持判断。"
         }
       ],
-      "tier": "far"
+      "boundary": "这里的片段为：雨停后林远扶起倒牌，同伴催促时，他又压紧了最后一块松动的底座。"
     },
     {
       "layout": "statement",
-      "title": "共同支持学生成长",
-      "lead": "让每一份作品，\n都成为\n理解学生的入口。",
+      "title": "作品交流",
+      "lead": "讨论学生的回答，\n也讨论怎样帮助他。",
       "body": "课程共研 · 作品交流 · 教学合作",
       "image": "assets/hualang-campus-path.jpg",
-      "context": "演示版 · 合作方式按学校实际发布",
+      "context": "拟议交流示例 · 合作安排按实际资料确认",
       "tier": "far",
       "text_side": "right"
     }

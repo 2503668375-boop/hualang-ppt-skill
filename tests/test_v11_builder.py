@@ -115,7 +115,17 @@ class BuilderExportTests(unittest.TestCase):
                 self.assertLessEqual(s.top + s.height, 582 * 9525)
 
     def test_parent_feedback_continues_without_hiding_observations_under_action(self):
-        spec = json.loads((SKILL / 'assets/examples/parent-growth.json').read_text())
+        # Capacity is a renderer behavior; editorial examples may choose a
+        # different layout without changing this regression's purpose.
+        spec = {'title': '反馈容量', 'scenario': 'parent_growth', 'content_only': True,
+                'slides': [{'layout': 'evidence', 'title': '作答变化',
+                            'lead': '同一任务的两次作答需要完整对照。',
+                            'context': '原创容量检查材料',
+                            'items': [
+                                {'title': '初稿', 'body': '有人物判断，缺少可以核对的文本依据。'},
+                                {'title': '修订稿', 'body': '增加动作描写，并用一句话解释证据。'},
+                                {'title': '仍需支持', 'body': '面对较长文本时，需要继续观察证据选择。'},
+                            ], 'action': '家庭追问：哪一句话让你这样想？'}]}
         path = self.directory / 'parent.pptx'
         report = build_deck(spec, path)
         prs = Presentation(path)

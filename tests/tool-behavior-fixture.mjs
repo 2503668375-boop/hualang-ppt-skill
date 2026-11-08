@@ -13,8 +13,9 @@ const longChinese = '先秦文化与秦汉政治制度比较';
 for (const title of ['先秦文化', '从一条请求开始', english, longChinese]) {
   assert.equal(assertTopicTitle(title), title);
 }
-for (const title of ['', '先读材料再比较证据', '如何理解模型', '本页讨论证据']) {
-  assert.throws(() => assertTopicTitle(title));
+assert.throws(() => assertTopicTitle(''));
+for (const title of ['先读材料再比较证据', '如何理解模型', '本页讨论证据']) {
+  assert.equal(assertTopicTitle(title), title);
 }
 assert.equal(assertTopicTitle('如何理解模型', {userSupplied:true}), '如何理解模型');
 

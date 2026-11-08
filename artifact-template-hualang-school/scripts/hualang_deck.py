@@ -479,7 +479,7 @@ class Page:
     def image(self, path, x, y, w, h, cover=True, focus=(0.5, 0.5)):
         """放图。cover=True 时按目标比例裁切，focus=(fx,fy) 决定保留画面的哪个位置。
 
-        focus=(0.5,0.5) 居中（默认）；fy=1 贴底裁（去掉底部水印）；fx=0 贴左。
+        focus=(0.5,0.5) 居中（默认）；fy=1 保留下部、裁去上部；fx=0 贴左。保留原署名和水印。
         """
         pic = self.slide.shapes.add_picture(str(path), Emu(int(x * EMU)), Emu(int(y * EMU)),
                                             Emu(int(w * EMU)), Emu(int(h * EMU)))

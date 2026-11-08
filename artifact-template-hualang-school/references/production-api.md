@@ -289,3 +289,5 @@ deck.contextLine(s,'模拟资料 · 非学校实绩',{x:area.x,y:area.y,w:area.w
 不要把概论和统计期混放在灰色包装函数中。独立调用`lead/contextLine`时由调用者提供几何并检查实际行高；只有`addPage`内的概论会预留正文区。
 
 分类图重排时，图级`categories`与各系列的`categories/values`须同步；原生图创建入口会默认给系列写入相同类别。导出后从PPTX重导入核对标签和值的配对，不能只检查内存截图。
+
+JavaScript通道导出后的 `unreviewed` 状态不表示文案已检查。交付前对最终PPT运行同一 `audit_content_claims.py` 入口并复读完整文字；若当前环境不能运行，按[文案参考](writing.md)人工/助手提取全文审阅，说明未执行自动定位，不能把渲染成功当表达通过。

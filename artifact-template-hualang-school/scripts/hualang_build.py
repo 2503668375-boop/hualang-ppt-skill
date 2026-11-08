@@ -178,6 +178,26 @@ def choose_layout(slide):
     return 'statement'
 
 
+def validate_activity_content(slide, location):
+    steps = slide.get('steps')
+    if not isinstance(steps, list) or not steps:
+        raise ValueError(f'{location} activity 需要非空 steps。')
+    placeholders = {'待课堂观察', '依据学生回应调整', '根据学生回应调整',
+                    '根据回应调整', '待补', '待定', '待观察'}
+    for index, item in enumerate(steps, 1):
+        if not isinstance(item, dict):
+            raise ValueError(f'{location} 活动 {index} 必须是对象。')
+        missing = [field for field in ('expected', 'feedback')
+                   if not isinstance(item.get(field), str) or not item[field].strip()
+                   or item[field].strip().rstrip('。；;') in placeholders]
+        task = item.get('task', item.get('title', ''))
+        if not isinstance(task, str) or not task.strip() or task.strip().rstrip('。；;') in placeholders:
+            missing.append('task')
+        if missing:
+            raise ValueError(f'{location} 活动 {index} 缺少具体的 {" / ".join(missing)}；'
+                             '请写明预期作答及相应处理，body 不代替反馈，不会自动补入泛话。')
+
+
 def validate_spec(spec):
     if not isinstance(spec, dict):
         raise ValueError('页面规格必须是 JSON 对象。')
@@ -207,6 +227,8 @@ def validate_spec(spec):
             validate_report_slide(slide, layout, i)
         if layout in CONTENT_LAYOUTS:
             validate_content_slide(slide, layout, i)
+        if layout == 'activity':
+            validate_activity_content(slide, f'第 {i} 页')
         if layout != 'image' and not str(slide.get('title', '')).strip():
             raise ValueError(f'第 {i} 页缺少具体题名 title。')
         resolve_tier(slide, scenario)
@@ -366,11 +388,11 @@ def render_statement(deck, slide, scenario, manifest):
                      color='F0ECF5', spacing=1.4, name='statement-body', fixed_spacing=True)
         extra_y = body_y + body_h + 16
         if slide.get('basis'):
-            basis_label, basis_body = ('依据', str(slide['basis']))
+            basis_label, basis_body = ('', str(slide['basis']))
             if isinstance(slide['basis'], dict):
-                basis_label = str(slide['basis'].get('title') or '依据')
+                basis_label = str(slide['basis'].get('title') or '')
                 basis_body = str(slide['basis'].get('body') or '')
-            basis_text = f'{basis_label}｜{basis_body}'
+            basis_text = f'{basis_label}｜{basis_body}' if basis_label else basis_body
             basis_h = text_height(basis_text, 560, 20, 1.35)
             text_box(page, basis_text, body_x, extra_y, 560, basis_h, size=20,
                      color='F0ECF5', spacing=1.35, name='statement-basis', fixed_spacing=True)
@@ -498,20 +520,21 @@ def draw_basis(page, basis, y, height=None):
     if not basis:
         return 0
     if isinstance(basis, dict):
-        label = str(basis.get('title') or '依据')
+        label = str(basis.get('title') or '')
         text = str(basis.get('body') or '')
     else:
-        label, text = '依据', str(basis)
+        label, text = '', str(basis)
     text = text.strip()
     if not text:
         return 0
-    label_w = 78
+    label_w = 78 if label else 0
     text_w = 1184 - label_w - 60
     text_h = text_height(text, text_w, page.t['label'], 1.45)
     h = height or min(150, max(64, text_h + 30))
     page.panel(48, y, 1184, h, fill='pale', name='basis-panel')
-    text_box(page, label, 70, y + 12, label_w, 24,
-             size=page.t['note'], color='purple', bold=True)
+    if label:
+        text_box(page, label, 70, y + 12, label_w, 24,
+                 size=page.t['note'], color='purple', bold=True)
     text_box(page, text, 70 + label_w, y + 10, text_w, h - 18,
              size=page.t['label'], color='ink', spacing=1.45)
     return h
@@ -831,6 +854,7 @@ def render_evidence(deck, slide, scenario, manifest):
 
 
 def render_activity(deck, slide, scenario, manifest):
+    validate_activity_content(slide, f'页面“{slide.get("title", "")}”')
     steps = slide.get('steps') or []
     if not steps:
         raise ValueError('activity 版式需要 steps，且应包含 task / expected / feedback。')
@@ -852,8 +876,8 @@ def render_activity(deck, slide, scenario, manifest):
         for item in remaining:
             cells = [(item.get('time', '—'), 88, page.t['label']),
                      (item.get('task', item.get('title', '')), 400, page.t['body']),
-                     (item.get('expected', '待课堂观察'), 320, page.t['label']),
-                     (item.get('feedback', item.get('body', '依据学生回应调整')), 336, page.t['label'])]
+                     (item['expected'], 320, page.t['label']),
+                     (item['feedback'], 336, page.t['label'])]
             height = max(72, max(text_height(value, width, size, 1.4)
                                  for value, width, size in cells) + 24)
             if used + height > available:
@@ -875,15 +899,49 @@ def render_activity(deck, slide, scenario, manifest):
                      size=page.t['label'], color='purple', bold=True)
             text_box(page, item.get('task', item.get('title', '')), 144, yy + 8, 400, row_h - 20,
                      size=page.t['body'], bold=True)
-            text_box(page, item.get('expected', '待课堂观察'), 560, yy + 8, 320, row_h - 20,
+            text_box(page, item['expected'], 560, yy + 8, 320, row_h - 20,
                      size=page.t['label'], color='ink')
-            text_box(page, item.get('feedback', item.get('body', '依据学生回应调整')), 896, yy + 8, 336, row_h - 20,
+            text_box(page, item['feedback'], 896, yy + 8, 336, row_h - 20,
                      size=page.t['label'], color='ink')
             yy += row_h
         page.page_number()
         pages.append(page)
         remaining = remaining[len(group):]
     return pages
+
+
+def render_feedback(deck, slide, scenario, manifest):
+    """Feedback is the supplied answer and explanation, not an invented hero claim."""
+    page = base_page(deck, slide, scenario)
+    y = add_lead_context(page, slide)
+    items = slide.get('items') or []
+    body_w = 744 if items else 1184
+    body = str(slide.get('body') or '')
+    body_h = text_height(body, body_w, page.t['body'], 1.4)
+    if y + body_h > 650:
+        raise ValueError(f'反馈页“{slide.get("title")}”完整答案超出可用高度；请按题目或推理单元拆页，不会缩字或裁字。')
+    text_box(page, body, 48, y, body_w, body_h, size=page.t['body'],
+             spacing=1.4, name='feedback-answer', fixed_spacing=True)
+    note_y = y
+    for index, item in enumerate(items, 1):
+        if isinstance(item, str):
+            item = {'body': item}
+        title = str(item.get('title') or '')
+        explanation = str(item.get('body') or '')
+        title_h = text_height(title, 384, page.t['label'], 1.3) if title else 0
+        explanation_h = text_height(explanation, 384, page.t['label'], 1.4)
+        required = title_h + (8 if title else 0) + explanation_h
+        if note_y + required > 650:
+            raise ValueError(f'反馈页“{slide.get("title")}”第 {index} 项解释超出可用高度；请拆页，保留完整反馈。')
+        if title:
+            text_box(page, title, 848, note_y, 384, title_h, size=page.t['label'],
+                     bold=True, color='purple', name=f'feedback-title-{index}')
+            note_y += title_h + 8
+        text_box(page, explanation, 848, note_y, 384, explanation_h,
+                 size=page.t['label'], spacing=1.4, name=f'feedback-note-{index}')
+        note_y += explanation_h + 22
+    page.page_number()
+    return [page]
 
 
 def render_lesson(deck, slide, scenario, manifest):
@@ -951,14 +1009,14 @@ def render_lesson(deck, slide, scenario, manifest):
     if answer:
         answer_slide = {
             'title': str(slide.get('title')) + '·反馈',
-            'lead': slide.get('answer_lead', '依据关键条件核对作答，定位具体错误。'),
+            'lead': slide.get('answer_lead') or '',
             'body': answer,
             'items': slide.get('feedback_items', []),
             'tier': page.tier,
             'layout': 'statement',
             'bleed': False, 'context': slide.get('context', ''), 'source': slide.get('source', ''),
         }
-        pages.extend(render_statement(deck, answer_slide, scenario, manifest))
+        pages.extend(render_feedback(deck, answer_slide, scenario, manifest))
     return pages
 
 
@@ -998,11 +1056,12 @@ def render_practice(deck, slide, scenario, manifest):
             f'{i + 1}. {a}' for i, a in enumerate(answers))
         feedback = {
             'title': str(slide.get('title')) + '·答案与判据',
-            'lead': slide.get('answer_lead', '按作答证据核对，不只看最终答案。'),
+            'lead': slide.get('answer_lead') or '',
             'body': body,
             'tier': resolve_tier(slide, scenario), 'layout': 'statement', 'bleed': False,
+            'context': slide.get('context', ''), 'source': slide.get('source', ''),
         }
-        pages.extend(render_statement(deck, feedback, scenario, manifest))
+        pages.extend(render_feedback(deck, feedback, scenario, manifest))
     return pages
 
 
@@ -1053,7 +1112,8 @@ def assess_quality(spec, scenario, page_log):
     return {
         'layout_families': families, 'table_ratio': round(table_ratio, 4),
         'sequence_findings': sequence_findings, 'content_findings': content_findings,
-        'passed': True, 'needs_review': bool(sequence_findings or content_findings),
+        'passed': None, 'needs_review': True,
+        'has_automated_findings': bool(sequence_findings or content_findings),
         'blocking_findings': [], 'checked_body_pages': len(checked),
         'appendix_pages': len(body) - len(checked),
     }
@@ -1154,20 +1214,21 @@ def build_deck(spec, out_path):
         warnings.append(f'第{page_index}页出现“{term}”（{path}），请确认是教学语境还是空话：{text[:24]}')
     if scenario == 'internal_report' and not any(
             t['layout'] in ({'table', 'metrics', 'bars', 'comparison', 'tradeoff'} | REPORT_LAYOUTS) for t in page_log):
-        warnings.append('内部汇报缺少比较、指标或表格页，请确认资料是否足以支持判断。')
+        warnings.append('本次未采用常用图表或比较版式；请按实际议题复核材料是否充分，告知类事项无需为此增加数字或方案。')
     if scenario == 'lesson_plan' and not any(t['layout'] == 'activity' for t in page_log):
-        warnings.append('教案缺少任务—预期回应—评价调整序列。')
+        warnings.append('本次未采用 activity；请核对其他页面是否已呈现具体任务、预期回应和评价调整。版式名称不决定教案是否完整。')
     if scenario == 'parent_growth' and not any(t['layout'] in ('evidence', 'annotated', 'revision') for t in page_log):
-        warnings.append('个体家长反馈缺少作品或记录证据页。')
+        warnings.append('本次未采用常用作品版式；请核对是否已用其他形式呈现具体个人作品或记录，不能仅凭版式名判定缺项。')
     if scenario in ('admissions', 'public_address') and not any(t['layout'] in ('statement', 'image', 'evidence') for t in page_log):
         warnings.append('对外稿缺少主视觉或证据页。')
     quality = assess_quality(spec, scenario, page_log)
     quality_findings = quality['sequence_findings'] + quality['content_findings']
-    quality['passed'] = quality['passed'] and not blocking_warnings
+    quality['passed'] = None
     warnings.extend(quality_findings)
-    quality['needs_review'] = bool(warnings)
+    quality['needs_review'] = True
+    quality['has_automated_findings'] = bool(warnings)
     quality['status'] = 'human_review_required'
-    quality['scope'] = 'passed仅表示已执行的结构性检查未阻断构建；内容、表达、视觉须依据最终文件分别审查。'
+    quality['scope'] = 'passed为null表示尚无人工质量结论；needs_review始终为true。has_automated_findings仅表示自动检查发现了候选问题，内容、表达和视觉仍须依据最终文件分别审查。'
     strict_quality = spec.get('strict_quality', True)
     if strict_quality and blocking_warnings:
         raise ValueError('质量门禁未通过，未交付 PPTX。请逐项修正：\n- ' +
@@ -1201,6 +1262,7 @@ def build_deck(spec, out_path):
     report['size_bytes'] = out_path.stat().st_size
     from audit_content_claims import audit_presentation
     report['content_review'] = audit_presentation(out_path)
+    quality['has_automated_findings'] = bool(warnings or report['content_review']['findings'])
     return report
 
 

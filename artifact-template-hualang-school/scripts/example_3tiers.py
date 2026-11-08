@@ -115,16 +115,16 @@ q.page_number()
 
 # ============ P3 远距档（整页出血） ============
 r = deck.bleed_page(tier='far')
-r.image(SKILL / 'assets' / 'hualang-university-fair-20260510.png', 0, 0, 1280, 720,
-        focus=(0.5, 0.0))   # 全部从底部裁掉，避开原图右下角新闻水印；该图为新闻稿配图，正式使用须换授权原图
+r.image(SKILL / 'assets' / 'hualang-light-court.jpg', 0, 0, 1280, 720,
+        focus=(0.5, 0.5))   # 校园环境图只说明地点氛围；保留主体与原署名，不作为课堂现场证据
 r.scrim(0, 0, 1280, 720,
         [(0.0, 0.90), (0.30, 0.84), (0.48, 0.40), (0.64, 0.0)], angle=0)
 r.brand_mark(148, 44, 132)
-r.lead('先独立判断，\n再解释依据。', x=148, y=190, w=560, color='white')
+r.lead('区间改变，\n最大值落在哪里？', x=148, y=190, w=560, color='white')
 r.body('30 分钟二次函数微课堂\n孩子写下理由，家长看见思考过程', 148, 368, 560,
        color='F0ECF5', spacing=1.5)
 r.rule(148, 494, 64, color='gold', width=2)
-r.note('面向已认识抛物线顶点的高一学生及家长\n2026.5.10 校园开放日现场　拟议体验方案，非已公布活动',
+r.note('面向已认识抛物线顶点的高一学生及家长\n校园环境配图　拟议体验示例，非课堂实景或已公布活动',
        148, 514, 560, color='C9C2D0')
 r.page_number(light=True)
 

@@ -73,7 +73,7 @@ export function assertTopicTitle(value, {userSupplied = false} = {}) {
   // syntax alone. The saved-file checker reports that review from the contract.
   const conversational = /^(先.+再|然后|接着|怎样|怎么|如何|本页|我们|你[们的要可]|哪些|什么|它[的是])/;
   if (/[\u3400-\u9fff]/.test(title) && (conversational.test(title) || /[？?]/.test(title))) {
-    throw new Error('自动题名使用具体议题短语，课堂问句放在任务区：' + title);
+    console.warn('题名需复读（非错误）：核对它是否指向具体对象、真实问题或操作顺序；句式本身不作禁用依据：' + title);
   }
   return title;
 }

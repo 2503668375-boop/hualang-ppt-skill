@@ -61,7 +61,8 @@ class AuditRegressions(unittest.TestCase):
         prs, report, _ = self.build([slide], 'classroom')
         self.assertIn(slide['context'], self.text(prs))
         self.assertIn(slide['task'], self.text(prs))
-        self.assertTrue(report['quality']['passed'])
+        self.assertIsNone(report['quality']['passed'])
+        self.assertTrue(report['quality']['needs_review'])
 
     def test_teacher_task_label_matches_use(self):
         slide = dict(layout='lesson', title='教师安排', context='模拟说课',
